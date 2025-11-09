@@ -8,6 +8,12 @@ public class UIManager : MonoBehaviour
     public Slider volumeSlider;
     public Slider brightnessSlider;
     public Button settingsButton;
+    [Header("Speaker Icon")]
+    public Image speakerIcon; // 1. Hierarchy의 'SpeakerIcon'을 연결할 슬롯
+    public Sprite spriteMute;
+    public Sprite spriteLow;
+    public Sprite spriteMedium;
+    public Sprite spriteHigh;
 
     [Header("Health")]
     public Image heartImage; // 1-1에서 설정한 'Filled' 하트 이미지
@@ -73,6 +79,24 @@ public class UIManager : MonoBehaviour
     {
         mainMixer.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat(VOLUME_KEY, volume);
+        if (speakerIcon == null) return; // 아이콘이 없으면 종료
+
+        if (volume <= 0.0001f) // 0에 가까우면 (음소거)
+        {
+            speakerIcon.sprite = spriteMute;
+        }
+        else if (volume <= 0.4f) // 40% 이하 (낮음)
+        {
+            speakerIcon.sprite = spriteLow;
+        }
+        else if (volume <= 0.8f) // 80% 이하 (중간)
+        {
+            speakerIcon.sprite = spriteMedium;
+        }
+        else // 80% 초과 (높음)
+        {
+            speakerIcon.sprite = spriteHigh;
+        }
     }
 
     public void SetBrightness(float brightness)
@@ -103,4 +127,8 @@ public class UIManager : MonoBehaviour
         // (참고) 유니티 에디터에서는 Application.Quit()이 작동하지 않습니다.
         // 빌드된 게임에서만 작동합니다.
     }
+    
+
+
+
 }
