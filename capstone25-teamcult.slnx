@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
 </Solution>
+=======
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+</Solution>
+>>>>>>> 40bdf714a5db0182c58220366029d64eea1dc839
