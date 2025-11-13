@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b202f11a85123045831e0d4a928c30c, type: 3}
+  m_Name: HeartType_Flame
+  m_EditorClassIdentifier: 
+  type: 1
+  heartSprite: {fileID: 0}
+  heartMaterial: {fileID: 0}
+  heartName: "\uC0C8 \uD558\uD2B8"
+  description: "\uC124\uBA85\uC744 \uC785\uB825\uD558\uC138\uC694."

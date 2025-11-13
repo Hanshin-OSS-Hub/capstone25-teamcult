@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - FlameHeartItem
+  - FlameHeart
+  - IceHeartItem
   layers:
   - Default
   - TransparentFX

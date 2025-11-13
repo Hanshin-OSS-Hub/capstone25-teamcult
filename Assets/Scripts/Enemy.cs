@@ -4,7 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float moveSpeed = 3f;
-    public float sightRange = 5f;
+    public float sightRange = 5f; // 5칸으로 설정된 상태
     public float attackRange = 1.5f;
 
     private Transform player;
@@ -21,7 +21,11 @@ public class Enemy : MonoBehaviour
         rb.gravityScale = 0; // 2D이므로 중력 0으로 설정
 
         // 씬에서 'Player' 스크립트를 가진 오브젝트를 찾아 player로 설정
-        Player playerObject = FindObjectOfType<Player>();
+        // --- 여기가 수정된 부분입니다 ---
+        // Player playerObject = FindObjectOfType<Player>(); // (오래된 방식)
+        Player playerObject = FindFirstObjectByType<Player>(); // (새로운 권장 방식)
+        // ------------------------------
+
         if (playerObject != null)
         {
             player = playerObject.transform;
