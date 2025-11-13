@@ -77,7 +77,7 @@ public class UIManager : MonoBehaviour
     // --- 볼륨 및 밝기 ---
     public void SetVolume(float volume)
     {
-        mainMixer.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
+        mainMixer.SetFloat("MasterVolume", volume > 0 ? Mathf.Log10(volume) * 20 : -80); // -80이 무음
         PlayerPrefs.SetFloat(VOLUME_KEY, volume);
         if (speakerIcon == null) return; // 아이콘이 없으면 종료
 
@@ -102,7 +102,8 @@ public class UIManager : MonoBehaviour
     public void SetBrightness(float brightness)
     {
         float alpha = 1.0f - brightness;
-        brightnessOverlay.color = new Color(0, 0, 0, alpha);
+        if (brightnessOverlay == null) { Debug.Log("brightnessOverlay == null"); }
+        else { brightnessOverlay.color = new Color(0, 0, 0, alpha); }
         PlayerPrefs.SetFloat(BRIGHTNESS_KEY, brightness);
     }
 
