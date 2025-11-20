@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI; // UI 요소(Slider, Button, Image) 사용
 using UnityEngine.Audio; // AudioMixer 사용
-
+using TMPro;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
 public class UIManager : MonoBehaviour
 {
     [Header("UI Elements")]
@@ -73,7 +75,11 @@ public class UIManager : MonoBehaviour
             heartImage.fillAmount = healthPercentage;
         }
     }
-
+    public void DeselectUIElement()
+    {
+        // 현재 선택된 UI(슬라이더)를 null로 만들어 포커스를 해제
+        EventSystem.current.SetSelectedGameObject(null);
+    }
     // --- 볼륨 및 밝기 ---
     public void SetVolume(float volume)
     {
