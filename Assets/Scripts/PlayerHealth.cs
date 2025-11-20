@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour
         }
         HP = 12;
         //hpBarManager.GenerateHearts();
-        hpBarManager.ChangeHealth(HP);
+        //hpBarManager.ChangeHealth(HP);
     }
     //private void Update() {
     //    // Z 키를 누르면 체력 1 감소
@@ -52,7 +52,7 @@ public class PlayerHealth : MonoBehaviour
         if (HP < 0) { HP = 0; }
 
         // 체력이 변경될 때마다 UI 업데이트 요청
-        hpBarManager.ChangeHealth(HP);
+        //hpBarManager.ChangeHealth(HP);
 
         if (HP <= 0)
         {
