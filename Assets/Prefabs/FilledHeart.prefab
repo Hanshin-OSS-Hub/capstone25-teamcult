@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1252352873451226662
+--- !u!1 &7260908648398383498
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1282427344960546868}
-  - component: {fileID: 3595743882887571246}
-  - component: {fileID: 6572477606509460885}
+  - component: {fileID: 4984698889408043654}
+  - component: {fileID: 5975010995467352510}
+  - component: {fileID: 4252827881843687654}
+  - component: {fileID: 4370258188223767231}
   m_Layer: 5
-  m_Name: EmptyHeart
+  m_Name: FilledHeart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1282427344960546868
+--- !u!224 &4984698889408043654
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252352873451226662}
+  m_GameObject: {fileID: 7260908648398383498}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -34,31 +35,31 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -847.363, y: 440}
+  m_AnchoredPosition: {x: 62.637, y: -50}
   m_SizeDelta: {x: 125.274, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3595743882887571246
+--- !u!222 &5975010995467352510
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252352873451226662}
+  m_GameObject: {fileID: 7260908648398383498}
   m_CullTransparentMesh: 1
---- !u!114 &6572477606509460885
+--- !u!114 &4252827881843687654
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252352873451226662}
+  m_GameObject: {fileID: 7260908648398383498}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.31132078, g: 0.3069153, b: 0.3069153, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -66,12 +67,31 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: -205270267638800340, guid: be504c4a94f18844f8b57f222bdcb140, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
-  m_FillAmount: 1
+  m_FillAmount: 0
   m_FillClockwise: 0
   m_FillOrigin: 2
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4370258188223767231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7260908648398383498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d18c461d57f5be48b44d73e5d275e01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HP: 0
+  currentAttribute: 0
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  fireColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  iceColor: {r: 0.5, g: 0.5, b: 1, a: 1}
+  poisonColor: {r: 0.5, g: 1, b: 0.5, a: 1}
+  electricColor: {r: 0.5, g: 1, b: 1, a: 1}
