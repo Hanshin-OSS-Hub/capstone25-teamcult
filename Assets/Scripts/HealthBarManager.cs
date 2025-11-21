@@ -3,22 +3,22 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class HealthBarManager : MonoBehaviour {
-    // === 인스펙터 설정 ===
+    // 하트 프리팹
+    [SerializeField] private GameObject emptyHeartPrefab;
+    [SerializeField] private GameObject filledHeartPrefab;
 
-    // 빈 하트(테두리) 프리팹 - 하트 4칸을 표현하는 Image 컴포넌트 (Type: Simple)
-    public GameObject emptyHeartPrefab;
-
-    // Fill 이미지 프리팹 (필요한 경우) - 보통 emptyHeartPrefab의 자식으로 구성됨 (Type: Filled)
-    public Transform heartsContainer; // 하트들을 담을 부모 오브젝트
+    [SerializeField] private Transform emptyHeartsContainer; // 빈 하트들을 담을 부모 오브젝트
+    [SerializeField] private Transform filledHeartsContainer; // 꽉찬 하트들을 담을 부모 오브젝트
 
     // === 체력 데이터 ===
-    private int maxHP = 12; // 최대 체력
-    private int HP = 12; // 현재 체력 수치
-    private const int HP_PER_HEART = 4; // 하트 1개당 체력 값 (고정)
-    private int maxHeart = 3; // maxHP/HP_PER_HEART; 하트의 최대 개수
+    private int HP = 12; // 체력
+    private int heart = 2; // 하트 개수
+    private int maxHeart = 10; // 최대 하트 개수
+    private int HPperHeart = 4; // 하트당 체력
 
     // 생성된 EmptyHeart 오브젝트들을 관리할 리스트
-    public List<GameObject> emptyHeartObjects = new List<GameObject>();
+    private List<GameObject> emptyHeartObjects = new List<GameObject>();
+    private List<GameObject> filledHeartObjects = new List<GameObject>();
 
 
     private void Start() {
@@ -26,15 +26,13 @@ public class HealthBarManager : MonoBehaviour {
         // this.maxHeart = Mathf.CeilToInt((float)maxHP / HP_PER_HEART); 
 
         GenerateHearts();
-        UpdateHealthBar();
     }
 
     // Z/X 키를 이용한 테스트 함수 (이전 답변에서 제공)
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Z)) {
             if (HP > 0) {
-                HP -= 1;
-                UpdateHealthBar();
+                LoseHP(1);
                 Debug.Log("체력 감소! 현재 체력: " + HP);
             }
             else {
@@ -42,8 +40,17 @@ public class HealthBarManager : MonoBehaviour {
             }
         }
         if (Input.GetKeyDown(KeyCode.X)) {
-            HP += 1;
-            UpdateHealthBar();
+            GainHP(1);
+            Debug.Log("체력 증가! 현재 체력: " + HP);
+        }
+        if (Input.GetKeyDown(KeyCode.C) && heart >= 1) {
+            filledHeart heartComponent = filledHeartObjects[0].GetComponent<filledHeart>();
+            heartComponent.SetAttribute(HeartAttribute.Ice);
+            Debug.Log("체력 증가! 현재 체력: " + HP);
+        }
+        if (Input.GetKeyDown(KeyCode.V) && heart >= 0) {
+            filledHeart heartComponent = filledHeartObjects[0].GetComponent<filledHeart>();
+            heartComponent.SetAttribute(HeartAttribute.Fire);
             Debug.Log("체력 증가! 현재 체력: " + HP);
         }
     }
@@ -51,64 +58,66 @@ public class HealthBarManager : MonoBehaviour {
 
     private void GenerateHearts() {
         // 1. 기존 하트 모두 제거
-        foreach (Transform child in heartsContainer) {
+        heart = 0;
+        HP = 0;
+        foreach (Transform child in emptyHeartsContainer) {
             Destroy(child.gameObject);
         }
-        emptyHeartObjects.Clear(); // 새로운 리스트도 초기화
+        emptyHeartObjects.Clear();
+        foreach (Transform child in filledHeartsContainer) {
+            Destroy(child.gameObject);
+        }
+        filledHeartObjects.Clear();
 
         // 2. maxHeart 개수만큼 하트 생성 (빈 하트)
-        for (int i = 0; i < maxHeart; i++) {
-            GameObject newHeart = Instantiate(emptyHeartPrefab, heartsContainer);
-
-            // 4. X 좌표를 125씩 증가시키는 로직 추가
-            RectTransform heartRect = newHeart.GetComponent<RectTransform>();
-            if (heartRect != null) {
-                // 기존 위치에서 오른쪽으로 125 * i 만큼 이동합니다.
-                heartRect.anchoredPosition = new Vector2(i * 125f, heartRect.anchoredPosition.y);
-            }
-
-            // EmptyHeart 오브젝트 리스트에 추가
-            emptyHeartObjects.Add(newHeart);
-
-        }
-
-        // 3. 함수 이름 변경 및 호출
-        TurnOnHeartUnitComponents();
+        AddHeart(2, true);
+        AddHeart(1, false);
     }
 
-    // 3. 함수 이름 변경: 모든 하트 유닛의 Image 컴포넌트를 활성화하는 함수
-    public void TurnOnHeartUnitComponents() {
-
-        // emptyHeartObjects 리스트를 순회합니다. (각 요소는 EmptyHeart GameObject입니다)
-        foreach (GameObject emptyHeartObject in emptyHeartObjects) {
-            if (emptyHeartObject != null) {
-
-                // 1. emptyHeartObject의 이미지를 찾아서 키기 (A 이미지, 기존 로직 유지)
-                // 부모 오브젝트(EmptyHeart, A 이미지)의 Image 컴포넌트를 활성화합니다.
-                Image imageA = emptyHeartObject.GetComponent<Image>();
-                if (imageA != null) {
-                    imageA.enabled = true;
-                }
-
-                // --- 2단계, 3단계 로직 추가 ---
-
-                // 2. emptyHeartObject의 자식 오브젝트 B를 찾을것
-                // 자식 오브젝트는 FilledHeart이며, EmptyHeart의 첫 번째 자식이라고 가정합니다.
-                Transform childTransformB = emptyHeartObject.transform.GetChild(0);
-
-                if (childTransformB != null) {
-                    // 3. B의 Image콤포넌트를 찾아서 킬것
-                    Image imageB = childTransformB.GetComponent<Image>();
-
-                    if (imageB != null) {
-                        imageB.enabled = true;
-                    }
-                }
-            }
+    public int AddHeart(int cnt = 1, bool full = false) { // 추가할 하트 개수, 하트를 채울지
+        int targetHeart = Mathf.Min(heart+cnt, maxHeart);
+        for (; heart < targetHeart;) {
+            GameObject emptyHeart = Instantiate(emptyHeartPrefab, emptyHeartsContainer);
+            emptyHeartObjects.Insert(heart, emptyHeart); // emptyHeart 오브젝트 리스트에 추가
+            GameObject filledheart = Instantiate(filledHeartPrefab, filledHeartsContainer);
+            filledHeartObjects.Insert(heart, filledheart); // filledheart 오브젝트 리스트에 추가
+            heart++;
+            if (full) { GainHP(HPperHeart); }
         }
-        Debug.Log("HealthBarManager: 모든 하트 유닛의 Image 컴포넌트가 활성화되었습니다.");
+        return HP;
     }
+    
+    private void GainHP(int cnt) {
+        Debug.Log("GainHP : " + cnt);
+        for (int i = 0; i < heart; i++) {
+            if (cnt == 0) { break; }
+            Debug.Log(heart + ", " + filledHeartObjects.Count);
+            filledHeart heartComponent = filledHeartObjects[i].GetComponent<filledHeart>();
+            int t = Mathf.Min(cnt, HPperHeart - heartComponent.HP);
+            heartComponent.HP += t;
+            UpdateHeart(filledHeartObjects[i]);
+            cnt -= t;
+            HP += t;
+        }
+    }    
+    private void LoseHP(int cnt) {
+        Debug.Log("LoseHP : " + cnt);
+        for (int i = filledHeartObjects.Count-1; i >= 0; i--) {
+            if (cnt == 0) { break; }
+            filledHeart heartComponent = filledHeartObjects[i].GetComponent<filledHeart>();
+            int t = Mathf.Min(cnt, heartComponent.HP);
+            heartComponent.HP -= t;
+            UpdateHeart(filledHeartObjects[i]);
+            cnt -= t;
+            HP -= t;
+        }
+    }
+    private void UpdateHeart(GameObject filledHeart) {
+        filledHeart heartComponent = filledHeart.GetComponent<filledHeart>();
+        Image fillHeart = filledHeart.GetComponent<Image>();
+        fillHeart.fillAmount = (float)heartComponent.HP / HPperHeart;
 
+    }
     private void UpdateHealthBar() {
         int remainingHP = this.HP; // 남은 체력 (초과분 계산용)
         Debug.Log("체력바업데이트테스트");
@@ -126,20 +135,20 @@ public class HealthBarManager : MonoBehaviour {
 
                 if (fillImage != null) {
                     // 2. 체력 계산 로직
-                    int hpToFill = Mathf.Min(remainingHP, HP_PER_HEART);
+                    int hpToFill = Mathf.Min(remainingHP, HPperHeart);
 
                     // FillAmount 계산 (0.0 ~ 1.0)
-                    float fillAmount = (float)hpToFill / HP_PER_HEART;
+                    float fillAmount = (float)hpToFill / HPperHeart;
 
                     // 3. Image 컴포넌트에 적용
                     fillImage.fillAmount = fillAmount;
 
                     // 남은 체력 업데이트 (다음 하트 계산을 위해)
-                    remainingHP -= HP_PER_HEART;
+                    remainingHP -= HPperHeart;
                 }
                 else {
                     // 자식 Image를 찾지 못한 경우 (오류 방지)
-                    remainingHP -= HP_PER_HEART;
+                    remainingHP -= HPperHeart;
                     Debug.LogError(emptyHeartObject.name + "에서 Filled Heart Image를 찾을 수 없습니다.");
                 }
             }
