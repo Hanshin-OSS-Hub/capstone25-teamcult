@@ -1241,6 +1241,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1469181429}
     m_Modifications:
     - target: {fileID: 4252827881843687654, guid: a9102c8c2f94ab34f9a618c2b950326d, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3395286274017720354, guid: bee6623d4d9eb584b9e58895dceb0dd3, type: 3}
+    - target: {fileID: 4252827881843687654, guid: a9102c8c2f94ab34f9a618c2b950326d, type: 3}
       propertyPath: m_FillAmount
       value: 0.75
       objectReference: {fileID: 0}
@@ -13506,6 +13510,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6572477606509460885, guid: 5f6c589d2a3b44447b6a04232846643f, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3395286274017720354, guid: bee6623d4d9eb584b9e58895dceb0dd3, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
