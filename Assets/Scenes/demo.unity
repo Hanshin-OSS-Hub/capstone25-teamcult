@@ -2613,6 +2613,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particleObject: {fileID: 1480075086}
   fireVolume: {fileID: 425741560}
+  playerHealth: {fileID: 0}
 --- !u!1 &517978982
 GameObject:
   m_ObjectHideFlags: 0
@@ -13907,6 +13908,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particleObject: {fileID: 305281557}
   fireVolume: {fileID: 425741560}
+  playerHealth: {fileID: 792503410}
 --- !u!1 &804112705
 GameObject:
   m_ObjectHideFlags: 0
@@ -15674,6 +15676,7 @@ MonoBehaviour:
   filledHeartPrefab: {fileID: 7260908648398383498, guid: a9102c8c2f94ab34f9a618c2b950326d, type: 3}
   emptyHeartsContainer: {fileID: 922141422}
   filledHeartsContainer: {fileID: 1469181429}
+  heart: 2
 --- !u!114 &1398053198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32467,10 +32470,10 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 122684569}
   - {fileID: 429482991}
   - {fileID: 1398053196}
   - {fileID: 1536779490}
-  - {fileID: 122684569}
   - {fileID: 1162663349}
   - {fileID: 1710619824}
   - {fileID: 431802471}

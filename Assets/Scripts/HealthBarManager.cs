@@ -12,7 +12,7 @@ public class HealthBarManager : MonoBehaviour {
 
     // === 체력 데이터 ===
     private int HP = 12; // 체력
-    private int heart = 2; // 하트 개수
+    public int heart = 2; // 하트 개수
     private int maxHeart = 10; // 최대 하트 개수
     private int HPperHeart = 4; // 하트당 체력
 
@@ -43,18 +43,21 @@ public class HealthBarManager : MonoBehaviour {
             GainHP(1);
             Debug.Log("체력 증가! 현재 체력: " + HP);
         }
-        if (Input.GetKeyDown(KeyCode.C) && heart >= 1) {
-            filledHeart heartComponent = filledHeartObjects[0].GetComponent<filledHeart>();
-            heartComponent.SetAttribute(HeartAttribute.Ice);
-            Debug.Log("체력 증가! 현재 체력: " + HP);
+        if (Input.GetKeyDown(KeyCode.C) && heart >= 0) {
+            ChangeHeartType(HeartAttribute.Ice, heart-1);
+            Debug.Log("얼음하트");
         }
         if (Input.GetKeyDown(KeyCode.V) && heart >= 0) {
-            filledHeart heartComponent = filledHeartObjects[0].GetComponent<filledHeart>();
-            heartComponent.SetAttribute(HeartAttribute.Fire);
-            Debug.Log("체력 증가! 현재 체력: " + HP);
+            ChangeHeartType(HeartAttribute.Fire, heart-1);
+            Debug.Log("불하트");
         }
     }
 
+    public void ChangeHeartType(HeartAttribute type, int index = 0) {
+        if (index >= filledHeartObjects.Count) { return; }
+        filledHeart heartComponent = filledHeartObjects[index].GetComponent<filledHeart>();
+        heartComponent.SetAttribute(type);
+    }
 
     private void GenerateHearts() {
         // 1. 기존 하트 모두 제거
@@ -86,8 +89,8 @@ public class HealthBarManager : MonoBehaviour {
         }
         return HP;
     }
-    
-    private void GainHP(int cnt) {
+
+    public int GainHP(int cnt) {
         Debug.Log("GainHP : " + cnt);
         for (int i = 0; i < heart; i++) {
             if (cnt == 0) { break; }
@@ -99,8 +102,9 @@ public class HealthBarManager : MonoBehaviour {
             cnt -= t;
             HP += t;
         }
-    }    
-    private void LoseHP(int cnt) {
+        return HP;
+    }
+    public int LoseHP(int cnt) {
         Debug.Log("LoseHP : " + cnt);
         for (int i = filledHeartObjects.Count-1; i >= 0; i--) {
             if (cnt == 0) { break; }
@@ -111,6 +115,7 @@ public class HealthBarManager : MonoBehaviour {
             cnt -= t;
             HP -= t;
         }
+        return HP;
     }
     private void UpdateHeart(GameObject filledHeart) {
         filledHeart heartComponent = filledHeart.GetComponent<filledHeart>();
