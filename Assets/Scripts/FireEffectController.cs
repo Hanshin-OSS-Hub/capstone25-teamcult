@@ -8,8 +8,6 @@ public class FireEffectController : MonoBehaviour
     public Volume fireVolume;         // 볼륨
     [SerializeField] private PlayerHealth playerHealth; // 체력 관련
 
-    // 2D 게임에서는 반드시 'OnTriggerEnter2D'를 써야 합니다!
-    // (매개변수도 Collider가 아니라 Collider2D여야 함)
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("FlameHeartItem"))
