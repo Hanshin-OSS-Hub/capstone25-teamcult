@@ -425,7 +425,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 465.732, y: 160.552}
+  m_SizeDelta: {x: 328.863, y: 160.552}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &110437428
 MonoBehaviour:
@@ -447,8 +447,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 761100573506273824, guid: 97f1d7f3358e33b498d7f88de3320c28, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -12477,7 +12477,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 465.732, y: 160.552}
+  m_SizeDelta: {x: 285.641, y: 160.552}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &675170982
 MonoBehaviour:
@@ -12499,7 +12499,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -4637937412519905047, guid: d05fb30d953676e4f98ec29e464709c0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22036,8 +22036,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 88.405, y: 503.59076}
-  m_SizeDelta: {x: 1095.469, y: 192.039}
+  m_AnchoredPosition: {x: -54.177, y: 462}
+  m_SizeDelta: {x: 811.646, y: 192.039}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1903981413
 MonoBehaviour:
@@ -22053,8 +22053,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponSlot1: {fileID: 110437428}
   weaponSlot2: {fileID: 675170982}
-  weapon1Sprite: {fileID: -3753825769889500098, guid: 90268017dd605aa40a16485274e55c18, type: 3}
-  weapon2Sprite: {fileID: -4637937412519905047, guid: 552da469533c7d54e82d09d7009000dd, type: 3}
+  weapon1Sprite: {fileID: 761100573506273824, guid: 97f1d7f3358e33b498d7f88de3320c28, type: 3}
+  weapon2Sprite: {fileID: -4637937412519905047, guid: d05fb30d953676e4f98ec29e464709c0, type: 3}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.6, g: 0.6, b: 0.6, a: 0.8}
   activeScale: {x: 1.2, y: 1.2, z: 1.2}
