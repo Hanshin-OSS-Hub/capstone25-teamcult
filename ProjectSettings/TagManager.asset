@@ -8,6 +8,7 @@ TagManager:
   - FlameHeartItem
   - FlameHeart
   - IceHeartItem
+  - Damage
   layers:
   - Default
   - TransparentFX
