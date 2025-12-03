@@ -267,7 +267,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4588935210562790, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0272
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4588935210562790, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -305,6 +305,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5871975393381454642, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5871975393381454642, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 8252384779053095759, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 792503406}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2440,7 +2452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4805181885227780, guid: 2e2183501755a214591e802f3aff33d2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.54
       objectReference: {fileID: 0}
     - target: {fileID: 4805181885227780, guid: 2e2183501755a214591e802f3aff33d2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -14947,6 +14959,7 @@ MonoBehaviour:
   moveSpeed: 3
   sightRange: 8
   attackRange: 1.5
+  player: {fileID: 0}
 --- !u!50 &1232502765
 Rigidbody2D:
   serializedVersion: 5

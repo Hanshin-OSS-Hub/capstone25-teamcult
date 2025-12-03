@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
     public float sightRange = 5f; // 5칸으로 설정된 상태
     public float attackRange = 1.5f;
 
-    private Transform player;
+    [SerializeField] private Transform player;
     private Rigidbody2D rb;
     private Animator myAnim;
 
@@ -20,18 +20,15 @@ public class Enemy : MonoBehaviour
 
         rb.gravityScale = 0; // 2D이므로 중력 0으로 설정
 
-        // 씬에서 'Player' 스크립트를 가진 오브젝트를 찾아 player로 설정
-        // --- 여기가 수정된 부분입니다 ---
-        // Player playerObject = FindObjectOfType<Player>(); // (오래된 방식)
-        Player playerObject = FindFirstObjectByType<Player>(); // (새로운 권장 방식)
+        // 씬에서 'PlayerController2D' 스크립트를 가진 오브젝트를 찾아 player로 설정
+        
         // ------------------------------
-
-        if (playerObject != null)
-        {
+        if (player == null) {
+            PlayerController2D playerObject = FindFirstObjectByType<PlayerController2D>();
             player = playerObject.transform;
         }
-        else
-        {
+
+        if (player == null)  {
             Debug.LogError(gameObject.name + ": 씬에서 플레이어(Player)를 찾을 수 없습니다!");
             enabled = false;
         }
@@ -42,6 +39,7 @@ public class Enemy : MonoBehaviour
         if (player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        Debug.Log($"Object: {transform.position}, Player: {player.position}, Distance: {Vector2.Distance(transform.position, player.position)}");
 
         if (distanceToPlayer <= sightRange)
         {
