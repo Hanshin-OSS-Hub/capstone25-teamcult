@@ -25,8 +25,7 @@ public class PlayerHealth : MonoBehaviour
         ChangeHeartType(HeartAttribute.Fire, hpBarManager.heart - 1);
     }
     private void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.name =="Spike") {
-            Debug.Log("가시랑 닿음"); 
+        if (other.gameObject.tag == "Damage") {
             TakeDamage();
             //Destroy(other.gameObject); // 아이템 삭제하지 않음
         }
