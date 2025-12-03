@@ -1,7 +1,24 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement; // 씬 관리를 위해 필요합니다.
 
 public class MenuManager : MonoBehaviour {
+    public Image backgroundImage;
+
+    // 메인 배경으로 사용할 Sprite (유니티 인스펙터 창에서 할당)
+    public Sprite mainBackgroundSprite;
+
+    // (선택 사항) 설정을 누르면 바뀔 배경 Sprite
+    public Sprite settingsBackgroundSprite;
+    private void Start()
+    {
+        // 씬이 시작될 때 배경 이미지를 메인 배경으로 초기화합니다.
+        if (backgroundImage != null && mainBackgroundSprite != null)
+        {
+            backgroundImage.sprite = mainBackgroundSprite;
+        }
+    }
+
     public void StartGame() {
         LoadSceneByName("demo");
     }
