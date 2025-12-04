@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public enum HeartAttribute {
+// ★ 이 부분이 클래스 밖에 있어야 다른 스크립트가 알아먹습니다!
+public enum HeartAttribute
+{
     Normal,
     Fire,
     Ice,
@@ -9,89 +11,84 @@ public enum HeartAttribute {
     Electric
 }
 
-public class filledHeart : MonoBehaviour {
+public class filledHeart : MonoBehaviour
+{
 
-    // 💡 HP는 public 필드로 유지됩니다.
     [Header("Heart Stats")]
     public int HP;
 
     private Image heartImage;
 
     [Header("Attribute Settings")]
-    // 💡 현재 하트의 속성: private [SerializeField]로 유지
     [SerializeField] private HeartAttribute currentAttribute = HeartAttribute.Normal;
 
-    // 속성별 색상 설정 (밝은 톤)
     [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color fireColor = new Color(1f, 0.5f, 0.5f);
+    [SerializeField] private Color fireColor = new Color(1f, 0.5f, 0.5f); // 붉은 계열
     [SerializeField] private Color iceColor = new Color(0.5f, 0.5f, 1f);
     [SerializeField] private Color poisonColor = new Color(0.5f, 1f, 0.5f);
     [SerializeField] private Color electricColor = new Color(0.5f, 1f, 1f);
 
-
-    void Awake() {
+    void Awake()
+    {
         heartImage = GetComponent<Image>();
-
-        if (heartImage == null) {
-            Debug.LogError($"FilledHeart 오브젝트({gameObject.name})에 Image 컴포넌트가 없습니다. UI 객체인지 확인하세요.");
-        }
-
-        // 게임 시작 시 색상을 적용
         UpdateColorByAttribute();
     }
 
-    // 💡 에디터에서만 호출되는 특수 메서드
-    private void OnValidate() {
-        // 💡 1. Image 컴포넌트 참조가 아직 없으면 미리 가져옵니다.
-        // OnValidate는 Awake보다 먼저 호출될 수 있으므로 Null 체크 후 GetComponent를 사용합니다.
-        if (heartImage == null) {
-            heartImage = GetComponent<Image>();
-        }
-
-        // 💡 2. 인스펙터에서 currentAttribute 값이 변경될 때마다 색상을 즉시 업데이트합니다.
-        // 이 코드가 없으면, 인스펙터에서 값을 바꿔도 Play 버튼을 눌러야 적용됩니다.
+    private void OnValidate()
+    {
+        if (heartImage == null) heartImage = GetComponent<Image>();
         UpdateColorByAttribute();
     }
 
-
-    /// <summary>
-    /// 외부에서 속성을 변경하고 색상을 업데이트하는 Public 함수
-    /// </summary>
-    public void SetAttribute(HeartAttribute newAttribute) {
+    public void SetAttribute(HeartAttribute newAttribute)
+    {
         currentAttribute = newAttribute;
         UpdateColorByAttribute();
     }
 
-
-    /// <summary>
-    /// 현재 속성(currentAttribute)에 따라 하트 이미지의 색상을 변경하는 핵심 메서드
-    /// </summary>
-    private void UpdateColorByAttribute() {
+    private void UpdateColorByAttribute()
+    {
         if (heartImage == null) return;
 
         Color targetColor;
 
-        switch (currentAttribute) {
-            case HeartAttribute.Normal:
-                targetColor = normalColor;
-                break;
-            case HeartAttribute.Fire:
-                targetColor = fireColor;
-                break;
-            case HeartAttribute.Ice:
-                targetColor = iceColor;
-                break;
-            case HeartAttribute.Poison:
-                targetColor = poisonColor;
-                break;
-            case HeartAttribute.Electric:
-                targetColor = electricColor;
-                break;
-            default:
-                targetColor = normalColor;
-                break;
+        switch (currentAttribute)
+        {
+            case HeartAttribute.Normal: targetColor = normalColor; break;
+            case HeartAttribute.Fire: targetColor = fireColor; break;
+            case HeartAttribute.Ice: targetColor = iceColor; break;
+            case HeartAttribute.Poison: targetColor = poisonColor; break;
+            case HeartAttribute.Electric: targetColor = electricColor; break;
+            default: targetColor = normalColor; break;
         }
 
         heartImage.color = targetColor;
+
+        // 속성 변할 때 '쿵' 효과 (선택사항)
+        if (currentAttribute != HeartAttribute.Normal) StartCoroutine(PulseEffect());
+    }
+
+    private System.Collections.IEnumerator PulseEffect()
+    {
+        Transform t = transform;
+        Vector3 originalScale = Vector3.one;
+        Vector3 targetScale = originalScale * 1.2f;
+
+        float timer = 0f;
+        while (timer < 0.1f)
+        {
+            timer += Time.deltaTime;
+            t.localScale = Vector3.Lerp(originalScale, targetScale, timer / 0.1f);
+            yield return null;
+        }
+
+        timer = 0f;
+        while (timer < 0.1f)
+        {
+            timer += Time.deltaTime;
+            t.localScale = Vector3.Lerp(targetScale, originalScale, timer / 0.1f);
+            yield return null;
+        }
+        t.localScale = originalScale;
     }
 }
