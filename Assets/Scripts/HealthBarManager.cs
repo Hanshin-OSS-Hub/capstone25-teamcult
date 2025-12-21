@@ -10,9 +10,9 @@ public class HealthBarManager : MonoBehaviour
     [SerializeField] private Transform emptyHeartsContainer;
     [SerializeField] private Transform filledHeartsContainer;
 
-    // === Ã¼·Â µ¥ÀÌÅÍ ===
+    // === Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ===
     private int HP = 12;
-    public int heart = 3; // ÇÏÆ® °³¼ö
+    public int heart = 3; // ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     private int maxHeart = 10;
     private int HPperHeart = 4;
 
@@ -27,7 +27,7 @@ public class HealthBarManager : MonoBehaviour
 
     private void Update()
     {
-        // (Å×½ºÆ®¿ë ´ÜÃàÅ° ÄÚµå´Â ±×´ë·Î µÎ¼Åµµ µÇ°í Áö¿ì¼Åµµ µË´Ï´Ù)
+        // (ï¿½×½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å° ï¿½Úµï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½Î¼Åµï¿½ ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½Åµï¿½ ï¿½Ë´Ï´ï¿½)
         if (Input.GetKeyDown(KeyCode.Z) && HP > 0) LoseHP(1);
         if (Input.GetKeyDown(KeyCode.X)) GainHP(1);
 
@@ -51,7 +51,7 @@ public class HealthBarManager : MonoBehaviour
         emptyHeartObjects.Clear();
         filledHeartObjects.Clear();
 
-        // ±âÁ¸ ·ÎÁ÷ À¯Áö: ÇöÀç heart °³¼ö¸¸Å­ »ý¼º
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ heart ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½
         int currentHeartCount = heart;
         heart = 0;
         HP = 0;
@@ -120,9 +120,9 @@ public class HealthBarManager : MonoBehaviour
 
     private void UpdateHealthBar()
     {
-        // (±âÁ¸ ÄÚµå¿¡ ÀÖ´ø ÇÔ¼öÀÎµ¥, ÇöÀç ·ÎÁ÷¿¡¼­´Â LoseHP/GainHP¿¡¼­ Á÷Á¢ Ã³¸®ÇÏ¹Ç·Î ¾È ¾²ÀÏ ¼öµµ ÀÖ½À´Ï´Ù. 
-        //  È¤½Ã ¸ô¶ó À¯ÁöÇÕ´Ï´Ù.)
-        // ... (³»¿ë »ý·«) ...
+        // (ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¿¡ ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½ï¿½Îµï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ LoseHP/GainHPï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï¹Ç·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½. 
+        //  È¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.)
+        // ... (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ...
     }
 
     public void ChangeHealth(int newHealth)
@@ -132,17 +132,28 @@ public class HealthBarManager : MonoBehaviour
         else if (diff < 0) LoseHP(-diff);
     }
 
-    // ¡Ú¡Ú¡Ú [¿ì¸®°¡ Ãß°¡ÇÑ ÇÙ½É ±â´É] ¡Ú¡Ú¡Ú
-    // ¸î ¹øÂ° ÇÏÆ®ÀÇ Ã¼·ÂÀÌ ¸î ³²¾Ò´ÂÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+    // ï¿½Ú¡Ú¡ï¿½ [ï¿½ì¸®ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½] ï¿½Ú¡Ú¡ï¿½
+    // ï¿½ï¿½ ï¿½ï¿½Â° ï¿½ï¿½Æ®ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ò´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     public int GetHeartHP(int index)
     {
-        // ¾ÈÀüÀåÄ¡: ¾ø´Â ¹øÈ£¸¦ ¹°¾îº¸¸é 0 ¸®ÅÏ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½îº¸ï¿½ï¿½ 0 ï¿½ï¿½ï¿½ï¿½
         if (index < 0 || index >= filledHeartObjects.Count) return 0;
 
-        // ÇØ´ç ¼ø¼­ÀÇ ÇÏÆ® ½ºÅ©¸³Æ®¸¦ °¡Á®¿Í¼­ HP¸¦ ¾Ë·ÁÁÜ
+        // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ HPï¿½ï¿½ ï¿½Ë·ï¿½ï¿½ï¿½
         filledHeart heartComponent = filledHeartObjects[index].GetComponent<filledHeart>();
         if (heartComponent != null) return heartComponent.HP;
 
         return 0;
+    }
+
+    public float GetHealthPercentage()
+    {
+        // ì „ì²´ ìµœëŒ€ ì²´ë ¥ ê³„ì‚° (í•˜íŠ¸ ê°œìˆ˜ * í•˜íŠ¸ë‹¹ HP)
+        int totalMaxHP = heart * HPperHeart; 
+    
+        // 0ìœ¼ë¡œ ë‚˜ëˆ„ê¸° ë°©ì§€
+         if (totalMaxHP <= 0) return 0f;
+
+        return (float)HP / totalMaxHP;
     }
 }
