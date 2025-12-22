@@ -9,6 +9,10 @@ TagManager:
   - FlameHeart
   - IceHeartItem
   - Damage
+  - Helmet
+  - Breastplate
+  - Sabaton
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -57,6 +61,9 @@ TagManager:
     locked: 0
   - name: Distortion
     uniqueID: 1726654271
+    locked: 0
+  - name: Item
+    uniqueID: 3970200113
     locked: 0
   m_RenderingLayers:
   - Default

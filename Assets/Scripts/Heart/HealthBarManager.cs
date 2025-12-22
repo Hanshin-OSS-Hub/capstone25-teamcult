@@ -28,8 +28,7 @@ public class HealthBarManager : MonoBehaviour
     private void Update()
     {
         // (테스트용 단축키 코드는 그대로 두셔도 되고 지우셔도 됩니다)
-        if (Input.GetKeyDown(KeyCode.Z) && HP > 0) LoseHP(1);
-        if (Input.GetKeyDown(KeyCode.X)) GainHP(1);
+       
 
         if (Input.GetKeyDown(KeyCode.C) && heart > 0) ChangeHeartType(HeartAttribute.Ice, heart - 1);
         if (Input.GetKeyDown(KeyCode.V) && heart > 0) ChangeHeartType(HeartAttribute.Fire, heart - 1);

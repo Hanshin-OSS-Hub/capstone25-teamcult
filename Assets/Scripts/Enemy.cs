@@ -39,7 +39,7 @@ public class Enemy : MonoBehaviour
         if (player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        Debug.Log($"Object: {transform.position}, Player: {player.position}, Distance: {Vector2.Distance(transform.position, player.position)}");
+        //Debug.Log($"Object: {transform.position}, Player: {player.position}, Distance: {Vector2.Distance(transform.position, player.position)}");
 
         if (distanceToPlayer <= sightRange)
         {

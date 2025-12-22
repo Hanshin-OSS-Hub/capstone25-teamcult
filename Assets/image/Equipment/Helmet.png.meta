@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 49426687719f9554e886d8e4e6d9c370
+guid: d5be4592130124841921b253640ba653
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1157193334102770065
-    second: sowrd_0
+      213: 309628545801974608
+    second: Helmet_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sowrd_0
+      name: Helmet_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 159
-        height: 148
+        y: 12
+        width: 303
+        height: 225
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f6eba503bc2d0ffe0800000000000000
-      internalID: -1157193334102770065
+      spriteID: 053f8dc95850c4400800000000000000
+      internalID: 309628545801974608
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sowrd_0: -1157193334102770065
+      Helmet_0: 309628545801974608
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
