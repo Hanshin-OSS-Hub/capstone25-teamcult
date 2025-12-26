@@ -1,24 +1,45 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal; // 1. URP 조명을 쓰려면 이게 꼭 필요합니다!
 
 public class FlashlightController : MonoBehaviour
 {
-    // 빛의 방향이 안 맞으면 이 값을 90, -90, 180 등으로 바꿔보세요.
-    public float angleOffset = -90f;
+    [Header("Settings")]
+    public float angleOffset = -90f; // 빛 방향 보정
+    public KeyCode toggleKey = KeyCode.F; // 끄고 킬 키
+
+    private Light2D myLight; // 제어할 빛 컴포넌트
+
+    void Start()
+    {
+        // 1. 내 몸에 붙은 Light 2D 컴포넌트를 찾아옵니다.
+        myLight = GetComponent<Light2D>();
+
+        // [추가된 부분] 시작하자마자 강제로 끕니다.
+        if (myLight != null)
+        {
+            myLight.enabled = false;
+        }
+    }
 
     void Update()
     {
-        // 1. 키보드 입력(WASD 또는 방향키)을 받아옵니다.
+        // --- [추가된 기능] F키로 불 끄고 켜기 ---
+        if (Input.GetKeyDown(toggleKey))
+        {
+            if (myLight != null)
+            {
+                // enabled가 true면 false로, false면 true로 뒤집습니다 (스위치)
+                myLight.enabled = !myLight.enabled;
+            }
+        }
+
+        // --- [기존 기능] 이동 방향 보면서 회전 ---
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
-        // 2. 이동 중일 때만 회전합니다. (멈춰있으면 마지막 방향 유지)
-        // (h나 v 둘 중 하나라도 0이 아니면 = 키를 누르고 있으면)
         if (h != 0 || v != 0)
         {
-            // 3. 입력받은 방향(x, y)을 각도로 변환합니다. (아크탄젠트 공식)
             float angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
-
-            // 4. 빛을 회전시킵니다.
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + angleOffset));
         }
     }
