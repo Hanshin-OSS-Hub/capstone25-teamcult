@@ -163,7 +163,24 @@ MonoBehaviour:
   - {fileID: 8276868020270567652, guid: b26dd27cf2ff25c4f8557b50cc7d6d24, type: 3}
   - {fileID: 7256881708363975622, guid: c73cb9971621fd0418b16046a259adfe, type: 3}
   - {fileID: 5103725234551744347, guid: 893161cec032d004ab35ac4f3ffcbeb6, type: 3}
+  - {fileID: 8851100794869565792, guid: e8d344ca7f64a2b4b903c7f79c2794f1, type: 3}
+  - {fileID: 8475045883492310538, guid: 5933a089797c2d74abce373b5820b883, type: 3}
+  - {fileID: 5509956234385226239, guid: 8072771076933ca46a5ed589aeba1257, type: 3}
+  - {fileID: 6770681296793938786, guid: b89ee7383736abe468c6ca9af544b3eb, type: 3}
+  - {fileID: 1416946552113934005, guid: 49b102ff5cb451b41ac3ef55ecdd3e0a, type: 3}
+  - {fileID: 3042398996105606441, guid: 62eb18c068a597845b22d6c82bd0bff8, type: 3}
+  - {fileID: 1112385436053462319, guid: c7c553e344dcfd7459df768f8a7c776b, type: 3}
+  - {fileID: 6688269334430149854, guid: c5db93aabb5491047b03fb349cdefbce, type: 3}
+  - {fileID: 7487173827689043754, guid: 8f8966a6aa4424748a69d97fdbb27f16, type: 3}
   - {fileID: 3940269919473437688, guid: 2d1d170b75b20794799be3251aeb7999, type: 3}
+  - {fileID: 7038668900030200743, guid: e3dde4d82d7f8114b984ff5be9072de5, type: 3}
+  - {fileID: 4678936974805601499, guid: c78549ab934de5441b04a2bbf1d24587, type: 3}
+  - {fileID: 44604833731045299, guid: 62be79ba60c9dd24dbddd2c5eff0e3aa, type: 3}
+  mapSize: 11
+  maxRooms: 15
+  mainBranchLength: 6
+  subBranchLength: 5
+  twigCount: 4
 --- !u!4 &116460504
 Transform:
   m_ObjectHideFlags: 0
@@ -173,7 +190,7 @@ Transform:
   m_GameObject: {fileID: 116460502}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.2921493, y: -9.756421, z: -0.045943476}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -370,7 +387,7 @@ Transform:
   m_GameObject: {fileID: 122684563}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 10, y: -10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
