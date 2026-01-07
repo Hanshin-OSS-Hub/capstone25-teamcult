@@ -121,14 +121,25 @@ public class TabController : MonoBehaviour
 
     private void UpdateSlot(ref Item equippedItem, Item newItem, Image slotImage)
     {
-        // 이미 장착된 게 있다면 인벤토리로 되돌림
-        if (equippedItem != null) inventoryItems.Add(equippedItem);
+        // 이미 장착된 게 있다면 해제 로직 실행 (인벤토리로 되돌림)
+        if (equippedItem != null)
+        {
+            AddItem(equippedItem);
+        }
 
         equippedItem = newItem;
+
         if (slotImage != null)
         {
             slotImage.sprite = newItem.icon;
-            slotImage.color = Color.white; // 투명했던 이미지를 보이게 함
+            slotImage.color = Color.white;
+            slotImage.enabled = true;
+
+            // 만약 장착 슬롯에 EquipSlot 스크립트가 있다면 데이터 동기화
+            if (slotImage.GetComponent<EquipSlot>() != null)
+            {
+                slotImage.GetComponent<EquipSlot>().SetItem(newItem);
+            }
         }
     }
 
@@ -136,6 +147,24 @@ public class TabController : MonoBehaviour
     public void ShowWeaponTab() { SetTabActive(true, false, false); }
     public void ShowConsumableTab() { SetTabActive(false, true, false); }
     public void ShowOopartsTab() { SetTabActive(false, false, true); }
+
+    public void UnequipItem(Item item)
+    {
+        if (item == null) return;
+
+        // 해당 부위 변수 비우기
+        switch (item.itemType)
+        {
+            case Item.ItemType.Head: equippedHead = null; break;
+            case Item.ItemType.Weapon: equippedWeapon = null; break;
+            case Item.ItemType.Armor: equippedArmor = null; break;
+            case Item.ItemType.Shoes: equippedShoes = null; break;
+        }
+
+        // 인벤토리에 다시 추가 (UI 슬롯 생성 포함)
+        AddItem(item);
+        Debug.Log($"{item.itemName} 해제 완료");
+    }
 
     private void SetTabActive(bool weapon, bool consumable, bool ooparts)
     {
