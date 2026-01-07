@@ -22,6 +22,7 @@ public class ItemSlot : MonoBehaviour
     {
         if (item != null)
         {
+            Debug.Log($"{item.itemName} 클릭됨! 타입: {item.itemType}"); // 로그 추가
             // TabController의 장착 함수 호출
             TabController.instance.EquipItem(item);
 

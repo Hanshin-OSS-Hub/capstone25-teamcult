@@ -131,10 +131,12 @@ public class TabController : MonoBehaviour
 
         if (slotImage != null)
         {
-            slotImage.sprite = newItem.icon;
-            slotImage.color = Color.white;
-            slotImage.enabled = true;
+            slotImage.sprite = newItem.icon; // 아이콘 이미지 변경
+            slotImage.enabled = true;        // 이미지 컴포넌트 활성화
 
+            // 색상을 불투명한 흰색으로 강제 설정
+            slotImage.color = new Color(1f, 1f, 1f, 1f);
+            EquipSlot eSlot = slotImage.GetComponent<EquipSlot>();
             // 만약 장착 슬롯에 EquipSlot 스크립트가 있다면 데이터 동기화
             if (slotImage.GetComponent<EquipSlot>() != null)
             {
