@@ -6,13 +6,18 @@ public class FlameHeartItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // [¼öÁ¤] HeatController°¡ ¾Æ´Ï¶ó PlayerHealth¸¦ Ã£¾Æ¾ß ÇÕ´Ï´Ù!
+            // [ï¿½ï¿½ï¿½ï¿½] HeatControllerï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ PlayerHealthï¿½ï¿½ Ã£ï¿½Æ¾ï¿½ ï¿½Õ´Ï´ï¿½!
             var playerHealth = other.GetComponent<PlayerHealth>();
 
             if (playerHealth != null)
             {
-                // ÇÃ·¹ÀÌ¾îÇÑÅ× "ºÒ²É ÇÏÆ® ¸Ô¾ú¾î!"¶ó°í ¾Ë¸²
+                // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ï¿½ "ï¿½Ò²ï¿½ ï¿½ï¿½Æ® ï¿½Ô¾ï¿½ï¿½ï¿½!"ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
                 playerHealth.GetFlameHeart();
+            }
+
+            if (MusicDirector.Instance != null)
+            {
+                MusicDirector.Instance.SetFlameMode(true);
             }
 
             Destroy(gameObject);
