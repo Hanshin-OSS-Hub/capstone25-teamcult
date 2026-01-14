@@ -13,6 +13,8 @@ TagManager:
   - Breastplate
   - Sabaton
   - Weapon
+  - wall
+  - Wall
   layers:
   - Default
   - TransparentFX
