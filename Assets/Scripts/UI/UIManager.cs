@@ -18,7 +18,12 @@ public class UIManager : MonoBehaviour
     public Button closeSettingsButton;
     public Button quitGameButton;
 
-   
+    [Header("Speaker Icon")]
+    public Image speakerIcon;
+    public Sprite spriteMute;
+    public Sprite spriteLow;
+    public Sprite spriteMedium;
+    public Sprite spriteHigh;
 
     [Header("Health & Brightness Overlay")]
     public Image heartImage;
@@ -40,11 +45,13 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // 리스너 연결
+        volumeSlider.onValueChanged.AddListener(SetVolume);
         brightnessSlider.onValueChanged.AddListener(SetBrightness);
         settingsButton.onClick.AddListener(OpenSettingsPanel); // Open 함수로 변경
         closeSettingsButton.onClick.AddListener(CloseSettingsPanel); // Close 함수로 변경
         quitGameButton.onClick.AddListener(QuitGame);
 
+        LoadSettings();
 
         // 초기 상태 설정: 패널은 꺼두고 상태변수 초기화
         if (settingsPanel != null)
@@ -105,7 +112,29 @@ public class UIManager : MonoBehaviour
         if (!isSettingsOpen) settingsPanel.SetActive(false);
     }
 
+    // --- 기존 기능들 (기능 유지) ---
+    private void LoadSettings()
+    {
+        float volume = PlayerPrefs.GetFloat(VOLUME_KEY, 1f);
+        volumeSlider.value = volume;
+        SetVolume(volume);
 
+        float brightness = PlayerPrefs.GetFloat(BRIGHTNESS_KEY, 1f);
+        brightnessSlider.value = brightness;
+        SetBrightness(brightness);
+    }
+
+    public void SetVolume(float volume)
+    {
+        mainMixer.SetFloat("MasterVolume", volume > 0 ? Mathf.Log10(volume) * 20 : -80);
+        PlayerPrefs.SetFloat(VOLUME_KEY, volume);
+
+        if (speakerIcon == null) return;
+        if (volume <= 0.0001f) speakerIcon.sprite = spriteMute;
+        else if (volume <= 0.4f) speakerIcon.sprite = spriteLow;
+        else if (volume <= 0.8f) speakerIcon.sprite = spriteMedium;
+        else speakerIcon.sprite = spriteHigh;
+    }
 
     public void SetBrightness(float brightness)
     {
