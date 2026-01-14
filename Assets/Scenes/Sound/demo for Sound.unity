@@ -1623,15 +1623,12 @@ MonoBehaviour:
   mainPanel: {fileID: 1530733368}
   equipPanel: {fileID: 1848729086}
   weaponContent: {fileID: 21649232}
-  consumableContent: {fileID: 2144433314}
-  oopartsContent: {fileID: 442531460}
   headSlotImage: {fileID: 1921971898}
   weaponSlotImage: {fileID: 1625376123}
   armorSlotImage: {fileID: 1678059478}
   shoesSlotImage: {fileID: 1778013887}
-  characterPreview: {fileID: 1208555894}
-  inventoryItems: []
   maxSlots: 100
+  inventoryItems: []
 --- !u!1 &354619159
 GameObject:
   m_ObjectHideFlags: 0
@@ -2591,7 +2588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f571f7f617de84bb3018be82650311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpBarManager: {fileID: 1398053197}
 --- !u!1 &517978982
 GameObject:
   m_ObjectHideFlags: 0
@@ -14020,7 +14016,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f571f7f617de84bb3018be82650311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpBarManager: {fileID: 1398053197}
 --- !u!1 &804112705
 GameObject:
   m_ObjectHideFlags: 0
@@ -21183,20 +21178,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9f694b1653f5b64ba4cef3a355c11ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settingsPanel: {fileID: 1290757408}
   volumeSlider: {fileID: 2002871803}
   brightnessSlider: {fileID: 1407225694}
   settingsButton: {fileID: 405071390}
-  speakerIcon: {fileID: 0}
-  spriteMute: {fileID: -1841092688277487243, guid: 35f1cd3b367389244aafba4ec49092c6, type: 3}
-  spriteLow: {fileID: -5146791844172402599, guid: 9753aa651c9d0dd44af1b3692e6f5bc3, type: 3}
-  spriteMedium: {fileID: -5402947343118931445, guid: 01cd73f948b4de44bae4cbe1a0167641, type: 3}
-  spriteHigh: {fileID: -4035789154129674210, guid: 46bda7b7581887f4fbad45c35c225c47, type: 3}
-  heartImage: {fileID: 0}
-  settingsPanel: {fileID: 1290757408}
   closeSettingsButton: {fileID: 304120627}
   quitGameButton: {fileID: 1100892291}
-  mainMixer: {fileID: 24100000, guid: 46aa3bd7695ed224894c300928a0df11, type: 2}
+  heartImage: {fileID: 0}
   brightnessOverlay: {fileID: 0}
+  mainMixer: {fileID: 24100000, guid: 46aa3bd7695ed224894c300928a0df11, type: 2}
 --- !u!4 &1398053196
 Transform:
   m_ObjectHideFlags: 0
@@ -27180,7 +27170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0ff6343dd2b5d459ead71e984c0bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 1
 --- !u!114 &1625376126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27530,7 +27519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0ff6343dd2b5d459ead71e984c0bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 2
 --- !u!114 &1678059481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28106,12 +28094,15 @@ MonoBehaviour:
   bpm: 120
   masterVolume: 0.5
   cutoffFrequency: 20000
-  flameMode: 0
+  chaos: 0.2
+  density: 0.8
+  pitchBias: 0.5
   kickVol: 0.8
   snareVol: 0.5
   hihatVol: 0.3
   bassVol: 0.7
   leadVol: 0.6
+  flameMode: 0
   isPlaying: 1
   tensionLevel: 0
   lowHealthMode: 0
@@ -28316,7 +28307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0ff6343dd2b5d459ead71e984c0bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 3
 --- !u!114 &1778013890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28669,7 +28659,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df0ff6343dd2b5d459ead71e984c0bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 0
 --- !u!114 &1921971901
 MonoBehaviour:
   m_ObjectHideFlags: 0
