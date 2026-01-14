@@ -2,20 +2,19 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-
 public class TabController : MonoBehaviour
 {
     public static TabController instance;
     public GameObject slotPrefab;
 
     [Header("UI 패널 연결")]
-    public GameObject mainPanel;       // 전체 인벤토리 창
-    public GameObject equipPanel;      // 장비창 부분 (왼쪽)
+    public GameObject mainPanel;
+    public GameObject equipPanel;
 
-    [Header("탭별 컨텐츠 연결")]
-    public GameObject weaponContent;     // 무기 탭 내용
-    public GameObject consumableContent; // 소비 탭 내용
-    public GameObject oopartsContent;    // 오파츠 탭 내용
+    [Header("탭별 컨텐츠(Scroll View의 Content) 연결")]
+    public GameObject weaponContent;
+   // public GameObject consumableContent;
+   // public GameObject oopartsContent;
 
     [Header("장착 슬롯 이미지 (UI)")]
     public Image headSlotImage;
@@ -23,156 +22,147 @@ public class TabController : MonoBehaviour
     public Image armorSlotImage;
     public Image shoesSlotImage;
 
-    [Header("캐릭터 프리뷰 (가운데)")]
-    public Image characterPreview; 
-
-    [Header("인벤토리 데이터")]
-    public List<Item> inventoryItems = new List<Item>();
+    [Header("인벤토리 설정")]
     public int maxSlots = 100;
+    public List<Item> inventoryItems = new List<Item>(); // 데이터 관리용
 
-    // 현재 장착된 아이템 보관용
+    // UI 슬롯 객체들을 미리 보관할 리스트
+    private List<ItemSlot> weaponSlotUI = new List<ItemSlot>();
+    private List<ItemSlot> consumableSlotUI = new List<ItemSlot>();
+    private List<ItemSlot> oopartsSlotUI = new List<ItemSlot>();
+
     private Item equippedHead, equippedWeapon, equippedArmor, equippedShoes;
 
-    void Awake()
-    {
-        instance = this;
-    }
+    void Awake() { instance = this; }
 
     void Start()
     {
-        // 시작하자마자 각 컨텐츠 영역을 깨끗이 비웁니다.
-        foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
-        foreach (Transform child in consumableContent.transform) Destroy(child.gameObject);
-        foreach (Transform child in oopartsContent.transform) Destroy(child.gameObject);
+        // 1. 시작 시 기존 자식들 제거 및 100개 슬롯 미리 생성
+        InitInventory();
 
         if (mainPanel != null) mainPanel.SetActive(false);
-        ShowWeaponTab(); // 기본 탭 설정
+        ShowWeaponTab();
     }
 
-    void Update()
+    private void InitInventory()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        // 기존 슬롯 청소
+        foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
+        //foreach (Transform child in consumableContent.transform) Destroy(child.gameObject);
+        //foreach (Transform child in oopartsContent.transform) Destroy(child.gameObject);
+
+        // 100개씩 미리 생성
+        CreateEmptySlots(weaponContent.transform, weaponSlotUI);
+        //CreateEmptySlots(consumableContent.transform, consumableSlotUI);
+        //CreateEmptySlots(oopartsContent.transform, oopartsSlotUI);
+    }
+
+    private void CreateEmptySlots(Transform parent, List<ItemSlot> list)
+    {
+        for (int i = 0; i < maxSlots; i++)
         {
-            ToggleWindow();
+            GameObject go = Instantiate(slotPrefab, parent);
+            ItemSlot slot = go.GetComponent<ItemSlot>();
+            slot.ClearSlot(); // 빈 상태로 초기화
+            list.Add(slot);
         }
     }
 
-  
-
-    public void ToggleWindow()
-    {
-        if (mainPanel != null)
-            mainPanel.SetActive(!mainPanel.activeSelf);
-    }
-
-    // --- 아이템 획득 로직 ---
+    // --- 아이템 획득 로직 (빈 슬롯 찾아 채우기) ---
     public bool AddItem(Item item)
     {
-        if (inventoryItems.Count >= maxSlots)
+        List<ItemSlot> targetList = GetTargetUIList(item.itemType);
+
+        foreach (ItemSlot slot in targetList)
         {
-            Debug.Log("인벤토리가 가득 찼습니다!");
-            return false;
+            if (slot.GetItem() == null) // 비어있는 UI 슬롯 발견 시
+            {
+                slot.AddItem(item);
+                inventoryItems.Add(item);
+                return true;
+            }
         }
-
-        inventoryItems.Add(item);
-
-        // --- 추가된 코드: UI 슬롯 생성 ---
-        Transform targetContent = null;
-
-        // 아이템 타입에 맞는 탭(Content) 결정
-        switch (item.itemType)
-        {
-            case Item.ItemType.Weapon: targetContent = weaponContent.transform; break;
-            case Item.ItemType.Consumable: targetContent = consumableContent.transform; break;
-            case Item.ItemType.Ooparts: targetContent = oopartsContent.transform; break;
-            default: targetContent = weaponContent.transform; break;
-        }
-
-        if (targetContent != null)
-        {
-            GameObject newSlotObj = Instantiate(slotPrefab, targetContent);
-
-            // [추가] 생성된 슬롯을 부모의 가장 첫 번째(0번) 순서로 강제 이동
-            newSlotObj.transform.SetAsFirstSibling();
-
-            ItemSlot slot = newSlotObj.GetComponent<ItemSlot>();
-            slot.AddItem(item);
-        }
-        Debug.Log(item.itemName + " 아이템 추가됨!");
-        return true;
+        Debug.Log("인벤토리가 가득 찼습니다!");
+        return false;
     }
 
-    // --- 장착 로직 (통합 및 확장) ---
-    public void EquipItem(Item item)
+    private List<ItemSlot> GetTargetUIList(Item.ItemType type)
+    {
+        switch (type)
+        {
+            case Item.ItemType.Consumable: return consumableSlotUI;
+            case Item.ItemType.Ooparts: return oopartsSlotUI;
+            default: return weaponSlotUI;
+        }
+    }
+
+    // --- 장착 로직 (인벤토리 클릭 시 호출) ---
+    public void EquipItem(Item item, ItemSlot fromSlot)
     {
         if (item == null) return;
 
         switch (item.itemType)
         {
-            case Item.ItemType.Head:   UpdateSlot(ref equippedHead, item, headSlotImage); break;
+            case Item.ItemType.Head: UpdateSlot(ref equippedHead, item, headSlotImage); break;
             case Item.ItemType.Weapon: UpdateSlot(ref equippedWeapon, item, weaponSlotImage); break;
-            case Item.ItemType.Armor:  UpdateSlot(ref equippedArmor, item, armorSlotImage); break;
-            case Item.ItemType.Shoes:  UpdateSlot(ref equippedShoes, item, shoesSlotImage); break;
+            case Item.ItemType.Armor: UpdateSlot(ref equippedArmor, item, armorSlotImage); break;
+            case Item.ItemType.Shoes: UpdateSlot(ref equippedShoes, item, shoesSlotImage); break;
+            default: return; // 소비템 등은 장착 불가
         }
-        
-        inventoryItems.Remove(item); // 장착했으니 인벤토리 리스트에서 제거
-        Debug.Log($"{item.itemName} 장착 완료");
+
+        inventoryItems.Remove(item);
+        fromSlot.ClearSlot(); // 인벤토리 슬롯만 비움 (파괴X)
     }
 
     private void UpdateSlot(ref Item equippedItem, Item newItem, Image slotImage)
     {
-        // 이미 장착된 게 있다면 해제 로직 실행 (인벤토리로 되돌림)
-        if (equippedItem != null)
-        {
-            AddItem(equippedItem);
-        }
+        // 이미 장착 중이면 인벤토리로 되돌림
+        if (equippedItem != null) AddItem(equippedItem);
 
         equippedItem = newItem;
 
         if (slotImage != null)
         {
-            slotImage.sprite = newItem.icon; // 아이콘 이미지 변경
-            slotImage.enabled = true;        // 이미지 컴포넌트 활성화
+            slotImage.sprite = newItem.icon;
+            slotImage.enabled = true;
+            slotImage.color = Color.white;
 
-            // 색상을 불투명한 흰색으로 강제 설정
-            slotImage.color = new Color(1f, 1f, 1f, 1f);
+            // 장착 슬롯 스크립트가 있다면 데이터 동기화
             EquipSlot eSlot = slotImage.GetComponent<EquipSlot>();
-            // 만약 장착 슬롯에 EquipSlot 스크립트가 있다면 데이터 동기화
-            if (slotImage.GetComponent<EquipSlot>() != null)
-            {
-                slotImage.GetComponent<EquipSlot>().SetItem(newItem);
-            }
+            if (eSlot != null) eSlot.SetItem(newItem);
         }
     }
 
-    // --- 탭 전환 함수들 ---
-    public void ShowWeaponTab() { SetTabActive(true, false, false); }
-    public void ShowConsumableTab() { SetTabActive(false, true, false); }
-    public void ShowOopartsTab() { SetTabActive(false, false, true); }
-
+    // --- 해제 로직 (장착창 클릭 시 호출) ---
     public void UnequipItem(Item item)
     {
         if (item == null) return;
 
-        // 해당 부위 변수 비우기
         switch (item.itemType)
         {
-            case Item.ItemType.Head: equippedHead = null; break;
-            case Item.ItemType.Weapon: equippedWeapon = null; break;
-            case Item.ItemType.Armor: equippedArmor = null; break;
-            case Item.ItemType.Shoes: equippedShoes = null; break;
+            case Item.ItemType.Head: equippedHead = null; headSlotImage.enabled = false; break;
+            case Item.ItemType.Weapon: equippedWeapon = null; weaponSlotImage.enabled = false; break;
+            case Item.ItemType.Armor: equippedArmor = null; armorSlotImage.enabled = false; break;
+            case Item.ItemType.Shoes: equippedShoes = null; shoesSlotImage.enabled = false; break;
         }
 
-        // 인벤토리에 다시 추가 (UI 슬롯 생성 포함)
-        AddItem(item);
-        Debug.Log($"{item.itemName} 해제 완료");
+        AddItem(item); // 인벤토리의 빈 칸으로 돌아감
     }
+
+    // --- 탭 전환 및 윈도우 토글 ---
+    public void ToggleWindow() { if (mainPanel != null) mainPanel.SetActive(!mainPanel.activeSelf); }
+    public void ShowWeaponTab() { SetTabActive(true, false, false); }
+    public void ShowConsumableTab() { SetTabActive(false, true, false); }
+    public void ShowOopartsTab() { SetTabActive(false, false, true); }
 
     private void SetTabActive(bool weapon, bool consumable, bool ooparts)
     {
         if (equipPanel != null) equipPanel.SetActive(weapon);
-        if (weaponContent) weaponContent.SetActive(weapon);
-        if (consumableContent) consumableContent.SetActive(consumable);
-        if (oopartsContent) oopartsContent.SetActive(ooparts);
+        // ScrollView가 있다면 해당 ScrollView를 끄고 켜도록 구조 설계 권장
+        weaponContent.SetActive(weapon);
+        //consumableContent.SetActive(consumable);
+        //oopartsContent.SetActive(ooparts);
     }
+
+    void Update() { if (Input.GetKeyDown(KeyCode.E)) ToggleWindow(); }
 }
