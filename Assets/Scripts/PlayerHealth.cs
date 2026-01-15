@@ -1,65 +1,40 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public HealthBarManager hpBarManager;
-    private HeatController heatController;
-
-    private int fireHeartIndex = -1;
+    public int maxHealth = 6;
+    public int currentHealth;
+    public Image[] hearts; // Heart1, Heart2, Heart3 넣는 곳
 
     void Start()
     {
-        if (hpBarManager == null) hpBarManager = FindFirstObjectByType<HealthBarManager>();
-        heatController = FindFirstObjectByType<HeatController>();
+        currentHealth = maxHealth;
+        UpdateHeartUI();
     }
 
-    public void GetFlameHeart()
+    public void TakeDamage(int damage)
     {
-        int lastIndex = hpBarManager.heart - 1;
+        currentHealth -= damage;
+        if (currentHealth < 0) currentHealth = 0;
 
-        if (lastIndex >= 0)
+        UpdateHeartUI();
+
+        if (currentHealth <= 0)
         {
-            if (fireHeartIndex != -1 && fireHeartIndex != lastIndex)
-            {
-                hpBarManager.ChangeHeartType(HeartAttribute.Normal, fireHeartIndex);
-            }
-
-            hpBarManager.ChangeHeartType(HeartAttribute.Fire, lastIndex);
-            fireHeartIndex = lastIndex;
-
-            if (heatController != null) heatController.TriggerEffect();
-
-            if (MusicDirector.Instance != null) MusicDirector.Instance.SetFlameMode(true);
+            Debug.Log("게임 오버!");
+            // 여기에 게임 오버 처리 코드 추가 가능
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void UpdateHeartUI()
     {
-        if (other.gameObject.CompareTag("Damage") || other.gameObject.CompareTag("Enemy"))
+        for (int i = 0; i < hearts.Length; i++)
         {
-            TakeDamage();
-        }
-    }
+            int heartValue = currentHealth - (i * 2);
+            int clampValue = Mathf.Clamp(heartValue, 0, 2);
 
-    public void TakeDamage(int damage = 1)
-    {
-        if (MusicDirector.Instance != null) MusicDirector.Instance.TriggerDamageEffect();
-
-        hpBarManager.LoseHP(damage);
-
-        if (fireHeartIndex != -1)
-        {
-            int remainingHP = hpBarManager.GetHeartHP(fireHeartIndex);
-
-            if (remainingHP <= 0)
-            {
-                if (heatController != null) heatController.StopEffect();
-
-                hpBarManager.ChangeHeartType(HeartAttribute.Normal, fireHeartIndex);
-                fireHeartIndex = -1;
-
-                if (MusicDirector.Instance != null) MusicDirector.Instance.SetFlameMode(false);
-            }
+            hearts[i].fillAmount = (float)clampValue / 2;
         }
     }
 }

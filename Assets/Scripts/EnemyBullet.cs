@@ -1,47 +1,40 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class EnemyBullet : MonoBehaviour
 {
-    public float speed = 7f;
-    public float lifeTime = 3f; // 3ÃÊ µÚ ÀÚµ¿ »èÁ¦
+    public float speed = 5f;
+    public int damage = 1; // í•˜íŠ¸ ë°˜ ì¹¸
 
-    private Vector2 targetDir;
-
-    public void SetDirection(Vector2 direction)
+    public void SetDirection(Vector3 direction)
     {
-        targetDir = direction.normalized;
-        // ÃÑ¾ËÀÌ ³¯¾Æ°¡´Â ¹æÇâÀ» ¹Ù¶óº¸°Ô È¸Àü (¼±ÅÃ »çÇ×)
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        // ë¦¬ì§€ë“œë°”ë”” ì—†ìœ¼ë©´ ì¶”ê°€
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
 
-        // 3ÃÊ µÚ¿¡ ½º½º·Î ÆÄ±« (¸Ş¸ğ¸® °ü¸®)
-        Destroy(gameObject, lifeTime);
-    }
-
-    void Update()
-    {
-        // ¼³Á¤µÈ ¹æÇâÀ¸·Î °è¼Ó ÀÌµ¿
-        transform.Translate(Vector2.right * speed * Time.deltaTime);
+        rb.gravityScale = 0; // ì¤‘ë ¥ ë„ê¸°
+        // Unity 6ë²„ì „ì€ linearVelocity, êµ¬ë²„ì „ì€ velocity
+        rb.linearVelocity = direction * speed;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // ÇÃ·¹ÀÌ¾î¿¡°Ô ´êÀ¸¸é
+        // 1. í”Œë ˆì´ì–´ íƒœê·¸ í™•ì¸
         if (other.CompareTag("Player"))
         {
-            // ¡Ú ÇÙ½É Ãß°¡: ÇÃ·¹ÀÌ¾î ¸ö¿¡¼­ ¹æ±İ ¸¸µç PlayerHitEffect ÄÄÆ÷³ÍÆ®¸¦ Ã£´Â´Ù.
-            PlayerHitEffect playerEffect = other.GetComponent<PlayerHitEffect>();
+            // â˜… ì¤‘ìš”: ë§ì€ ë¶€ìœ„(íŒ”, ë¬´ê¸° ë“±)ì˜ ë¶€ëª¨ë‹˜(ëª¸í†µ)ì—ê²Œì„œ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ì°¾ìŠµë‹ˆë‹¤.
+            // ì´ê²Œ ìˆì–´ì•¼ ì¶©ëŒì´ ì”¹íˆì§€ ì•ŠìŠµë‹ˆë‹¤.
+            PlayerHealth player = other.GetComponentInParent<PlayerHealth>();
 
-            // Ã£¾ÒÀ¸¸é (nullÀÌ ¾Æ´Ï¸é), TakeDamage ÇÔ¼ö¸¦ ½ÇÇà½ÃÅ²´Ù!
-            if (playerEffect != null)
+            if (player != null)
             {
-                playerEffect.TakeDamage();
+                player.TakeDamage(damage);
+                Debug.Log("ğŸ”« ì  ì´ì•Œ ëª…ì¤‘! í”Œë ˆì´ì–´ ì²´ë ¥ ê°ì†Œ");
             }
 
-            // ÃÑ¾ËÀº ÀÚ±â ÀÓ¹«¸¦ ´ÙÇßÀ¸´Ï »ç¶óÁø´Ù.
+            // ë§ì•˜ìœ¼ë©´ ì´ì•Œ ì‚­ì œ
             Destroy(gameObject);
         }
-        // º®¿¡ ´êÀ¸¸é
+        // 2. ë²½ì— ë§ìœ¼ë©´ ì‚­ì œ
         else if (other.CompareTag("Wall"))
         {
             Destroy(gameObject);

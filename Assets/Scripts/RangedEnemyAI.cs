@@ -1,47 +1,45 @@
 using UnityEngine;
 
-public class RangedEnemyAI : MonoBehaviour
+public class RangedEnemy : MonoBehaviour
 {
-    [Header("Movement")]
-    public float speed = 2.5f;      // 근거리보다 조금 느리게
-    public float detectRange = 8f;  // 감지는 멀리서
-    public float keepDistance = 5f; // ★핵심: 플레이어와 이만큼 거리를 둠 (멈춤)
+    [Header("설정")]
+    public float detectRange = 7f;   // 사거리 (이 안에 들어오면 쏨)
+    public float stopDistance = 3f;  // 너무 가까우면 멈춤 (도망가지 않게)
+    public float moveSpeed = 1.5f;   // 이동 속도
 
-    [Header("Attack")]
-    public GameObject bulletPrefab; // 아까 만든 총알 프리팹 넣기
-    public float attackCooldown = 2.0f;
-    private float lastAttackTime = 0f;
+    public GameObject bulletPrefab;  // ★ 적 총알 프리팹 꼭 넣으세요!
+    public float attackCooldown = 2f; // 2초마다 발사
+    private float lastAttackTime;
 
-    private Transform target;
+    private Transform player;
 
     void Start()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null) target = player.transform;
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null) player = p.transform;
     }
 
     void Update()
     {
-        if (target == null) return;
+        if (player == null) return;
 
-        float distance = Vector2.Distance(transform.position, target.position);
+        float distance = Vector2.Distance(transform.position, player.position);
 
-        // 1. 공격 사거리(유지 거리) 안에 들어왔을 때 -> 멈춰서 쏨
-        if (distance <= keepDistance)
+        // 사거리 안에 들어왔으면?
+        if (distance <= detectRange)
         {
-            // 이동 멈춤 (추적 안 함)
-
-            // 쿨타임 체크 후 발사
-            if (Time.time - lastAttackTime >= attackCooldown)
+            // 공격 쿨타임 체크 -> 발사
+            if (Time.time > lastAttackTime + attackCooldown)
             {
                 Shoot();
                 lastAttackTime = Time.time;
             }
-        }
-        // 2. 감지 범위 안이지만 아직 멀 때 -> 추적
-        else if (distance <= detectRange)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+
+            // 너무 딱 붙지 않게, 적당한 거리까지만 다가감
+            if (distance > stopDistance)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            }
         }
     }
 
@@ -49,24 +47,21 @@ public class RangedEnemyAI : MonoBehaviour
     {
         if (bulletPrefab == null) return;
 
-        Debug.Log("탕! (원거리 공격)");
-
-        // 1. 총알 생성 (적 위치에서)
+        // 총알 생성
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
-        // 2. 플레이어 방향 계산
-        Vector2 direction = (target.position - transform.position).normalized;
-
-        // 3. 총알에게 방향 전달
-        bullet.GetComponent<EnemyBullet>().SetDirection(direction);
+        // 총알에게 "플레이어 쪽으로 날아가라" 명령
+        EnemyBullet bulletScript = bullet.GetComponent<EnemyBullet>();
+        if (bulletScript != null)
+        {
+            Vector3 direction = (player.position - transform.position).normalized;
+            bulletScript.SetDirection(direction);
+        }
     }
 
-    // 범위 확인용 기즈모
-    void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectRange); // 감지
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, keepDistance); // 사격 거리
+        Gizmos.DrawWireSphere(transform.position, detectRange);
     }
 }

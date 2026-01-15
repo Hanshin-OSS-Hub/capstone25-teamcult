@@ -1121,7 +1121,7 @@ Transform:
   m_GameObject: {fileID: 936488278}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.07, y: 4.68, z: 0}
+  m_LocalPosition: {x: -7.96, y: -0.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1136,11 +1136,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 936488278}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfd8fe6f1ebd9b642bc7e58f1066119e, type: 3}
+  m_Script: {fileID: 11500000, guid: 017fa5642ba326840bd4361e42dce95e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 0
-  multiplierAmount: 0.5
+  multiplierAmount: 1
 --- !u!1 &1176404012
 GameObject:
   m_ObjectHideFlags: 0
@@ -2069,10 +2069,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectRange: 8
-  stopDistance: 3
+  stopDistance: 5
   moveSpeed: 1.5
-  bulletPrefab: {fileID: 6851888218847048926, guid: 00f02ffdfd153014fb5b22a44308943b, type: 3}
-  attackCooldown: 3
+  bulletPrefab: {fileID: 5708858304311431416, guid: a5c107bd9bdba4847b5c66c174da29f4, type: 3}
+  attackCooldown: 1.5
 --- !u!114 &2129841856211413730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2324,11 +2324,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5042980192563395543}
   - component: {fileID: 8481561436245437695}
-  - component: {fileID: 8117557652587641345}
-  - component: {fileID: 8481561436245437696}
   - component: {fileID: 8481561436245437698}
   - component: {fileID: 8481561436245437697}
-  - component: {fileID: 8481561436245437699}
+  - component: {fileID: 8481561436245437700}
+  - component: {fileID: 8481561436245437701}
   m_Layer: 0
   m_Name: EnemyAI
   m_TagString: Enemy
@@ -2347,7 +2346,6 @@ GameObject:
   - component: {fileID: 9194944697797730376}
   - component: {fileID: 1047278485127231774}
   - component: {fileID: 1651937316301478705}
-  - component: {fileID: 9194944697797730377}
   - component: {fileID: 9194944697797730379}
   - component: {fileID: 9194944697797730378}
   - component: {fileID: 9194944697797730380}
@@ -2465,8 +2463,8 @@ GameObject:
   - component: {fileID: 7922291555365033438}
   - component: {fileID: 3892869902286918824}
   - component: {fileID: 8765123900591283561}
-  - component: {fileID: 8765123900591283564}
-  - component: {fileID: 8765123900591283565}
+  - component: {fileID: 8765123900591283563}
+  - component: {fileID: 8765123900591283562}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2505,22 +2503,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angleOffset: -90
   toggleKey: 102
---- !u!114 &8117557652587641345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3154997885730371442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6db7221a4ea47144490b61f63a61bd5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectRange: 5
-  attackRange: 1.5
-  moveSpeed: 2
-  attackCooldown: 2
 --- !u!212 &8481561436245437695
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2576,22 +2558,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8481561436245437696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3154997885730371442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06b2540606280b14bb685f09083f08dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 3000
-  currentHealth: 0
-  hpSlider: {fileID: 456552322}
-  hpText: {fileID: 1710465453}
 --- !u!61 &8481561436245437697
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2622,7 +2588,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -2665,7 +2631,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &8481561436245437699
+--- !u!114 &8481561436245437700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2674,10 +2640,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 3154997885730371442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46311447e96baf54691869c91fc380c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 502ab6748711c9444ac742fb2c269837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectRange: 5
+  attackRange: 1.2
+  moveSpeed: 2
+  attackCooldown: 1
   damage: 1
+--- !u!114 &8481561436245437701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3154997885730371442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49371fe68a2b9954fa288f281392b62b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 30
+  currentHealth: 0
+  hpSlider: {fileID: 456552322}
+  hpText: {fileID: 1710465453}
 --- !u!114 &8765123900591283561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2692,7 +2678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashCount: 3
   flashInterval: 0.1
---- !u!114 &8765123900591283564
+--- !u!114 &8765123900591283562
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2701,7 +2687,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6627970124773854081}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28553ae772b59984c8129426fec22f89, type: 3}
+  m_Script: {fileID: 11500000, guid: dec5add50d189d040998aef0b1b4bb39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseDamage: 10
+  addedDamage: 0
+  damageMultiplier: 1
+  bulletPrefab: {fileID: 7413192166536640196, guid: 4cd354726914ad1478ced46d164867b6, type: 3}
+  firePoint: {fileID: 1176404013}
+--- !u!114 &8765123900591283563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6627970124773854081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f571f7f617de84bb3018be82650311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 6
@@ -2710,23 +2713,6 @@ MonoBehaviour:
   - {fileID: 797368872}
   - {fileID: 1275639585}
   - {fileID: 200617726}
---- !u!114 &8765123900591283565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6627970124773854081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d390c51cc1e85848aed0f3f0c4ec27d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseDamage: 10
-  addedDamage: 0
-  damageMultiplier: 1
-  bulletPrefab: {fileID: 6902949473447136083, guid: a5e396618336bc84dbea7096c9c707f2, type: 3}
-  firePoint: {fileID: 1176404013}
 --- !u!4 &9194944697797730376
 Transform:
   m_ObjectHideFlags: 0
@@ -2743,22 +2729,6 @@ Transform:
   - {fileID: 200851608}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9194944697797730377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3636964501459797780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06b2540606280b14bb685f09083f08dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 300
-  currentHealth: 0
-  hpSlider: {fileID: 245052692}
-  hpText: {fileID: 1638181032}
 --- !u!50 &9194944697797730378
 Rigidbody2D:
   serializedVersion: 5
@@ -2816,7 +2786,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -2841,10 +2811,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3636964501459797780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46311447e96baf54691869c91fc380c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 49371fe68a2b9954fa288f281392b62b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 1
+  maxHealth: 3000
+  currentHealth: 0
+  hpSlider: {fileID: 245052692}
+  hpText: {fileID: 1638181032}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
