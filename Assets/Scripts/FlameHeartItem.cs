@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class FlameHeartItem : MonoBehaviour
@@ -6,12 +7,12 @@ public class FlameHeartItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // [����] HeatController�� �ƴ϶� PlayerHealth�� ã�ƾ� �մϴ�!
+            
             var playerHealth = other.GetComponent<PlayerHealth>();
 
             if (playerHealth != null)
             {
-                // �÷��̾����� "�Ҳ� ��Ʈ �Ծ���!"��� �˸�
+               
                 playerHealth.GetFlameHeart();
             }
 

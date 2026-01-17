@@ -402,7 +402,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8252384779053095759, guid: 3248535f6a2562c489a1223a75951ef2, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2347,8 +2348,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsPanel: {fileID: 1290757408}
-  volumeSlider: {fileID: 0}
-  brightnessSlider: {fileID: 0}
+  volumeSlider: {fileID: 1247180332}
+  brightnessSlider: {fileID: 1693334447}
   settingsButton: {fileID: 405071390}
   closeSettingsButton: {fileID: 304120627}
   quitGameButton: {fileID: 1100892291}
@@ -2721,9 +2722,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1689866831511430, guid: 2e2183501755a214591e802f3aff33d2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 500218994}
-    - targetCorrespondingSourceObject: {fileID: 1689866831511430, guid: 2e2183501755a214591e802f3aff33d2, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 500218993}
     - targetCorrespondingSourceObject: {fileID: 1689866831511430, guid: 2e2183501755a214591e802f3aff33d2, type: 3}
       insertIndex: -1
@@ -2785,18 +2783,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.8287036, y: 1.224289}
   m_EdgeRadius: 0
---- !u!114 &500218994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500218992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6b35b2d748e07b4c810d95c7a157f4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &500218998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2809,7 +2795,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f571f7f617de84bb3018be82650311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpBarManager: {fileID: 0}
+  maxHealth: 6
+  currentHealth: 0
 --- !u!1 &503624671
 GameObject:
   m_ObjectHideFlags: 0
@@ -12548,14 +12535,13 @@ GameObject:
   - component: {fileID: 612292917}
   - component: {fileID: 612292916}
   - component: {fileID: 612292915}
-  - component: {fileID: 612292918}
   m_Layer: 0
   m_Name: FlameHeartItem
   m_TagString: FlameHeartItem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &612292915
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12672,18 +12658,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &612292918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 612292914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d12d02b214ec8c45862b01c3929a6b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &629796490 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1282427344960546868, guid: 5f6c589d2a3b44447b6a04232846643f, type: 3}
@@ -14053,7 +14027,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f571f7f617de84bb3018be82650311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpBarManager: {fileID: 0}
+  maxHealth: 6
+  currentHealth: 0
 --- !u!1 &807356263
 GameObject:
   m_ObjectHideFlags: 0
@@ -20487,7 +20462,7 @@ GameObject:
   - component: {fileID: 1232502767}
   - component: {fileID: 1232502766}
   - component: {fileID: 1232502765}
-  - component: {fileID: 1232502764}
+  - component: {fileID: 1232502769}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -20495,18 +20470,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1232502764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1232502763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18d2a40a93d201c419b3129c0898d802, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!50 &1232502765
 Rigidbody2D:
   serializedVersion: 5
@@ -20603,6 +20566,22 @@ Transform:
   - {fileID: 314150807}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1232502769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232502763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db7221a4ea47144490b61f63a61bd5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 3
+  detectRange: 5
+  attackRange: 1.5
+  attackCooldown: 2
 --- !u!1001 &1235860918
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27976,12 +27955,15 @@ MonoBehaviour:
   bpm: 170
   masterVolume: 0.5
   cutoffFrequency: 22000
-  flameMode: 0
+  chaos: 0.2
+  density: 0.8
+  pitchBias: 0.5
   kickVol: 0.8
   snareVol: 0.6
   hihatVol: 0.3
   bassVol: 0.5
   leadVol: 0.4
+  flameMode: 0
   isPlaying: 1
   tensionLevel: 0
   lowHealthMode: 0
