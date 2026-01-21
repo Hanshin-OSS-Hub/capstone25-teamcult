@@ -14,6 +14,10 @@ TagManager:
   - Sabaton
   - Weapon
   - Wall
+  - Enemy (Normal)
+  - Enemy (Heavy)
+  - Enemy (Speed)
+  - Enemy (Weird)
   layers:
   - Default
   - TransparentFX
