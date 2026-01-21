@@ -18,25 +18,23 @@ public class KnobRotateHandler : MonoBehaviour, IDragHandler, IBeginDragHandler
     // 마우스를 드래그하는 동안 계속 호출됩니다.
     public void OnDrag(PointerEventData eventData)
     {
-        Vector2 touchPos = eventData.position;
-        Vector2 direction = touchPos - centerPoint;
+        if (manager == null) return;
 
-        // 중심점으로부터 마우스 위치의 각도를 구합니다. (유니티는 12시 방향이 0도)
-        float angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
+        // 노브의 중심점을 구합니다.
+        Vector2 center = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, transform.position);
+        Vector2 dir = eventData.position - center;
 
-        if (angle < 0) angle += 360f; // 0~360도로 변환
+        // 각도 계산 (12시 방향이 0도가 되도록 설정)
+        float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+        if (angle < 0) angle += 360f;
 
-        // 각도(0~360)를 0~1 사이의 값으로 변환
+        // 0~1 사이의 값으로 변환
         float value = angle / 360f;
 
-        // 매니저에 값 전달
         if (isVolumeKnob)
             manager.UpdateEnemyVolume(value);
         else
             manager.UpdateMapBrightness(value);
-
-        // 실제 노브 이미지도 마우스 방향에 맞춰 회전시키고 싶다면 아래 코드 추가
-        // transform.localRotation = Quaternion.Euler(0, 0, -angle);
     }
 
 }
