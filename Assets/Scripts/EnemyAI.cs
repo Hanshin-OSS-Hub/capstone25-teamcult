@@ -2,21 +2,16 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    [Header("Movement")]
-    public float speed = 3f;        // 이동 속도
-    public float detectRange = 5f;  // 감지 거리 (이 거리 안이면 쫓아옴)
-
-    [Header("Attack")]
-    public float attackRange = 1.5f;    // 공격 거리 (이 거리 안이면 멈추고 공격) [추가됨]
-    public float attackCooldown = 2.0f; // 공격 쿨타임 [추가됨]
-    private float lastAttackTime = 0f;  // 마지막 공격 시간 저장용 [추가됨]
-
-    private Transform target;       // 플레이어
+    // ★ 이 변수가 없어서 에러가 났던 겁니다
+    public Transform target;
+    private EnemyStats stats;
 
     void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        stats = GetComponent<EnemyStats>();
 
+        // 게임 시작 시 이름이 "Player"인 오브젝트를 찾아서 타겟으로 설정
+        GameObject playerObj = GameObject.Find("Player");
         if (playerObj != null)
         {
             target = playerObj.transform;
@@ -25,50 +20,32 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        // 타겟(플레이어)이 없으면 움직이지 않음
         if (target == null) return;
 
-        // 1. 현재 플레이어와 적 사이의 거리 계산
-        float distance = Vector2.Distance(transform.position, target.position);
+        // 스탯에서 이동 속도 가져오기 (없으면 기본값 2f)
+        float speed = (stats != null) ? stats.moveSpeed : 2f;
 
-        // [변경점] 거리 체크 로직 분기
+        // 타겟 쪽으로 이동
+        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
 
-        // A. 공격 사거리 안에 들어왔을 때 (공격)
-        if (distance <= attackRange)
+        // (선택 사항) 적이 플레이어를 바라보게 뒤집기
+        if (target.position.x < transform.position.x) transform.localScale = new Vector3(-1, 1, 1);
+        else transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 플레이어와 부딪혔을 때
+        if (collision.gameObject.CompareTag("Player"))
         {
-            // 이동하지 않음 (MoveTowards 코드를 실행 안 하면 멈춤)
-
-            // 쿨타임 체크 후 공격
-            if (Time.time - lastAttackTime >= attackCooldown)
+            PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+            if (player != null)
             {
-                Attack(); // 공격 함수 실행
-                lastAttackTime = Time.time; // 시간 갱신
+                // 스탯에서 공격력 가져오기 (없으면 기본값 10)
+                int dmg = (stats != null) ? stats.damage : 10;
+                player.TakeDamage(dmg);
             }
         }
-        // B. 공격 범위는 아니지만, 감지 범위 안일 때 (추적)
-        else if (distance <= detectRange)
-        {
-            // MoveTowards: 현재 위치에서 목표 위치로 야금야금 이동
-            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-        }
-
-        // C. 둘 다 아니면 가만히 있음 (else 생략 가능)
-    }
-
-    // [추가됨] 실제 공격 행동을 하는 함수
-    void Attack()
-    {
-        Debug.Log("적군이 공격합니다!");
-        // 여기에 나중에 공격 애니메이션 실행이나 데미지 주는 코드를 넣으면 됨
-    }
-
-    void OnDrawGizmos()
-    {
-        // 감지 범위 (빨간색)
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectRange);
-
-        // 공격 범위 (노란색) [추가됨] - 에디터에서 구별하기 쉽게
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
