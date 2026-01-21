@@ -15001,10 +15001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7221a4ea47144490b61f63a61bd5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
-  detectRange: 5
-  attackRange: 1.5
-  attackCooldown: 2
+  target: {fileID: 0}
 --- !u!1001 &1235860918
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23690,10 +23687,66 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 1672450108368495955, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Size.x
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672450108368495955, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Size.y
+      value: 24.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672450108368495955, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Offset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672450108368495955, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672450108368495955, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161364432344883021, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161364432344883021, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3264184341807976020, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5877577096447868178, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Size.x
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5877577096447868178, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Size.y
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 5877577096447868178, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Offset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5877577096447868178, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 792503406}
+    - target: {fileID: 8185029207527558294, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185029207527558294, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8721671649861173815, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

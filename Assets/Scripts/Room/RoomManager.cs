@@ -16,6 +16,7 @@ public class RoomManager : MonoBehaviour {
     [SerializeField] int twigCount = 4;
 
     private int[,] mapPlan;
+    public int[,] mapLock;
     private Vector2Int[] directions = {
         new Vector2Int(0, 1),  // 0: Up
         new Vector2Int(1, 0),  // 1: Right
@@ -50,7 +51,14 @@ public class RoomManager : MonoBehaviour {
         while (!generationSuccess && safetyNet < 100) {
             safetyNet++;
             mapPlan = new int[mapSize, mapSize];
+            mapLock = new int[mapSize, mapSize];
+            for (int x = 0; x < mapSize; x++) {
+                for (int y = 0; y < mapSize; y++) {
+                    mapLock[x, y] = 1; // 기본값: 모든 방은 잠김(1)
+                }
+            }
             Vector2Int startPos = new Vector2Int(mapSize / 2, mapSize / 2);
+            mapLock[startPos.x, startPos.y] = 0;
 
             // 각 가지별 위치 저장을 위한 리스트
             List<Vector2Int> mainBranchRooms = new List<Vector2Int>();
