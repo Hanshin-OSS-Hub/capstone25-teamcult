@@ -22340,6 +22340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac184891b1e374cf19b07e1787b38c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentGenre: 0
   bpm: 170
   masterVolume: 0.5
   cutoffFrequency: 22000

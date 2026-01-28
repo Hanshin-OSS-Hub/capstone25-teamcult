@@ -7,9 +7,14 @@ public class MusicDirector : MonoBehaviour
     public DnBSynth synth; 
 
     public float detectionRadius = 10.0f; 
+    
     private Collider2D[] hitBuffer = new Collider2D[20];
     private ContactFilter2D contactFilter;
     private bool isFlameActivated = false;
+    
+    // [NEW] 장르마다 시작 속도가 다르므로 저장해둘 변수
+    private double baseBPM = 160.0;
+    private bool initialized = false;
 
     void Awake()
     {
@@ -26,6 +31,14 @@ public class MusicDirector : MonoBehaviour
     void Update()
     {
         if (synth == null) return;
+
+        // [NEW] 처음 한 번, 신디사이저가 정한 장르의 BPM을 기준점으로 삼음
+        if (!initialized)
+        {
+            baseBPM = synth.bpm; 
+            initialized = true;
+        }
+
         if (player == null) {
             GameObject p = GameObject.FindWithTag("Player");
             if (p != null) player = p.transform;
@@ -47,58 +60,30 @@ public class MusicDirector : MonoBehaviour
         UpdateAIConductor(enemyCount, closestDist);
     }
 
-    // ★★★ AI 지휘자 (LLM Simulation) ★★★
-    // 게임 상황 데이터를 바탕으로 작곡 파라미터(Markov Weights)를 실시간 조정
     void UpdateAIConductor(int enemyCount, float closestDist)
     {
         float distFactor = (enemyCount > 0) ? Mathf.Clamp01(1.0f - (closestDist / detectionRadius)) : 0f;
 
-        // 1. 기본 상태 (BPM 등)
+        // 1. 텐션 레벨
         int targetTension = (enemyCount == 0) ? 0 : ((enemyCount < 3) ? 1 : 2);
         synth.tensionLevel = targetTension;
         synth.flameMode = isFlameActivated;
         
-        double targetBPM = isFlameActivated ? 170.0 : (150.0 + enemyCount * 2.0 + distFactor * 5.0);
+        // 2. BPM 조절 (장르별 기본 BPM을 기준으로 빨라짐)
+        double targetBPM = baseBPM;
+        if (isFlameActivated) targetBPM = baseBPM + 20.0; // 각성 시 +20
+        else targetBPM = baseBPM + (enemyCount * 2.0) + (distFactor * 5.0); // 적 많으면 빨라짐
+
         synth.bpm = Mathf.Lerp((float)synth.bpm, (float)targetBPM, Time.deltaTime);
 
-        // 2. [핵심] 마르코프 체인 파라미터 조절 (스타일 결정)
-        // 이 부분이 나중에 LLM의 프롬프트 결과값으로 대체될 수 있습니다.
-        
-        float targetChaos = 0.2f;   // 기본: 안정적
-        float targetDensity = 0.5f; // 기본: 여유로움
-        float targetPitchBias = 0.5f; // 기본: 중음역
+        // 3. AI 파라미터 (Markov Chain)
+        // 장르에 상관없이 적이 많으면 혼란스러워지는 로직은 유지
+        float targetChaos = 0.2f + (enemyCount * 0.15f);
+        float targetDensity = 0.5f + (distFactor * 0.4f);
+        float targetPitchBias = (synth.lowHealthMode || enemyCount >= 3) ? 0.8f : 0.5f;
 
-        if (isFlameActivated)
-        {
-            // 각성 모드: 매우 혼란스럽고(Chaos), 음표가 꽉 차고(Density High), 고음역(High Pitch)
-            // 하지만 각성 모드는 'GenCinematicBrass'가 덮어쓰므로 멜로디 생성은 덜 중요할 수 있음
-        }
-        else if (enemyCount > 0)
-        {
-            // 적 발견:
-            // - 적이 많을수록 Chaos 증가 (불규칙한 멜로디)
-            // - 거리가 가까울수록 Density 증가 (급박함)
-            
-            targetChaos = 0.2f + (enemyCount * 0.15f); // 적 3명이면 0.65 (매우 혼란)
-            targetDensity = 0.6f + (distFactor * 0.4f); // 가까우면 1.0 (쉼표 없음)
-            
-            // 위기 상황(체력 낮음 or 적 많음)이면 고음역대 사용
-            if (synth.lowHealthMode || enemyCount >= 3) targetPitchBias = 0.8f; 
-        }
-        else
-        {
-            // 평화: 질서 정연하고(Chaos Low), 듬성듬성한(Density Low) 멜로디
-            targetChaos = 0.1f;
-            targetDensity = 0.3f; // 쉼표가 많아 여백의 미
-            targetPitchBias = 0.4f; // 약간 저음의 차분함
-        }
-
-        // 파라미터를 부드럽게 Synth에 적용
         synth.chaos = Mathf.Lerp(synth.chaos, Mathf.Clamp01(targetChaos), Time.deltaTime);
         synth.density = Mathf.Lerp(synth.density, Mathf.Clamp01(targetDensity), Time.deltaTime);
         synth.pitchBias = Mathf.Lerp(synth.pitchBias, Mathf.Clamp01(targetPitchBias), Time.deltaTime);
-        
-        // *참고: 이 값들이 변하면 DnBSynth의 GenerateMarkovMelody()가 호출될 때 
-        //       새로운 스타일의 멜로디가 만들어집니다.
     }
 }
