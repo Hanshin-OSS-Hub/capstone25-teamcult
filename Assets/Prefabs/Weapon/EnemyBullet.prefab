@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 7
-  lifeTime: 3
+  damage: 1
 --- !u!212 &3438002080620225168
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -153,9 +153,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -2094805801
+  m_SortingLayer: 2
+  m_SortingOrder: 10
   m_Sprite: {fileID: -2413806693520163455, guid: 6725b4cc0322a3041a7c9e5e29108de7, type: 3}
   m_Color: {r: 0.12452829, g: 0.123721376, b: 0.10596652, a: 1}
   m_FlipX: 0
