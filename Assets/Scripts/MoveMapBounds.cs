@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveMapBounds : MonoBehaviour {
@@ -5,25 +6,27 @@ public class MoveMapBounds : MonoBehaviour {
     [SerializeField] private int gridSize = 20;
     [SerializeField] private Vector2Int currentRoomIndex = new Vector2Int(0, 0);
 
-    private RoomManager roomManager;
-    private BoxCollider2D areaCollider;
-    private GameObject wallObject; // 자식 "Wall" 오브젝트 참조
+    private RoomManager roomManager; 
+    private BoxCollider2D areaCollider; // 방 내부 콜라이더
+    private GameObject wallObject; // 벽
+    private List<GameObject> currentRoomEnemies = new List<GameObject>(); // 현재 방에서 소환된 적들을 추적하는 리스트
+    private EnemySpawner enemySpawner;
 
     void Start() {
-        // 1. 위치 초기화 (기본 인덱스 설정 - mapSize 11 기준 중앙값 5)
-        int startIdx = 5;
-        currentRoomIndex = new Vector2Int(startIdx, startIdx);
-        transform.position = new Vector3(10f, -10f, transform.position.z);
-
-        // 2. 컴포넌트 및 자식 오브젝트 찾기
+        // transform.position 초기화는 실제 시작 방의 월드 좌표와 맞춰야 함
+        // transform.position = new Vector3(10, -10, transform.position.z);
         areaCollider = transform.Find("Area")?.GetComponent<BoxCollider2D>();
-        wallObject = transform.Find("Wall")?.gameObject; // "Wall" 오브젝트 찾기
+        wallObject = transform.Find("Wall")?.gameObject;
         roomManager = Object.FindAnyObjectByType<RoomManager>();
+        enemySpawner = Object.FindAnyObjectByType<EnemySpawner>();
 
-        if (roomManager == null) Debug.LogError("RoomManager를 찾을 수 없습니다!");
-        if (wallObject == null) Debug.LogWarning("자식 오브젝트 'Wall'을 찾을 수 없습니다.");
+        if (roomManager == null) { Debug.LogError("RoomManager를 찾을 수 없습니다!"); }
+        if (enemySpawner == null) { Debug.LogError("EnemySpawner를 찾을 수 없습니다!"); }
 
-        PrintMapLockInfo();
+        // 초기 위치 설정 (RoomManager의 중앙 인덱스와 일치시킴)
+        // RoomManager의 mapSize가 11이라면 중앙은 5
+        int startIdx = roomManager.MapSize / 2;
+        currentRoomIndex = new Vector2Int(startIdx, startIdx);
     }
 
     void Update() {
@@ -31,28 +34,19 @@ public class MoveMapBounds : MonoBehaviour {
 
         UpdateCameraPosition();
         HandleWallLock();
+        CheckEnemiesStatus();
 
-        // --- 테스트용 코드: Z키를 누르면 현재 방 해제 ---
         if (Input.GetKeyDown(KeyCode.Z)) {
-            UnlockCurrentRoom();
+            ReduceMonsterCountTest();
         }
     }
 
-    private void UnlockCurrentRoom() {
-        if (roomManager.mapLock == null) return;
-
-        int x = currentRoomIndex.x;
-        int y = currentRoomIndex.y;
-
-        // 인덱스 범위 확인 후 값 변경
-        if (x >= 0 && x < roomManager.mapLock.GetLength(0) &&
-            y >= 0 && y < roomManager.mapLock.GetLength(1)) {
-
-            roomManager.mapLock[x, y] = 0; // 잠금 해제!
-            Debug.Log($"<color=yellow>테스트:</color> [{x}, {y}] 번 방의 잠금을 해제했습니다.");
-
-            // HandleWallLock이 Update에서 돌아가고 있으므로, 
-            // 값이 0이 되는 순간 다음 프레임에 Wall이 즉시 비활성화됩니다.
+    // [테스트 기능] 몬스터 수를 줄여서 문이 열리는지 확인
+    private void ReduceMonsterCountTest() {
+        var room = roomManager.rooms[currentRoomIndex.x, currentRoomIndex.y];
+        if (room.status == RoomData.RoomStatus.Locked) {
+            room.monsterCount--;
+            Debug.Log($"몬스터 처치! 남은 수: {room.monsterCount}");
         }
     }
 
@@ -62,7 +56,6 @@ public class MoveMapBounds : MonoBehaviour {
         float halfSize = gridSize / 2f;
         bool hasMoved = false;
 
-        // X축 이동
         if (playerPos.x > currentPos.x + halfSize) {
             transform.position += new Vector3(gridSize, 0, 0);
             currentRoomIndex.x += 1;
@@ -74,7 +67,6 @@ public class MoveMapBounds : MonoBehaviour {
             hasMoved = true;
         }
 
-        // Y축 이동 (RoomManager의 배치 방식에 맞춰 + 인덱스 증가로 수정)
         if (playerPos.y > currentPos.y + halfSize) {
             transform.position += new Vector3(0, gridSize, 0);
             currentRoomIndex.y += 1;
@@ -87,60 +79,91 @@ public class MoveMapBounds : MonoBehaviour {
         }
 
         if (hasMoved) {
-            PrintMapLockInfo();
+            PrintRoomInfo();
         }
     }
 
-    // 1. 플레이어가 영역 안에 완전히 포함되었는지 체크 (bool 반환)
     private bool IsPlayerCompletelyInside() {
         if (areaCollider == null) return false;
-
         Bounds areaBounds = areaCollider.bounds;
         Collider2D pCol = playerTarget.GetComponent<Collider2D>();
 
         if (pCol != null) {
-            // 플레이어 콜라이더의 모든 끝점이 영역 안에 있어야 함
             return areaBounds.Contains(pCol.bounds.min) && areaBounds.Contains(pCol.bounds.max);
         }
-
-        // 콜라이더가 없을 경우 피벗 포인트만 체크
         return areaBounds.Contains(playerTarget.position);
     }
 
-    // 2. mapLock 상태와 위치를 체크하여 Wall 활성화/비활성화
-    private void HandleWallLock() {
-        if (wallObject == null || roomManager.mapLock == null) return;
+private void HandleWallLock() {
+        if (wallObject == null || roomManager.rooms == null) return;
 
         int x = currentRoomIndex.x;
         int y = currentRoomIndex.y;
 
-        // 인덱스 유효성 검사
-        if (x >= 0 && x < roomManager.mapLock.GetLength(0) &&
-            y >= 0 && y < roomManager.mapLock.GetLength(1)) {
+        if (x < 0 || x >= roomManager.rooms.GetLength(0) || y < 0 || y >= roomManager.rooms.GetLength(1)) return;
 
-            int lockStatus = roomManager.mapLock[x, y];
-            bool isInside = IsPlayerCompletelyInside();
+        RoomData currentRoom = roomManager.rooms[x, y];
+        bool isInside = IsPlayerCompletelyInside();
 
-            // 조건: mapLock이 1(잠김)이고 플레이어가 완전히 들어왔을 때만 Wall 활성화
-            if (lockStatus == 1 && isInside) {
-                if (!wallObject.activeSelf) wallObject.SetActive(true);
+        // 1. 입장 시 잠금 처리
+        if (currentRoom.status == RoomData.RoomStatus.Empty && currentRoom.isFirstVisit) {
+            if (isInside && currentRoom.shouldLockOnVisit) {
+                currentRoom.status = RoomData.RoomStatus.Locked;
+                currentRoom.isFirstVisit = false;
+                SpawnMonsters(currentRoom);
             }
-            // mapLock이 0(해제)이거나 플레이어가 아직 들어오는 중이면 Wall 비활성화
-            else if (lockStatus == 0) {
-                if (wallObject.activeSelf) wallObject.SetActive(false);
+        }
+
+        // 2. 잠긴 상태에서 클리어 체크
+        if (currentRoom.status == RoomData.RoomStatus.Locked) {
+            if (!wallObject.activeSelf) wallObject.SetActive(true);
+
+            // 미사용 조건 변경: 데이터상의 숫자와 실제 리스트가 모두 비었을 때 클리어
+            //if (currentRoom.CheckClearCondition() && currentRoomEnemies.Count == 0) {
+            if (currentRoomEnemies.Count == 0) {
+                UnlockAndReward(currentRoom);
+            }
+        }
+        else {
+            if (wallObject.activeSelf) wallObject.SetActive(false);
+        }
+    }
+
+    private void SpawnMonsters(RoomData room) {
+        if (room.monsterCount <= 0) return;
+        Debug.Log($"<color=red>전투 시작!</color> {room.monsterCount}마리 소환 시도");
+
+        if (enemySpawner != null) {
+            // EnemySpawner로부터 생성된 적 리스트를 전달받음
+            currentRoomEnemies = enemySpawner.SpawnEnemy(room.monsterCount);
+        }
+    }
+
+    // 적이 죽었는지(Destroy 되었는지) 확인하는 로직
+    // 리스트의 마지막 원소만 확인하는 방식, 모든 적이 죽었는지 확인하는 용도로만 사용할것
+    // 적이 정확히 몇마리인지 알고싶다면 모든 원소를 순회할것
+    private void CheckEnemiesStatus() {
+        while (currentRoomEnemies.Count > 0) {
+            int lastIndex = currentRoomEnemies.Count - 1;
+            // 마지막 요소가 Destroy 되었는지 확인
+            if (currentRoomEnemies[lastIndex] == null) {
+                currentRoomEnemies.RemoveAt(lastIndex); // 죽었으면 제거
+            }
+            else { // 적이 하나 이상 남아있음
+                break;
             }
         }
     }
 
-    private void PrintMapLockInfo() {
-        if (roomManager?.mapLock == null) return;
+    private void UnlockAndReward(RoomData room) {
+        room.status = RoomData.RoomStatus.Cleared;
+        Debug.Log($"<color=cyan>방 클리어!</color> 보상: {room.rewardItemName}");
+        // TODO: 보상 상자 생성 로직
+    }
 
-        int x = currentRoomIndex.x;
-        int y = currentRoomIndex.y;
-
-        if (x >= 0 && x < roomManager.mapLock.GetLength(0) &&
-            y >= 0 && y < roomManager.mapLock.GetLength(1)) {
-            Debug.Log($"방 인덱스: [{x}, {y}], mapLock 값: {roomManager.mapLock[x, y]}");
-        }
+    private void PrintRoomInfo() {
+        if (roomManager.rooms == null) return;
+        var room = roomManager.rooms[currentRoomIndex.x, currentRoomIndex.y];
+        Debug.Log($"방 이동: [{currentRoomIndex.x}, {currentRoomIndex.y}] 상태: {room.status}, 남은몹: {room.monsterCount}");
     }
 }

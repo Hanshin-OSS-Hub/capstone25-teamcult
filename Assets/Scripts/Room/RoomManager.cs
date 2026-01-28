@@ -2,12 +2,31 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text; // 로그 문자열 조립용
 
+[System.Serializable]
+public class RoomData {
+    public enum RoomStatus { Empty, Locked, Cleared }
+
+    public RoomStatus status = RoomStatus.Empty;
+    public bool isFirstVisit = true; // 첫 방문 여부
+    public bool shouldLockOnVisit = true; // 첫 방문 시 잠글지 여부
+
+    public int monsterCount = 1; // 스폰할 몬스터 수
+    public string rewardItemName = "None"; 
+
+    //// 미사용 방 클리어 조건 체크 (예: 몬스터가 0마리인가?)
+    //public bool CheckClearCondition() {
+    //    return monsterCount <= 0;
+    //}
+}
+
 public class RoomManager : MonoBehaviour {
-    // ... 기존 변수들 유지 ...
     [SerializeField] Vector2Int roomSize = new Vector2Int(20, 20);
     [SerializeField] List<GameObject> allRooms;
     [SerializeField] List<GameObject>[] roomByDoors = new List<GameObject>[16];
     [SerializeField] int mapSize = 11;
+    public int MapSize {
+        get { return mapSize; }
+    }
 
     [Header("Branch Settings")]
     [SerializeField] int maxRooms = 15;
@@ -16,7 +35,7 @@ public class RoomManager : MonoBehaviour {
     [SerializeField] int twigCount = 4;
 
     private int[,] mapPlan;
-    public int[,] mapLock;
+    public RoomData[,] rooms;
     private Vector2Int[] directions = {
         new Vector2Int(0, 1),  // 0: Up
         new Vector2Int(1, 0),  // 1: Right
@@ -36,7 +55,9 @@ public class RoomManager : MonoBehaviour {
         }
     }
 
-    void Start() { GenerateDungeon(); }
+    void Start() { 
+        GenerateDungeon(); 
+    }
 
     void GenerateDungeon() {
         int totalPlanned = 1 + (mainBranchLength - 1) + (subBranchLength - 1) + twigCount;
@@ -51,14 +72,16 @@ public class RoomManager : MonoBehaviour {
         while (!generationSuccess && safetyNet < 100) {
             safetyNet++;
             mapPlan = new int[mapSize, mapSize];
-            mapLock = new int[mapSize, mapSize];
+            rooms = new RoomData[mapSize, mapSize];
             for (int x = 0; x < mapSize; x++) {
                 for (int y = 0; y < mapSize; y++) {
-                    mapLock[x, y] = 1; // 기본값: 모든 방은 잠김(1)
+                    rooms[x, y] = new RoomData();
                 }
             }
             Vector2Int startPos = new Vector2Int(mapSize / 2, mapSize / 2);
-            mapLock[startPos.x, startPos.y] = 0;
+            // 시작방(루트) 세팅
+            rooms[startPos.x, startPos.y].status = RoomData.RoomStatus.Empty;
+            rooms[startPos.x, startPos.y].shouldLockOnVisit = false;
 
             // 각 가지별 위치 저장을 위한 리스트
             List<Vector2Int> mainBranchRooms = new List<Vector2Int>();
@@ -165,7 +188,6 @@ public class RoomManager : MonoBehaviour {
         return branch;
     }
 
-    // ... (ShuffleArray, DrawMap, IsInsideMap, PlaceRoom, GetRandomRoomByMask는 기존 코드와 동일) ...
     void ShuffleArray(int[] array) {
         for (int i = array.Length - 1; i > 0; i--) {
             int j = Random.Range(0, i + 1);
@@ -187,7 +209,9 @@ public class RoomManager : MonoBehaviour {
         }
     }
 
-    bool IsInsideMap(Vector2Int pos) { return pos.x >= 0 && pos.x < mapSize && pos.y >= 0 && pos.y < mapSize; }
+    bool IsInsideMap(Vector2Int pos) { 
+        return pos.x >= 0 && pos.x < mapSize && pos.y >= 0 && pos.y < mapSize; 
+    }
 
     void PlaceRoom(int gridX, int gridY, GameObject roomPrefab) {
         Vector3 spawnPos = new Vector3(gridX * roomSize.x, gridY * roomSize.y, 0);

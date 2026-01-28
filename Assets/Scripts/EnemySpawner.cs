@@ -1,47 +1,48 @@
 using UnityEngine;
+using System.Collections; // 코루틴
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("설정")]
-    // ★ [수정] 적 하나가 아니라, 여러 종류를 넣을 수 있게 '배열([])'로 변경
-    public GameObject[] enemyPrefabs;
-
-    public float spawnInterval = 1.0f; // 소환 간격
-    public float spawnRadius = 10.0f;  // 소환 거리
+    [Header("Setting")]
+    [SerializeField] private GameObject[] enemyPrefabs;
+    [SerializeField] private float spawnInterval = 1.0f; // 스폰주기,spawnInterval <= 0 일때 스포너 작동 X
+    [SerializeField] private float spawnRadius = 10.0f; // 스폰 범위
+    [SerializeField] private int enemiesPerTick = 1;
 
     private Transform player;
-    private float timer;
 
     void Start()
     {
         GameObject p = GameObject.Find("Player");
         if (p != null) player = p.transform;
+
+        // 코루틴 시작
+        StartCoroutine(SpawnRoutine());
     }
 
-    void Update()
+    IEnumerator SpawnRoutine()
     {
-        if (player == null || !player.gameObject.activeSelf) return;
-
-        timer += Time.deltaTime;
-
-        if (timer >= spawnInterval)
+        if (spawnInterval <= 0) { yield break; }
+        // 플레이어가 존재하는 동안 무한 반복
+        while (player != null && player.gameObject.activeSelf)
         {
-            SpawnEnemy();
-            timer = 0f;
+            SpawnEnemy(enemiesPerTick);
+            // spawnInterval초 대기
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 
-    void SpawnEnemy()
+    public List<GameObject> SpawnEnemy(int cnt)
     {
-        // ★ [추가] 등록된 적들 중에서 랜덤으로 하나 뽑기
-        // 예: 0번(근접), 1번(원거리) 중 랜덤 선택
-        int randomIndex = Random.Range(0, enemyPrefabs.Length);
-        GameObject selectedEnemy = enemyPrefabs[randomIndex];
+        List<GameObject> enemyList = new List<GameObject>();
+        for (int i = 0; i < cnt; i++) {
+            int randomIndex = Random.Range(0, enemyPrefabs.Length);
+            Vector2 randomDir = Random.insideUnitCircle.normalized;
+            Vector3 spawnPos = player.position + (Vector3)randomDir * spawnRadius;
 
-        // 위치 계산 및 소환
-        Vector2 randomDir = Random.insideUnitCircle.normalized;
-        Vector3 spawnPos = player.position + (Vector3)randomDir * spawnRadius;
-
-        Instantiate(selectedEnemy, spawnPos, Quaternion.identity);
+            enemyList.Add(Instantiate(enemyPrefabs[randomIndex], spawnPos, Quaternion.identity));
+        }
+        return enemyList;
     }
 }
