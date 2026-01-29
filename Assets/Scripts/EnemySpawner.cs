@@ -39,7 +39,9 @@ public class EnemySpawner : MonoBehaviour
         for (int i = 0; i < cnt; i++) {
             int randomIndex = Random.Range(0, enemyPrefabs.Length);
             Vector2 randomDir = Random.insideUnitCircle.normalized;
-            Vector3 spawnPos = player.position + (Vector3)randomDir * spawnRadius;
+            //Vector3 spawnPos = player.position; // 캐릭터위치
+            Vector3 spawnPos = transform.position; // 스포너 위치
+            spawnPos += (Vector3)randomDir * spawnRadius;
 
             enemyList.Add(Instantiate(enemyPrefabs[randomIndex], spawnPos, Quaternion.identity));
         }
