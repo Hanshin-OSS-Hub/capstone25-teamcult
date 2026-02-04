@@ -13,19 +13,19 @@ public class WeaponData
 
 public class PlayerSlash : MonoBehaviour
 {
-    [Header(" ¹«±â ¼³Á¤")]
+    [Header(" ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public WeaponData[] weapons;
 
-    [Header("»óÅÂ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     public int currentIndex = 0;
     public float distance = 1.0f;
     private float nextAttackTime = 0f;
 
-    private PlayerStats stats; //  [Ãß°¡] ½ºÅÈ °ü¸®¼Ò ¿¬°á
+    private PlayerStats stats; //  [ï¿½ß°ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     void Start()
     {
-        stats = GetComponent<PlayerStats>(); // ³» ¸ö¿¡¼­ ½ºÅÈ °¡Á®¿À±â
+        stats = GetComponent<PlayerStats>(); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
     void Update()
@@ -42,6 +42,11 @@ public class PlayerSlash : MonoBehaviour
 
     void Attack()
     {
+        if (MusicDirector.Instance != null)
+        {
+            MusicDirector.Instance.OnPlayerAttack();
+        }
+        
         if (weapons.Length == 0 || stats == null) return;
 
         WeaponData currentWeapon = weapons[currentIndex];
@@ -56,10 +61,10 @@ public class PlayerSlash : MonoBehaviour
 
         GameObject obj = Instantiate(currentWeapon.prefab, spawnPos, rotation);
 
-        //  [ÇÙ½É º¯°æ] ÃÖÁ¾ µ¥¹ÌÁö = (¹«±âµ¥¹ÌÁö x ¹èÀ²) + Ãß°¡µ¥¹ÌÁö
+        //  [ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ = (ï¿½ï¿½ï¿½âµ¥ï¿½ï¿½ï¿½ï¿½ x ï¿½ï¿½ï¿½ï¿½) + ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         float finalDamage = (currentWeapon.damage * stats.attackMultiplier) + stats.bonusDamage;
 
-        // 1. ±ÙÁ¢ ¹«±â
+        // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         SlashDamage melee = obj.GetComponent<SlashDamage>();
         if (melee != null)
         {
@@ -67,7 +72,7 @@ public class PlayerSlash : MonoBehaviour
             melee.lifeTime = currentWeapon.lifeTime;
         }
 
-        // 2. ÃÑ¾Ë ¹«±â
+        // 2. ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½
         PlayerBullet bullet = obj.GetComponent<PlayerBullet>();
         if (bullet != null)
         {

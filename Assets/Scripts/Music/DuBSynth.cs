@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public enum MusicGenre { DnB, Chiptune, Industrial, Synthwave }
+public enum MusicGenre { DnB, Chiptune, DeepHouse, Synthwave }
 
 [RequireComponent(typeof(AudioSource))]
 public class DnBSynth : MonoBehaviour
@@ -36,11 +36,10 @@ public class DnBSynth : MonoBehaviour
     [HideInInspector] public int tensionLevel = 0; 
     [HideInInspector] public bool lowHealthMode = false;
 
+    // 내부 처리 변수
     private double sampleRate = 44100.0;
     private double nextTick = 0.0;
     private int stepIndex = 0;
-    
-    // 오디오 쓰레드 안전용 LFO 위상
     private double lfoPhase = 0.0; 
 
     private Voice kickV = new Voice();
@@ -52,9 +51,12 @@ public class DnBSynth : MonoBehaviour
     private float filterVel = 0.0f;
     private float filterPos = 0.0f;
     
-    // ★ System.Random은 오디오 쓰레드에서도 안전합니다.
     private System.Random rand = new System.Random();
+    
+    // 글리치 변수
     private float glitchIntensity = 0.0f;
+    private float attackGlitch = 0.0f;
+    private float damageGlitch = 0.0f;
 
     private int[] generatedMelody = new int[16];
     private int[] scale = { -12, -5, 0, 3, 5, 7, 10, 12, 15, 19 };
@@ -63,6 +65,7 @@ public class DnBSynth : MonoBehaviour
     private int leadWaveType = 2; 
     private float distortionAmount = 1.0f;
     private bool useSwing = false; 
+    private bool useUnison = false; 
 
     void Start()
     {
@@ -70,79 +73,57 @@ public class DnBSynth : MonoBehaviour
         if (sampleRate <= 0) sampleRate = 44100.0;
 
         SetupRandomGenre();
-        GenerateMarkovMelody(); // 시작할 때 한 번 생성
+        GenerateMarkovMelody();
 
         AudioSource source = GetComponent<AudioSource>();
-        
-        // [안전장치] 클립이 없으면 오디오 엔진이 안 도는 경우가 있음. 빈 클립 생성.
-        if (source.clip == null) {
-            source.clip = AudioClip.Create("ProceduralAudio", 1, 1, 44100, false);
-        }
-
-        source.Stop(); 
-        source.loop = true; 
-        source.Play(); 
+        if (source.clip == null) source.clip = AudioClip.Create("ProceduralAudio", 1, 1, 44100, false);
+        source.Stop(); source.loop = true; source.Play(); 
     }
 
     void SetupRandomGenre()
     {
-        // Start는 메인쓰레드라 UnityEngine.Random 써도 되지만, 통일성을 위해 rand 사용
         Array values = Enum.GetValues(typeof(MusicGenre));
         currentGenre = (MusicGenre)values.GetValue(rand.Next(values.Length));
 
         switch (currentGenre)
         {
             case MusicGenre.DnB: 
-                bpm = 170.0;
-                bassWaveType = 0; // Sine (FM)
-                leadWaveType = 2; // Square
-                distortionAmount = 1.5f;
-                useSwing = false;
+                bpm = 170.0; bassWaveType = 0; leadWaveType = 2; distortionAmount = 1.5f; 
+                useSwing = false; useUnison = true; 
                 break;
             case MusicGenre.Chiptune: 
-                bpm = 140.0;
-                bassWaveType = 2; // Square (PWM)
-                leadWaveType = 2; // Square
-                distortionAmount = 1.0f; 
-                useSwing = false;
+                bpm = 140.0; bassWaveType = 2; leadWaveType = 2; distortionAmount = 1.0f; 
+                useSwing = false; useUnison = false; 
                 cutoffFrequency = 20000f; 
                 break;
-            case MusicGenre.Industrial: 
-                bpm = 100.0;
-                bassWaveType = 1; // Saw (Fold)
-                leadWaveType = 3; // Noise (Crush)
-                distortionAmount = 4.0f; 
-                useSwing = true; 
+            case MusicGenre.DeepHouse: 
+                bpm = 124.0; bassWaveType = 0; leadWaveType = 1; distortionAmount = 1.0f; 
+                useSwing = true; useUnison = false; 
                 break;
             case MusicGenre.Synthwave: 
-                bpm = 120.0;
-                bassWaveType = 1; // Saw
-                leadWaveType = 0; // Sine
-                distortionAmount = 1.2f;
-                useSwing = false;
+                bpm = 120.0; bassWaveType = 1; leadWaveType = 0; distortionAmount = 1.2f; 
+                useSwing = false; useUnison = true; 
                 break;
         }
     }
 
     public void TriggerGlitch() { glitchIntensity = 1.0f; }
+    
+    // ★★★ [중요] 공격 시 attackGlitch를 1.0으로 설정
+    public void TriggerAttackGlitch() { attackGlitch = 1.0f; } 
+    
+    // ★★★ [중요] 피격 시 damageGlitch를 1.0으로 설정
+    public void TriggerDamageGlitch() { damageGlitch = 1.0f; } 
 
-    // ★★★ [수정됨] 오디오 쓰레드 안전 버전 ★★★
-    // UnityEngine.Random -> System.Random (rand)으로 교체
     public void GenerateMarkovMelody()
     {
         int currentNoteIndex = 2;
         for (int i = 0; i < 16; i++)
         {
             float currentDensity = density + ((i % 4 == 0) ? 0.2f : 0.0f);
-            
-            // rand.NextDouble()은 0.0 ~ 1.0 사이 값을 줍니다.
-            if (rand.NextDouble() > currentDensity) { 
-                generatedMelody[i] = -999; 
-                continue; 
-            }
+            if (rand.NextDouble() > currentDensity) { generatedMelody[i] = -999; continue; }
 
             int move = (rand.NextDouble() < chaos) ? rand.Next(-4, 5) : rand.Next(-1, 2);
-            
             if (pitchBias > 0.7f) move += 1;
             if (pitchBias < 0.3f) move -= 1;
 
@@ -158,17 +139,28 @@ public class DnBSynth : MonoBehaviour
         double samplesPerTick = sampleRate * (60.0 / bpm) / 4.0; 
         if (useSwing && stepIndex % 2 == 1) samplesPerTick *= 1.2;
 
-        float currentCutoff = Mathf.Clamp(cutoffFrequency, 50f, 20000f);
+        float targetCutoff = cutoffFrequency;
+        
+        // 피격 시 필터 닫힘 (먹먹해짐)
+        if (damageGlitch > 0.01f) { 
+            targetCutoff = 300f; 
+        }
+        float currentCutoff = Mathf.Clamp(targetCutoff, 50f, 20000f);
 
         for (int i = 0; i < data.Length; i += channels)
         {
-            // LFO 위상 증가 (Time.time 대신 사용 - 오디오 쓰레드 안전)
             lfoPhase += 1.0 / sampleRate;
-
             double pitchShift = 1.0;
-            if (glitchIntensity > 0.01f) {
+
+            // 글리치 피치 변조 (기존 유지)
+            if (glitchIntensity > 0.001f) {
                 pitchShift = 1.5 + (glitchIntensity * 1.0) + (rand.NextDouble() * 0.5);
                 glitchIntensity *= 0.9995f; 
+            }
+            
+            // 피격 시 음악 속도 느려짐 (Tape Stop 효과)
+            if (damageGlitch > 0.001f) {
+                pitchShift -= 0.3; // 0.3배 느려짐
             }
             
             nextTick += 1.0 * pitchShift;
@@ -177,8 +169,6 @@ public class DnBSynth : MonoBehaviour
                 nextTick = 0;
                 stepIndex = (stepIndex + 1) % 16;
                 ProcessSequencer(stepIndex);
-                
-                // 오디오 쓰레드 안에서 호출되므로, 반드시 안전한 함수여야 함
                 if (stepIndex == 0 && rand.NextDouble() < 0.2) GenerateMarkovMelody();
             }
 
@@ -195,12 +185,43 @@ public class DnBSynth : MonoBehaviour
             double mix = kick + snare + hihat + bass + lead;
             
             if (tensionLevel == 0 && !flameMode) mix *= 0.6;
-            
             mix = Math.Tanh(mix * distortionAmount); 
+
+            // =========================================================
+            // ★★★ [NEW] 노이즈 주입 파트 (확실한 효과음) ★★★
+            // =========================================================
+
+            // 1. 공격 (Attack) -> "치익!" 하는 날카로운 노이즈 추가
+            if (attackGlitch > 0.001f)
+            {
+                // 화이트 노이즈 생성
+                double whiteNoise = (rand.NextDouble() * 2.0 - 1.0);
+                
+                // attackGlitch 값 자체가 볼륨이 됨 (1.0 -> 0.0)
+                mix += whiteNoise * attackGlitch * 0.4f; // 음악 위에 40% 볼륨으로 얹음
+                
+                // 빠르게 사라짐 (Short Decay)
+                attackGlitch *= 0.99f; 
+            }
+
+            // 2. 피격 (Damage) -> "콰직!" 하는 깨진 노이즈 + 음악 볼륨 다운
+            if (damageGlitch > 0.001f)
+            {
+                // 비트크러쉬 노이즈 (저해상도 노이즈)
+                double brokenNoise = (rand.NextDouble() * 2.0 - 1.0);
+                brokenNoise = Math.Floor(brokenNoise * 5.0) / 5.0; // 5단계로 깎음
+
+                // 음악 볼륨을 줄이고(Ducking), 노이즈를 크게 키움
+                mix = (mix * 0.3) + (brokenNoise * damageGlitch * 0.8);
+                
+                // 천천히 사라짐 (Long Decay)
+                damageGlitch *= 0.999f; 
+            }
+            // =========================================================
+
             mix *= masterVolume;
 
-            if (currentCutoff < 20000f) 
-            {
+            if (currentCutoff < 20000f) {
                 float f = 2.0f * Mathf.Sin((float)(Math.PI * currentCutoff / sampleRate));
                 filterPos += filterVel * f;
                 filterVel += ((float)mix - filterPos - filterVel * 1.0f) * f;
@@ -212,33 +233,16 @@ public class DnBSynth : MonoBehaviour
         }
     }
 
-    // ... (ProcessSequencer는 기존과 동일하여 생략, Generator로 바로 넘어갑니다) ...
+    // --- 나머지 기존 시퀀서 및 제네레이터 코드들 (유지) ---
     void ProcessSequencer(int step)
     {
         bool kTrig = false, sTrig = false, hTrig = false;
 
-        switch (currentGenre)
-        {
-            case MusicGenre.DnB: 
-                if (step == 0 || step == 10) kTrig = true;
-                if (step == 4 || step == 12) sTrig = true;
-                if (step % 2 == 0) hTrig = true;
-                break;
-            case MusicGenre.Chiptune: 
-                if (step % 4 == 0) kTrig = true;
-                if (step % 8 == 4) sTrig = true; 
-                if (step % 2 == 0) hTrig = true;
-                break;
-            case MusicGenre.Industrial: 
-                if (step == 0 || step == 8) kTrig = true; 
-                if (step == 4 || step == 12) sTrig = true; 
-                if (step % 4 == 0) hTrig = true; 
-                break;
-            case MusicGenre.Synthwave: 
-                if (step % 4 == 0) kTrig = true; 
-                if (step == 4 || step == 12) sTrig = true;
-                if (step % 2 == 0) hTrig = true;
-                break;
+        switch (currentGenre) {
+            case MusicGenre.DnB: if (step==0 || step==10) kTrig=true; if (step==4 || step==12) sTrig=true; if (step%2==0) hTrig=true; break;
+            case MusicGenre.Chiptune: if (step%4==0) kTrig=true; if (step%8==4) sTrig=true; if (step%2==0) hTrig=true; break;
+            case MusicGenre.DeepHouse: if (step%4==0) kTrig=true; if (step%4==2) hTrig=true; if (step==4 || step==12) sTrig=true; break;
+            case MusicGenre.Synthwave: if (step%4==0) kTrig=true; if (step==4 || step==12) sTrig=true; if (step%2==0) hTrig=true; break;
         }
 
         if (flameMode && step % 4 == 0) kTrig = true;
@@ -258,74 +262,56 @@ public class DnBSynth : MonoBehaviour
         else if (flameMode) { if (step % 8 == 0) Trigger(leadV, 55.0); }
         else {
             int noteNum = generatedMelody[step];
-            if (noteNum != -999) {
-                double freq = 220.0 * Math.Pow(1.05946, noteNum);
-                Trigger(leadV, freq);
-            }
+            if (noteNum != -999) Trigger(leadV, 220.0 * Math.Pow(1.05946, noteNum));
         }
     }
 
     void Trigger(Voice v, double freq = 0) { v.active = true; v.time = 0.0; v.phase = 0.0; if(freq>0) v.freq = freq; }
 
-    // ★★★ Time.time 대신 lfoPhase 사용 (안전함) ★★★
-    double GetAdvancedWave(double phase, int type, double timbre) 
-    {
+    double GetAdvancedWave(double phase, int type, double timbre) {
+        double grit = (rand.NextDouble() * 2.0 - 1.0) * 0.05 * timbre; 
         switch(type) {
-            case 0: // Sine + FM
-                double fmAmount = timbre * 3.0; 
-                return Math.Sin(phase * 2.0 * Math.PI + Math.Sin(phase * 4.0 * Math.PI) * fmAmount);
-            case 1: // Saw + Fold
-                double rawSaw = (phase % 1.0) * 2.0 - 1.0;
-                double foldAmt = 1.0 + (timbre * 4.0); 
-                return Math.Sin(rawSaw * foldAmt); 
-            case 2: // Square + PWM
-                // Time.time 대신 lfoPhase 사용
-                double lfo = Math.Sin(lfoPhase * 2.0) * 0.4 * timbre;
-                double width = 0.5 + lfo; 
-                return (phase % 1.0) < width ? 1.0 : -1.0;
-            case 3: // Noise + Bitcrush
-                double noise = (rand.NextDouble() * 2.0 - 1.0);
-                if (timbre > 0.1) {
-                    double steps = 30.0 - (timbre * 28.0);
-                    if(steps < 1.0) steps = 1.0; // 0 나누기 방지
-                    noise = Math.Floor(noise * steps) / steps;
-                }
-                return noise;
+            case 0: return Math.Sin(phase * 2.0 * Math.PI + Math.Sin(phase * 4.0 * Math.PI) * timbre * 3.0) + grit; 
+            case 1: double rs = (phase % 1.0) * 2.0 - 1.0; return Math.Sin(rs * (1.0 + timbre * 4.0)) + grit; 
+            case 2: double width = 0.5 + Math.Sin(lfoPhase * 2.0) * 0.4 * timbre; return ((phase % 1.0) < width ? 1.0 : -1.0) + grit; 
+            case 3: double n = (rand.NextDouble() * 2.0 - 1.0); if (timbre > 0.1) { double s = Math.Max(1.0, 30.0 - timbre * 28.0); n = Math.Floor(n * s) / s; } return n; 
             default: return 0.0;
         }
     }
 
+    double GetThickWave(double phase, int type, double timbre)
+    {
+        if (useUnison) {
+            double center = GetAdvancedWave(phase, type, timbre);
+            double left = GetAdvancedWave(phase * 0.995, type, timbre); 
+            double right = GetAdvancedWave(phase * 1.005, type, timbre); 
+            return (center + left * 0.7 + right * 0.7) * 0.45; 
+        } else {
+            return GetAdvancedWave(phase, type, timbre);
+        }
+    }
+
     double GenCustomBass(double p, int type) {
-        if(!bassV.active)return 0; 
-        bassV.time+=p/sampleRate; 
-        if(bassV.time>0.6)bassV.active=false; 
-        bassV.phase+=bassV.freq*p/sampleRate; 
-        
+        if(!bassV.active)return 0; bassV.time+=p/sampleRate; if(bassV.time>0.6)bassV.active=false; bassV.phase+=bassV.freq*p/sampleRate; 
         double morph = 0.2 + (heavyMix * 0.6) + (tensionLevel * 0.2);
-        double w1 = GetAdvancedWave(bassV.phase, type, morph);
-        double w2 = GetAdvancedWave(bassV.phase * 1.01, type, morph); 
-        return (w1+w2)*0.5 * Math.Exp(-bassV.time*4.0) * bassVol; 
+        double subOsc = Math.Sin(bassV.phase * 0.5 * 2.0 * Math.PI) * 0.6; 
+        double mainOsc = GetThickWave(bassV.phase, type, morph);
+        double mainOsc2 = GetThickWave(bassV.phase * 1.01, type, morph);
+        return (mainOsc + mainOsc2 + subOsc) * 0.4 * Math.Exp(-bassV.time*4.0) * bassVol; 
     }
 
     double GenCustomLead(double p, int type) {
-        if(!leadV.active)return 0; 
-        leadV.time+=p/sampleRate; 
-        if(leadV.time>0.4)leadV.active=false; 
-        leadV.phase+=leadV.freq*p/sampleRate; 
-        
-        double vibrato = (Math.Sin(lfoPhase * 6.0) + 1.0) * 0.5; // lfoPhase 사용
-        double morph = (speedMix * vibrato) + (chaos * 0.5f);
-        if (currentGenre == MusicGenre.Chiptune) morph *= 0.5;
-
-        double w = GetAdvancedWave(leadV.phase, type, morph);
-        return w * Math.Exp(-leadV.time*8.0) * leadVol; 
+        if(!leadV.active)return 0; leadV.time+=p/sampleRate; if(leadV.time>0.4)leadV.active=false; leadV.phase+=leadV.freq*p/sampleRate; 
+        double vibrato = (Math.Sin(lfoPhase * 6.0) + 1.0) * 0.5;
+        double morph = (speedMix * vibrato) + (chaos * 0.5f); if (currentGenre == MusicGenre.Chiptune) morph *= 0.5;
+        return GetThickWave(leadV.phase, type, morph) * Math.Exp(-leadV.time*8.0) * leadVol; 
     }
 
-    double GenKick(double p) { if(!kickV.active)return 0; kickV.time+=p/sampleRate; if(kickV.time>0.3)kickV.active=false; double decay = (currentGenre == MusicGenre.Chiptune) ? 50.0 : 25.0; double f=150*Math.Exp(-kickV.time*decay); kickV.phase+=f*p/sampleRate; return Math.Tanh(Math.Sin(kickV.phase*2*Math.PI)*3)*Math.Exp(-kickV.time*8)*kickVol; }
-    double GenSnare(double p) { if(!snareV.active)return 0; snareV.time+=p/sampleRate; if(snareV.time>0.2)snareV.active=false; double t=Math.Sin(snareV.time*180*2*Math.PI*p)*Math.Exp(-snareV.time*15); if(currentGenre == MusicGenre.Chiptune) t = ((t>0)?1:-1) * 0.5; double n=(rand.NextDouble()*2-1)*Math.Exp(-snareV.time*25); return (t*0.4+n*0.6)*snareVol; }
+    double GenKick(double p) { if(!kickV.active)return 0; kickV.time+=p/sampleRate; if(kickV.time>0.3)kickV.active=false; double decay=(currentGenre==MusicGenre.Chiptune)?50.0:25.0; kickV.phase+=150*Math.Exp(-kickV.time*decay)*p/sampleRate; return Math.Tanh(Math.Sin(kickV.phase*2*Math.PI)*3)*Math.Exp(-kickV.time*8)*kickVol; }
+    double GenSnare(double p) { if(!snareV.active)return 0; snareV.time+=p/sampleRate; if(snareV.time>0.2)snareV.active=false; double t=Math.Sin(snareV.time*180*2*Math.PI*p)*Math.Exp(-snareV.time*15); if(currentGenre==MusicGenre.Chiptune)t=((t>0)?1:-1)*0.5; double n=(rand.NextDouble()*2-1)*Math.Exp(-snareV.time*25); return (t*0.4+n*0.6)*snareVol; }
     double GenHihat(double p) { if(!hihatV.active)return 0; hihatV.time+=p/sampleRate; if(hihatV.time>0.05)hihatV.active=false; return (rand.NextDouble()*2-1)*Math.Exp(-hihatV.time*60)*hihatVol; }
-    double GenCinematicBrass(double p) { if(!leadV.active)return 0; leadV.time+=p/sampleRate; if(leadV.time>1.5)leadV.active=false; leadV.phase+=leadV.freq*p/sampleRate; double s1=(leadV.phase%1.0)*2-1; double s2=((leadV.phase*1.01)%1.0)*2-1; double s3=((leadV.phase*0.99)%1.0)*2-1; double raw=(s1+s2+s3)*0.33; double env=Math.Min(1,leadV.time*5)*Math.Exp(-(leadV.time-0.2)*2); return Math.Tanh(raw*4)*env*leadVol; }
-    double GenAlarm(double p) { if(!leadV.active)return 0; leadV.time+=p/sampleRate; if(leadV.time>0.15)leadV.active=false; double pm=1-(leadV.time*2); leadV.phase+=(leadV.freq*(1+pm*0.1)*p)/sampleRate; return ((leadV.phase%1.0)<0.5?1:-1)*0.6; }
+    double GenCinematicBrass(double p) { if(!leadV.active)return 0; leadV.time+=p/sampleRate; if(leadV.time>1.5)leadV.active=false; leadV.phase+=leadV.freq*p/sampleRate; double raw=((leadV.phase%1.0)*2-1 + ((leadV.phase*1.01)%1.0)*2-1)*0.5; return Math.Tanh(raw*4)*Math.Min(1,leadV.time*5)*Math.Exp(-(leadV.time-0.2)*2)*leadVol; }
+    double GenAlarm(double p) { if(!leadV.active)return 0; leadV.time+=p/sampleRate; if(leadV.time>0.15)leadV.active=false; leadV.phase+=(leadV.freq*(1+(1-leadV.time*2)*0.1)*p)/sampleRate; return ((leadV.phase%1.0)<0.5?1:-1)*0.6; }
 
     class Voice { public bool active; public double time; public double phase; public double freq; }
 }
