@@ -17163,6 +17163,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1492389192194012746, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: screenEffectImage
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3797411090668824417, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: 'hearts.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3797411090668824417, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: 'hearts.Array.data[1]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3797411090668824417, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: 'hearts.Array.data[2]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6349534013542928686, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
       propertyPath: m_Name
       value: Player
