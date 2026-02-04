@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Text; // 로그 문자열 조립용
 
 [System.Serializable]
+public class RewardWeight {
+    public GameObject rewardPrefab;
+    public float weight; // 등장 가중치
+}
+
+[System.Serializable]
 public class RoomData {
     public enum RoomStatus { Empty, Locked, Cleared }
 
@@ -11,7 +17,7 @@ public class RoomData {
     public bool shouldLockOnVisit = true; // 첫 방문 시 잠글지 여부
 
     public int monsterCount = 1; // 스폰할 몬스터 수
-    public string rewardItemName = "None"; 
+    public List<GameObject> rewardPrefabs = new List<GameObject>();
 
     //// 미사용 방 클리어 조건 체크 (예: 몬스터가 0마리인가?)
     //public bool CheckClearCondition() {
@@ -42,6 +48,9 @@ public class RoomManager : MonoBehaviour {
         new Vector2Int(0, -1), // 2: Down
         new Vector2Int(-1, 0)  // 3: Left
     };
+
+    [Header("Reward Settings")]
+    [SerializeField] private List<RewardWeight> allRewards = new List<RewardWeight>();
 
     // --- (Awake, Start 등 기존 메서드 동일) ---
     void Awake() {
@@ -155,6 +164,18 @@ public class RoomManager : MonoBehaviour {
             Debug.Log(sb.ToString());
             
         }
+
+        PreparePrefixWeights();
+        for (int x = 0; x < mapSize; x++) {
+            for (int y = 0; y < mapSize; y++) {
+                // 방이 존재하는 위치인지 확인 (mapPlan 활용)
+                if (mapPlan[x, y] > 0) {
+                    if (x == mapSize / 2 && y == mapSize / 2) continue; // 시작 방은 제외
+                    AssignRandomRewards(rooms[x, y]);
+                }
+            }
+        }
+
         DrawMap();
     }
 
@@ -221,5 +242,68 @@ public class RoomManager : MonoBehaviour {
     GameObject GetRandomRoomByMask(int mask) {
         if (roomByDoors[mask].Count > 0) return roomByDoors[mask][Random.Range(0, roomByDoors[mask].Count)];
         return null;
+    }
+
+    public int GetDoorMask(int x, int y) {
+        if (x < 0 || x >= mapSize || y < 0 || y >= mapSize) return 0;
+        return mapPlan[x, y];
+    }
+
+    private List<float> prefixWeights = new List<float>();
+    private float totalWeightSum = 0;
+
+    void PreparePrefixWeights() {
+        prefixWeights.Clear();
+        totalWeightSum = 0;
+        foreach (var rw in allRewards) {
+            totalWeightSum += rw.weight;
+            prefixWeights.Add(totalWeightSum);
+        }
+    }
+
+    /// <summary>
+    /// 특정 방에 보상을 랜덤하게 할당합니다.
+    /// </summary>
+    void AssignRandomRewards(RoomData room) {
+        if (allRewards == null || allRewards.Count == 0) return;
+        // 보상 평균 개수 결정
+        float goal = 1.5f; // 
+        // N은 goal의 3배로 하되, 정수형으로 올림. 최소 3번은 던지도록 설정.
+        int N = Mathf.Max(3, Mathf.CeilToInt(goal * 3));
+        // 개별 시도의 성공 확률
+        float p = goal / N;
+        int rewardCount = 0;
+        for (int i = 0; i < N; i++) {
+            if (Random.value <= p) {
+                rewardCount++;
+            }
+        }
+
+        // 보상이 0개로 결정되면 종료
+        if (rewardCount == 0) return;
+
+
+        //  결정된 개수만큼 가중치 랜덤 보상 선택 (이분 탐색) ---
+        for (int i = 0; i < rewardCount; i++) {
+            float randomValue = Random.Range(0, totalWeightSum);
+
+            // 이분 탐색 시작
+            int low = 0;
+            int high = prefixWeights.Count - 1;
+            int selectedIndex = high;
+
+            while (low <= high) {
+                int mid = (low + high) / 2;
+                if (prefixWeights[mid] >= randomValue) {
+                    selectedIndex = mid; // 후보로 저장하고 더 작은 쪽을 탐색
+                    high = mid - 1;
+                }
+                else {
+                    low = mid + 1;
+                }
+            }
+
+            room.rewardPrefabs.Add(allRewards[selectedIndex].rewardPrefab);
+        }
     }
 }

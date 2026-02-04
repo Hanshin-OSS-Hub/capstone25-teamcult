@@ -9,6 +9,8 @@ public class MoveMapBounds : MonoBehaviour {
     private RoomManager roomManager; 
     private BoxCollider2D areaCollider; // 방 내부 콜라이더
     private GameObject wallObject; // 벽
+    private GameObject[] wallParts = new GameObject[4]; // 벽 상(0), 우(1), 하(2), 좌(3) 순서로 저장될 배열
+    private int ActiveWalls = 0;
     private List<GameObject> currentRoomEnemies = new List<GameObject>(); // 현재 방에서 소환된 적들을 추적하는 리스트
     private EnemySpawner enemySpawner;
 
@@ -17,6 +19,16 @@ public class MoveMapBounds : MonoBehaviour {
         // transform.position = new Vector3(10, -10, transform.position.z);
         areaCollider = transform.Find("Area")?.GetComponent<BoxCollider2D>();
         wallObject = transform.Find("Wall")?.gameObject;
+
+        if (wallObject != null) {
+            int[] childNames = { 0, 1, 2, 3 };
+            for (int i = 0; i < 4; i++) {
+                Transform child = wallObject.transform.Find(childNames[i].ToString());
+                if (child != null) {
+                    wallParts[i] = child.gameObject;
+                }
+            }
+        }
         roomManager = Object.FindAnyObjectByType<RoomManager>();
         enemySpawner = Object.FindAnyObjectByType<EnemySpawner>();
 
@@ -94,13 +106,14 @@ public class MoveMapBounds : MonoBehaviour {
         return areaBounds.Contains(playerTarget.position);
     }
 
-private void HandleWallLock() {
+    private void HandleWallLock() {
         if (wallObject == null || roomManager.rooms == null) return;
 
         int x = currentRoomIndex.x;
         int y = currentRoomIndex.y;
 
-        if (x < 0 || x >= roomManager.rooms.GetLength(0) || y < 0 || y >= roomManager.rooms.GetLength(1)) return;
+        // 인덱스 범위 체크
+        if (x < 0 || x >= roomManager.MapSize || y < 0 || y >= roomManager.MapSize) return;
 
         RoomData currentRoom = roomManager.rooms[x, y];
         bool isInside = IsPlayerCompletelyInside();
@@ -114,18 +127,23 @@ private void HandleWallLock() {
             }
         }
 
-        // 2. 잠긴 상태에서 클리어 체크
+        // 2. 상태별 벽 제어
         if (currentRoom.status == RoomData.RoomStatus.Locked) {
-            if (!wallObject.activeSelf) wallObject.SetActive(true);
+            /* [핵심 로직]
+               roomManager.mapPlan[x, y]는 '문이 있는 방향'입니다.
+               잠겼을 때는 '문이 있는 곳만 벽으로' 막아야 합니다.
+               따라서 mapPlan의 비트 정보 그대로 SetWalls에 전달합니다.
+            */
+            int doorMask = roomManager.GetDoorMask(x, y);
+            SetWalls(doorMask);
 
-            // 미사용 조건 변경: 데이터상의 숫자와 실제 리스트가 모두 비었을 때 클리어
-            //if (currentRoom.CheckClearCondition() && currentRoomEnemies.Count == 0) {
             if (currentRoomEnemies.Count == 0) {
                 UnlockAndReward(currentRoom);
             }
         }
         else {
-            if (wallObject.activeSelf) wallObject.SetActive(false);
+            // 평소(Cleared 또는 Empty)에는 모든 벽을 내립니다.
+            SetWalls(0);
         }
     }
 
@@ -157,13 +175,70 @@ private void HandleWallLock() {
 
     private void UnlockAndReward(RoomData room) {
         room.status = RoomData.RoomStatus.Cleared;
-        Debug.Log($"<color=cyan>방 클리어!</color> 보상: {room.rewardItemName}");
-        // TODO: 보상 상자 생성 로직
+        SetWalls(0); // 모든 벽 비활성화
+
+        if (room.rewardPrefabs != null && room.rewardPrefabs.Count > 0) {
+            foreach (GameObject prefab in room.rewardPrefabs) {
+                if (prefab == null) continue;
+
+                // 방 중앙(transform.position)에 생성
+                // 여러 개일 경우를 대비해 랜덤한 오프셋을 줄 수도 있습니다.
+                Vector3 spawnOffset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0);
+                Instantiate(prefab, transform.position + spawnOffset, Quaternion.identity);
+
+                Debug.Log($"<color=cyan>보상 생성됨:</color> {prefab.name}");
+            }
+        }
     }
 
     private void PrintRoomInfo() {
         if (roomManager.rooms == null) return;
         var room = roomManager.rooms[currentRoomIndex.x, currentRoomIndex.y];
         Debug.Log($"방 이동: [{currentRoomIndex.x}, {currentRoomIndex.y}] 상태: {room.status}, 남은몹: {room.monsterCount}");
+    }
+
+    /// <summary>
+    /// 모든 벽의 상태를 매개변수로 받은 mask 값과 동일하게 설정합니다.
+    /// </summary>
+    /// <param name="mask">설정하고자 하는 벽 상태 (0~15)</param>
+    public void SetWalls(int mask) {
+        if (wallObject == null) { return; }
+        if (mask == ActiveWalls) { return; }
+        for (int i = 0; i < 4; i++) {
+            if (wallParts[i] == null) { continue; }
+
+            bool shouldBeActive = (mask & (1 << i)) != 0;
+            bool isCurrentlyActive = (ActiveWalls & (1 << i)) != 0;
+
+            // 현재 상태와 목표 상태가 다를 때만 실행
+            if (shouldBeActive != isCurrentlyActive) {
+                wallParts[i].SetActive(shouldBeActive);
+            }
+        }
+
+        // 최종 상태 업데이트
+        ActiveWalls = mask;
+
+        // 부모 오브젝트 관리 (최적화)
+        if (ActiveWalls == 0) wallObject.SetActive(false);
+        else wallObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// 입력된 mask에 해당하는 벽들을 추가로 활성화합니다.
+    /// </summary>
+    public void SetWallsActive(int mask = 15) {
+        // 기존 상태에 새로운 비트를 추가 (OR 연산)
+        int nextState = ActiveWalls | mask;
+        SetWalls(nextState);
+    }
+
+    /// <summary>
+    /// 입력된 mask에 해당하는 벽들을 비활성화합니다.
+    /// </summary>
+    public void SetWallsInactive(int mask = 15) {
+        // 기존 상태에서 해당 비트만 제거 (NOT 연산 후 AND)
+        int nextState = ActiveWalls & ~mask;
+        SetWalls(nextState);
     }
 }

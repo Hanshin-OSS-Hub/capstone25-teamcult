@@ -181,6 +181,11 @@ MonoBehaviour:
   mainBranchLength: 6
   subBranchLength: 5
   twigCount: 4
+  allRewards:
+  - rewardPrefab: {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
+    weight: 1.5
+  - rewardPrefab: {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
+    weight: 1
 --- !u!4 &116460504
 Transform:
   m_ObjectHideFlags: 0
@@ -16362,14 +16367,6 @@ PrefabInstance:
       propertyPath: playerTarget
       value: 
       objectReference: {fileID: 621932869}
-    - target: {fileID: 6136906711721724468, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6136906711721724468, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
