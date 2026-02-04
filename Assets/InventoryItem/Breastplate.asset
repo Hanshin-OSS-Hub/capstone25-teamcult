@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
   m_Name: Breastplate
   m_EditorClassIdentifier: 
-  itemName: Breastplate
-  icon: {fileID: 4752369627228079557, guid: 32096d4076990de469e452986ee4ef7e, type: 3}
+  itemName: Bodyaromor
+  icon: {fileID: -3166199798605743746, guid: d4a96f930ef36034584e52e773f28a8c, type: 3}
   itemType: 2
