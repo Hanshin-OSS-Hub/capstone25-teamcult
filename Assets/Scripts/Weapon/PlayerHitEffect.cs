@@ -4,8 +4,8 @@ using System.Collections;
 public class PlayerHitEffect : MonoBehaviour
 {
     [Header("Settings")]
-    public int flashCount = 3;         // ¸î ¹ø ±ôºýÀÏÁö
-    public float flashInterval = 0.1f; // ±ôºýÀÌ´Â ¼Óµµ
+    public int flashCount = 3;         // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public float flashInterval = 0.1f; // ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½Óµï¿½
 
     private SpriteRenderer spriteRenderer;
 
@@ -16,10 +16,16 @@ public class PlayerHitEffect : MonoBehaviour
 
     public void TakeDamage()
     {
-        // ½ºÇÁ¶óÀÌÆ® ·»´õ·¯°¡ ¾ø°Å³ª ÀÌ¹Ì ±ôºýÀÌ´Â ÁßÀÌ¸é ½ÇÇà ¾È ÇÔ
+        if (MusicDirector.Instance != null)
+        {
+            MusicDirector.Instance.OnPlayerDamaged();
+        }
+        
+        
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Å³ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
         if (spriteRenderer == null) return;
 
-        // ÄÚ·çÆ¾(±ôºýÀÓ ·ÎÁ÷) ½ÃÀÛ
+        // ï¿½Ú·ï¿½Æ¾(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½
         StartCoroutine(FlashRoutine());
     }
 
@@ -27,16 +33,16 @@ public class PlayerHitEffect : MonoBehaviour
     {
         for (int i = 0; i < flashCount; i++)
         {
-            // 1. ²ô°í (Åõ¸í)
+            // 1. ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
             spriteRenderer.enabled = false;
             yield return new WaitForSeconds(flashInterval);
 
-            // 2. ÄÑ°í (¿ø»óº¹±¸)
+            // 2. ï¿½Ñ°ï¿½ (ï¿½ï¿½ï¿½óº¹±ï¿½)
             spriteRenderer.enabled = true;
             yield return new WaitForSeconds(flashInterval);
         }
 
-        // ³¡³ª¸é È®½ÇÇÏ°Ô ÄÑµÎ±â
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ÑµÎ±ï¿½
         spriteRenderer.enabled = true;
     }
 }

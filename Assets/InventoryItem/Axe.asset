@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
-  m_Name: Breastplate
+  m_Name: Axe
   m_EditorClassIdentifier: 
-  itemName: Bodyaromor
-  icon: {fileID: -3166199798605743746, guid: d4a96f930ef36034584e52e773f28a8c, type: 3}
-  itemType: 2
+  itemName: AXE
+  icon: {fileID: 7451049502576452310, guid: 84d74c27eb79ebc4f9e21210d947fc8e, type: 3}
+  itemType: 1

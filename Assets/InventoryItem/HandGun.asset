@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
-  m_Name: Breastplate
+  m_Name: HandGun
   m_EditorClassIdentifier: 
-  itemName: Bodyaromor
-  icon: {fileID: -3166199798605743746, guid: d4a96f930ef36034584e52e773f28a8c, type: 3}
-  itemType: 2
+  itemName: HG
+  icon: {fileID: -963157203481525993, guid: e8b62ca0bbe890e41bd9ef1c2dcb28ec, type: 3}
+  itemType: 1
