@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
   m_Name: Sabaton
   m_EditorClassIdentifier: 
-  itemName: Sabaton
-  icon: {fileID: -1440751728789228180, guid: be3a58ebe8f2d6a479a0eae969917358, type: 3}
+  itemName: MilitaryBoots
+  icon: {fileID: -2549174934128436885, guid: 8938d8d2e36aeb0498376d92b1922659, type: 3}
   itemType: 3
