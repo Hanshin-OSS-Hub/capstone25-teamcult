@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
-  m_Name: Knife
+  m_Name: Axe
   m_EditorClassIdentifier: 
-  itemName: Knife
-  icon: {fileID: 6764707825347140516, guid: e2f51bb1bba4d7a45aadc05e0ed2146d, type: 3}
+  itemName: AXE
+  icon: {fileID: 7451049502576452310, guid: 84d74c27eb79ebc4f9e21210d947fc8e, type: 3}
   itemType: 1

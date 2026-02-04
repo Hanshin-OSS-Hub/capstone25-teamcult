@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
-  m_Name: Knife
+  m_Name: HandGun
   m_EditorClassIdentifier: 
-  itemName: Knife
-  icon: {fileID: 6764707825347140516, guid: e2f51bb1bba4d7a45aadc05e0ed2146d, type: 3}
+  itemName: HG
+  icon: {fileID: -963157203481525993, guid: e8b62ca0bbe890e41bd9ef1c2dcb28ec, type: 3}
   itemType: 1
