@@ -129,11 +129,6 @@ public class MoveMapBounds : MonoBehaviour {
 
         // 2. 상태별 벽 제어
         if (currentRoom.status == RoomData.RoomStatus.Locked) {
-            /* [핵심 로직]
-               roomManager.mapPlan[x, y]는 '문이 있는 방향'입니다.
-               잠겼을 때는 '문이 있는 곳만 벽으로' 막아야 합니다.
-               따라서 mapPlan의 비트 정보 그대로 SetWalls에 전달합니다.
-            */
             int doorMask = roomManager.GetDoorMask(x, y);
             SetWalls(doorMask);
 
