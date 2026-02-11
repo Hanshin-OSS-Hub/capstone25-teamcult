@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c08a6a096611f425fbbd4d6644e15d86, type: 3}
+  m_Name: Phonk_Set
+  m_EditorClassIdentifier: 
+  themeName: 
+  drums:
+  - {fileID: 8300000, guid: ab792bc329e7645b4a5c2af05fb5ace3, type: 3}
+  - {fileID: 8300000, guid: 84f8dd968731243d08be532e37dd3545, type: 3}
+  - {fileID: 8300000, guid: 4881dddf92e134965b4ed5d863435674, type: 3}
+  - {fileID: 0}
+  basses:
+  - {fileID: 8300000, guid: 96153e986c16d450399967a87441ea69, type: 3}
+  - {fileID: 8300000, guid: 00b4a5dceae684fa3a547fd8a7662d0c, type: 3}
+  - {fileID: 8300000, guid: fcfeda7b3f50447d893e530cea6c2fdd, type: 3}
+  - {fileID: 0}
+  leads:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  backgroundFX: {fileID: 0}
+  attackFX: {fileID: 0}
