@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Helmet
   m_EditorClassIdentifier: 
   itemName: Helmet
+  itemDesc: It's very old
   icon: {fileID: 309628545801974608, guid: d5be4592130124841921b253640ba653, type: 3}
+  equipSprite: {fileID: 0}
   itemType: 0
