@@ -5,6 +5,7 @@ public class MoveMapBounds : MonoBehaviour {
     [SerializeField] private Transform playerTarget;
     [SerializeField] private int gridSize = 20;
     [SerializeField] private Vector2Int currentRoomIndex = new Vector2Int(0, 0);
+    public Vector2Int CurrentRoomIndex => currentRoomIndex;
 
     private RoomManager roomManager; 
     private BoxCollider2D areaCollider; // 방 내부 콜라이더

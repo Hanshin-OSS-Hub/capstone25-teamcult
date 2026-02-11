@@ -267,7 +267,7 @@ public class RoomManager : MonoBehaviour {
     void AssignRandomRewards(RoomData room) {
         if (allRewards == null || allRewards.Count == 0) return;
         // 보상 평균 개수 결정
-        float goal = 1.5f; // 
+        float goal = 0.5f; // 
         // N은 goal의 3배로 하되, 정수형으로 올림. 최소 3번은 던지도록 설정.
         int N = Mathf.Max(3, Mathf.CeilToInt(goal * 3));
         // 개별 시도의 성공 확률
