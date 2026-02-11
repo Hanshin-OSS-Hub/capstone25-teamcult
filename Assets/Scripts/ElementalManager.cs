@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Tilemaps;
 using System.Collections;
 
 public class ElementalManager : MonoBehaviour
@@ -8,37 +9,54 @@ public class ElementalManager : MonoBehaviour
     public PlayerHealth playerHealth;
     public Image screenEffectImage;
 
-    [Header("Screen Effect Settings")]
-    public Material screenMaterial;
+    [Header("Fire Settings")]
+    public Sprite[] fireHeartSprites;
 
-    // Internal variables
+    [Header("Ice Settings")]
+    public Sprite[] iceHeartSprites;
+
+    [Header("General Settings")]
+    public Sprite defaultHeartSprite;
+    public float animSpeed = 10f;
+
+    private Tilemap[] allMaps;
     private float savedHealth;
     private bool isAbilityActive = false;
-    private string currentType = "";
+    private Material screenMat;
 
     void Start()
     {
-        // Initialize screen effect material
+        // 1. Setup Screen Effect Material
         if (screenEffectImage != null)
         {
-            screenEffectImage.material = new Material(screenMaterial);
-            screenEffectImage.material.SetColor("_Color", new Color(0, 0, 0, 0));
-            screenEffectImage.raycastTarget = false;
+            screenEffectImage.gameObject.SetActive(false);
+            if (screenEffectImage.material != null)
+            {
+                // Create a material instance to prevent modifying the asset
+                screenMat = new Material(screenEffectImage.material);
+                screenEffectImage.material = screenMat;
+            }
         }
+
+        // 2. Auto-assign default sprite if missing
+        if (defaultHeartSprite == null && playerHealth != null && playerHealth.hearts.Length > 0)
+        {
+            if (playerHealth.hearts[0] != null)
+                defaultHeartSprite = playerHealth.hearts[0].sprite;
+        }
+
+        allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
     }
 
     void Update()
     {
-        // Deactivate ability if player loses 1 Full Heart (2 HP)
+        // Deactivate if health drops by 2 or more
         if (isAbilityActive)
         {
-            if (playerHealth.currentHealth <= savedHealth - 2.0f)
-            {
-                DeactivateAbility();
-            }
+            if (playerHealth.currentHealth <= savedHealth - 2.0f) DeactivateAbility();
         }
 
-        // Test Input Keys
+        // Input Handling
         if (Input.GetKeyDown(KeyCode.Alpha4)) ActivateAbility("Fire");
         if (Input.GetKeyDown(KeyCode.Alpha5)) ActivateAbility("Ice");
         if (Input.GetKeyDown(KeyCode.Alpha6)) ActivateAbility("Poison");
@@ -48,9 +66,11 @@ public class ElementalManager : MonoBehaviour
     {
         if (playerHealth == null) return;
 
+        allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         isAbilityActive = true;
-        currentType = type;
         savedHealth = playerHealth.currentHealth;
+
+        if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(true);
 
         StopAllCoroutines();
         StartCoroutine(AbilityLoop(type));
@@ -59,16 +79,11 @@ public class ElementalManager : MonoBehaviour
     public void DeactivateAbility()
     {
         if (!isAbilityActive) return;
-
-        Debug.Log("Ability Deactivated!");
         isAbilityActive = false;
-        currentType = "";
 
-        // Reset Screen Effect
-        if (screenEffectImage != null)
-            screenEffectImage.material.SetColor("_Color", new Color(0, 0, 0, 0));
+        if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(false);
 
-        // Reset Heart UI
+        // Reset Hearts
         if (playerHealth.hearts != null)
         {
             foreach (var img in playerHealth.hearts)
@@ -77,88 +92,205 @@ public class ElementalManager : MonoBehaviour
                 {
                     img.color = Color.white;
                     img.transform.localScale = Vector3.one;
+                    if (defaultHeartSprite != null) img.sprite = defaultHeartSprite;
                 }
             }
+        }
+
+        // Reset Map Color
+        if (allMaps != null)
+        {
+            foreach (var map in allMaps)
+                if (map != null) map.color = Color.white;
         }
     }
 
     IEnumerator AbilityLoop(string type)
     {
-        Material mat = screenEffectImage.material;
+        // ------------------------------------------------
+        // 1. Setup Target Values
+        // ------------------------------------------------
+        // 화면 하단 높이 설정 (0.9f)
+        float targetRadius = 0.9f;
 
-        // Poison Colors (Green Only)
-        Color brightGreen = new Color(0.2f, 1f, 0.2f);
-        Color darkGreen = new Color(0.1f, 0.4f, 0.1f);
+        Color targetCore = Color.white;
+        Color targetEdge = Color.white;
+        Vector2 scrollSpeed = Vector2.zero;
+        float targetSoftness = 0.3f;
 
+        if (type == "Fire")
+        {
+            // ★ [핵심 수정] 요청하신 밝고 쨍한 황금빛 주황색 적용
+            // Core: 노란색에 가까운 아주 밝은 금색 (RGB 값을 높임)
+            targetCore = new Color(1.0f, 0.9f, 0.4f, 0.85f);
+            // Edge: 선명하고 채도 높은 밝은 주황색
+            targetEdge = new Color(1.0f, 0.6f, 0.1f, 0.85f);
+
+            scrollSpeed = new Vector2(0.1f, 1.5f);
+            targetSoftness = 0.5f;
+        }
+        else if (type == "Ice")
+        {
+            // Ice: Soft Cyan/Blue
+            targetCore = new Color(0.6f, 0.9f, 1.0f, 0.6f);
+            targetEdge = new Color(0.0f, 0.4f, 1.0f, 0.6f);
+            scrollSpeed = new Vector2(0.02f, 0.05f);
+            targetSoftness = 0.4f;
+        }
+        else if (type == "Poison")
+        {
+            // Poison: Soft Green
+            targetCore = new Color(0.7f, 1.0f, 0.7f, 0.6f);
+            targetEdge = new Color(0.1f, 0.6f, 0.1f, 0.6f);
+            scrollSpeed = new Vector2(0.08f, 0.7f);
+            targetSoftness = 0.6f;
+        }
+
+        // Apply Initial Shader Settings
+        if (screenMat != null)
+        {
+            screenMat.SetVector("_ScrollSpeed", scrollSpeed);
+            screenMat.SetFloat("_Softness", targetSoftness);
+            screenMat.SetColor("_CoreColor", targetCore);
+            screenMat.SetColor("_EdgeColor", targetEdge);
+
+            // Intro Logic
+            if (type == "Fire")
+            {
+                screenMat.SetFloat("_Radius", targetRadius);
+                screenMat.SetFloat("_Progress", 0f);
+            }
+            else
+            {
+                screenMat.SetFloat("_Radius", 1.5f);
+                screenMat.SetFloat("_Progress", 1.0f);
+            }
+        }
+
+        // ------------------------------------------------
+        // 2. Intro Animation Loop
+        // ------------------------------------------------
+        float duration = 0.7f;
+        float timer = 0f;
+        float currentScale = 1.0f;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float progress = Mathf.Clamp01(timer / duration);
+
+            if (screenMat != null)
+            {
+                screenMat.SetColor("_CoreColor", targetCore);
+                screenMat.SetColor("_EdgeColor", targetEdge);
+
+                if (type == "Fire")
+                {
+                    screenMat.SetFloat("_Progress", progress);
+                }
+                else
+                {
+                    float currentRadius = Mathf.Lerp(1.5f, targetRadius, progress);
+                    screenMat.SetFloat("_Radius", currentRadius);
+                }
+            }
+
+            float targetHeartScale = (type == "Fire") ? 1.8f : (type == "Ice" ? 1.2f : 1.0f);
+            currentScale = Mathf.Lerp(1.0f, targetHeartScale, progress);
+
+            UpdateHeartVisuals(type, Time.time, currentScale);
+
+            yield return null;
+        }
+
+        // Finalize Intro
+        if (screenMat != null)
+        {
+            screenMat.SetFloat("_Progress", 1.0f);
+            screenMat.SetFloat("_Radius", targetRadius);
+        }
+
+        // ------------------------------------------------
+        // 3. Main Loop
+        // ------------------------------------------------
         while (isAbilityActive)
         {
             float t = Time.time;
 
-            for (int i = 0; i < playerHealth.hearts.Length; i++)
+            if (screenMat != null)
             {
-                Image img = playerHealth.hearts[i];
-                if (img == null || img.fillAmount <= 0) continue;
-
-                float offset = i * 0.3f;
-
-                if (type == "Fire")
-                {
-                    // Fire: Fast Flicker & Jitter
-                    // 1. Color: Rapidly switch between Red, Orange, Yellow
-                    float colorNoise = Mathf.PerlinNoise(t * 25f + offset, 0f);
-                    if (colorNoise < 0.4f) img.color = Color.red;
-                    else if (colorNoise < 0.7f) img.color = new Color(1f, 0.5f, 0f);
-                    else img.color = Color.yellow;
-
-                    // 2. Motion: Jitter upwards
-                    float jitterX = Mathf.PerlinNoise(t * 30f + offset, 10f) * 0.15f;
-                    float jitterY = Mathf.PerlinNoise(t * 30f + offset, 50f) * 0.35f;
-                    img.transform.localScale = new Vector3(1.0f + jitterX, 1.0f + Mathf.Abs(jitterY), 1f);
-
-                    // Screen Effect: Fast
-                    mat.SetColor("_Color", new Color(1f, 0.2f, 0f, 0.3f));
-                    mat.SetFloat("_DistortStrength", 0.02f);
-                    mat.SetFloat("_Speed", 3.0f);
-                }
-                else if (type == "Ice")
-                {
-                    // Ice: Synchronized Slow Breathing
-                    // 1. Color: Cyan <-> Blue
-                    img.color = Color.Lerp(Color.cyan, Color.blue, Mathf.PingPong(t * 2f, 1f));
-
-                    // 2. Motion: Slow Sine Wave
-                    float breathe = 1.0f + Mathf.Sin(t * 2f) * 0.1f;
-                    img.transform.localScale = new Vector3(breathe, breathe, 1f);
-
-                    // Screen Effect: Slow
-                    mat.SetColor("_Color", new Color(0f, 1f, 1f, 0.3f));
-                    mat.SetFloat("_DistortStrength", 0.002f);
-                    mat.SetFloat("_Speed", 0.5f);
-                }
-                else if (type == "Poison")
-                {
-                    // Poison: Slow, Viscous, Throbbing
-
-                    // 1. Color: Very slow transition (Dark Green <-> Bright Green)
-                    img.color = Color.Lerp(darkGreen, brightGreen, Mathf.PingPong((t * 1.0f) + offset, 1f));
-
-                    // 2. Motion: Slow swelling (like an infection)
-                    // Lower noise frequency for slower changes
-                    float spasmNoise = Mathf.PerlinNoise((t * 2.0f) + offset, 10f);
-
-                    // Trigger swelling only when noise is high
-                    float targetScale = (spasmNoise > 0.6f) ? 1.2f : 1.0f;
-
-                    // Smoothly interpolate scale (Viscous feel)
-                    img.transform.localScale = Vector3.Lerp(img.transform.localScale, new Vector3(targetScale, targetScale, 1f), Time.deltaTime * 2f);
-
-                    // Screen Effect: Slow and dizzy
-                    mat.SetColor("_Color", new Color(0.2f, 1f, 0.2f, 0.2f));
-                    mat.SetFloat("_DistortStrength", 0.015f);
-                    mat.SetFloat("_Speed", 0.5f);
-                }
+                screenMat.SetColor("_CoreColor", targetCore);
+                screenMat.SetColor("_EdgeColor", targetEdge);
+                screenMat.SetFloat("_Progress", 1.0f);
+                screenMat.SetFloat("_Radius", targetRadius);
             }
+
+            // Map Color Logic
+            Color targetMapColor = Color.white;
+            if (type == "Fire") targetMapColor = Color.Lerp(new Color(1f, 0.96f, 0.96f), new Color(1f, 0.99f, 0.97f), Mathf.PerlinNoise(t * 2.0f, 0f));
+            else if (type == "Ice") targetMapColor = new Color(0.9f, 0.95f, 1.0f);
+            else if (type == "Poison") targetMapColor = Color.Lerp(new Color(0.97f, 1f, 0.97f), new Color(0.99f, 1f, 0.99f), (Mathf.Sin(t * 2f) + 1f) * 0.5f);
+
+            if (allMaps != null) { foreach (var map in allMaps) if (map != null) map.color = targetMapColor; }
+
+            float finalTargetScale = (type == "Fire") ? 1.8f : (type == "Ice" ? 1.2f : 1.0f);
+            currentScale = Mathf.Lerp(currentScale, finalTargetScale, Time.deltaTime * 5f);
+
+            UpdateHeartVisuals(type, t, currentScale);
+
             yield return null;
+        }
+    }
+
+    void UpdateHeartVisuals(string type, float time, float scale)
+    {
+        int fireIndex = 0;
+        int iceIndex = 0;
+
+        if (fireHeartSprites != null && fireHeartSprites.Length > 0)
+            fireIndex = (int)(time * animSpeed) % fireHeartSprites.Length;
+
+        if (iceHeartSprites != null && iceHeartSprites.Length > 0)
+            iceIndex = (int)(time * animSpeed) % iceHeartSprites.Length;
+
+        for (int i = 0; i < playerHealth.hearts.Length; i++)
+        {
+            Image img = playerHealth.hearts[i];
+            if (img == null || img.fillAmount <= 0) continue;
+            float offset = i * 0.3f;
+
+            if (type == "Fire")
+            {
+                if (fireHeartSprites != null && fireHeartSprites.Length > 0)
+                    img.sprite = fireHeartSprites[fireIndex];
+
+                float jitter = Mathf.PerlinNoise(time * 10f + offset, 0f);
+                img.transform.localScale = Vector3.one * (scale + jitter * 0.2f);
+                img.color = Color.white;
+            }
+            else if (type == "Ice")
+            {
+                if (iceHeartSprites != null && iceHeartSprites.Length > 0)
+                {
+                    img.sprite = iceHeartSprites[iceIndex];
+                    img.color = Color.white;
+                }
+                else
+                {
+                    if (defaultHeartSprite != null) img.sprite = defaultHeartSprite;
+                    img.color = new Color(0.5f, 0.8f, 1.0f);
+                }
+
+                float breathe = Mathf.Sin(time * 2f + offset) * 0.05f;
+                img.transform.localScale = Vector3.one * (scale + breathe);
+            }
+            else if (type == "Poison")
+            {
+                if (defaultHeartSprite != null) img.sprite = defaultHeartSprite;
+                float spasm = Mathf.PerlinNoise(time * 3f + offset, 0f);
+                img.transform.localScale = Vector3.one * (scale + spasm * 0.2f);
+                img.color = Color.Lerp(Color.white, new Color(0.7f, 1f, 0.7f), spasm);
+            }
         }
     }
 }

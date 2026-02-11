@@ -201,8 +201,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -2094805801
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -549,4 +549,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 3797411090668824417}
   screenEffectImage: {fileID: 0}
-  screenMaterial: {fileID: 2100000, guid: 843f193ce20986948bf2d75502898c4e, type: 2}
+  fireHeartSprites:
+  - {fileID: 8076867352368644889, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
+  - {fileID: 5113472034530473930, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
+  - {fileID: 6671131799231141830, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
+  - {fileID: 9149849721653418289, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
+  iceHeartSprites:
+  - {fileID: 7634824774245119595, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
+  - {fileID: -691107167454221571, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
+  - {fileID: -1018982239767624507, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
+  - {fileID: -3683002996967730991, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
+  defaultHeartSprite: {fileID: 0}
+  animSpeed: 8
