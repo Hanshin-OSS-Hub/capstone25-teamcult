@@ -181,6 +181,7 @@ MonoBehaviour:
   mainBranchLength: 6
   subBranchLength: 5
   twigCount: 4
+  allRewards: []
 --- !u!4 &116460504
 Transform:
   m_ObjectHideFlags: 0
@@ -10241,7 +10242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &772011604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10269,7 +10270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac184891b1e374cf19b07e1787b38c3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGenre: 2
+  currentGenre: 1
   bpm: 120
   masterVolume: 0.5
   cutoffFrequency: 20000
@@ -10400,6 +10401,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &904227747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 904227750}
+  - component: {fileID: 904227751}
+  m_Layer: 0
+  m_Name: BGM_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &904227750
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904227747}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.1483374, y: -0.5105951, z: -0.014572202}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &904227751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904227747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e22639ce9614245909fcd080e9a5e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drumSamples:
+  - {fileID: 8300000, guid: 84f8dd968731243d08be532e37dd3545, type: 3}
+  - {fileID: 8300000, guid: ab792bc329e7645b4a5c2af05fb5ace3, type: 3}
+  - {fileID: 8300000, guid: 84f8dd968731243d08be532e37dd3545, type: 3}
+  bassSamples:
+  - {fileID: 8300000, guid: 96153e986c16d450399967a87441ea69, type: 3}
+  - {fileID: 8300000, guid: fcfeda7b3f50447d893e530cea6c2fdd, type: 3}
+  - {fileID: 8300000, guid: 00b4a5dceae684fa3a547fd8a7662d0c, type: 3}
+  leadSamples:
+  - {fileID: 8300000, guid: cb07e7da24bc94ec784a32ea39346c36, type: 3}
+  - {fileID: 8300000, guid: 8227084d4220e4b62998fbcdc03b8a81, type: 3}
+  - {fileID: 8300000, guid: d32be9313865645e88775ec0f825422f, type: 3}
+  - {fileID: 8300000, guid: d2bb2fc8170fb4666b326e64a0a7d010, type: 3}
+  - {fileID: 8300000, guid: af78989a29ad14c3687cebbd17a6dbaf, type: 3}
+  ambientSamples:
+  - {fileID: 8300000, guid: 5acd011991d564e66bd98a6fb3460139, type: 3}
+  - {fileID: 8300000, guid: 4f914729795374b868a2ac649fa3db41, type: 3}
+  fxSamples:
+  - {fileID: 8300000, guid: 176d3564d788247eb9070f817ad86258, type: 3}
+  - {fileID: 8300000, guid: 3017cf478d8da498982b14dc2d1ae09b, type: 3}
+  - {fileID: 8300000, guid: 6750980a7aee34891ab693facae8171f, type: 3}
+  masterVolume: 0.8
+  bpm: 130
+  playOnStart: 1
+  useVariation: 1
 --- !u!4 &1055627611 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8981466137728101447, guid: 62eb18c068a597845b22d6c82bd0bff8, type: 3}
@@ -18286,3 +18356,4 @@ SceneRoots:
   - {fileID: 1203546179}
   - {fileID: 2064022389}
   - {fileID: 772011607}
+  - {fileID: 904227750}
