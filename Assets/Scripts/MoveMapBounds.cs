@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class MoveMapBounds : MonoBehaviour {
     [SerializeField] private Transform playerTarget;
@@ -14,6 +16,15 @@ public class MoveMapBounds : MonoBehaviour {
     private int ActiveWalls = 0;
     private List<GameObject> currentRoomEnemies = new List<GameObject>(); // 현재 방에서 소환된 적들을 추적하는 리스트
     private EnemySpawner enemySpawner;
+
+    private GameObject[] visualWalls = new GameObject[4]; // 애니메이션용 복제본
+    private TilemapCollider2D[] realColliders = new TilemapCollider2D[4]; // 원본의 콜라이더
+
+    [Header("Wall Animation Settings")]
+    [SerializeField] private float animationDuration = 0.5f;
+    [SerializeField] private float wallUpYOffset = 2.0f;
+    private Coroutine[] wallCoroutines = new Coroutine[4];
+
 
     void Start() {
         // transform.position 초기화는 실제 시작 방의 월드 좌표와 맞춰야 함
@@ -30,6 +41,7 @@ public class MoveMapBounds : MonoBehaviour {
                 }
             }
         }
+        SetupWallSeparation();
         roomManager = Object.FindAnyObjectByType<RoomManager>();
         enemySpawner = Object.FindAnyObjectByType<EnemySpawner>();
 
@@ -193,31 +205,111 @@ public class MoveMapBounds : MonoBehaviour {
         Debug.Log($"방 이동: [{currentRoomIndex.x}, {currentRoomIndex.y}] 상태: {room.status}, 남은몹: {room.monsterCount}");
     }
 
+
+    //private int ActiveWalls = 0;
     /// <summary>
     /// 모든 벽의 상태를 매개변수로 받은 mask 값과 동일하게 설정합니다.
     /// </summary>
     /// <param name="mask">설정하고자 하는 벽 상태 (0~15)</param>
-    public void SetWalls(int mask) {
-        if (wallObject == null) { return; }
-        if (mask == ActiveWalls) { return; }
+    private void SetupWallSeparation() {
+        if (wallObject == null) return;
+
         for (int i = 0; i < 4; i++) {
-            if (wallParts[i] == null) { continue; }
+            if (wallParts[i] == null) continue;
+
+            // --- 1. 원본 설정 (물리 전용) ---
+            realColliders[i] = wallParts[i].GetComponent<TilemapCollider2D>();
+            TilemapRenderer tr = wallParts[i].GetComponent<TilemapRenderer>();
+            if (tr != null) tr.enabled = false; // 물리 벽은 안 보이게 함
+
+            if (realColliders[i] != null) {
+                realColliders[i].enabled = false;
+            }
+
+            // --- 2. 시각적 복제본 생성 ---
+            // Instantiate 할 때 부모만 지정하지 말고, 위치/회전값도 원본과 맞춥니다.
+            visualWalls[i] = Instantiate(wallParts[i], wallParts[i].transform.position, wallParts[i].transform.rotation, wallParts[i].transform.parent);
+            visualWalls[i].name = wallParts[i].name + "_Visual";
+
+            // 복제본의 콜라이더 제거
+            TilemapCollider2D duplicateCol = visualWalls[i].GetComponent<TilemapCollider2D>();
+            if (duplicateCol != null) Destroy(duplicateCol);
+
+            // 복제본의 렌더러는 켜기 (원본이 꺼져있으므로 명시적으로 켬)
+            TilemapRenderer visualRenderer = visualWalls[i].GetComponent<TilemapRenderer>();
+            if (visualRenderer != null) visualRenderer.enabled = true;
+
+            Tilemap visualTilemap = visualWalls[i].GetComponent<Tilemap>();
+            if (visualTilemap != null) {
+                Color vc = visualTilemap.color;
+                vc.a = 0f;
+                visualTilemap.color = vc;
+            }
+
+            // 초기 위치 설정: 원본의 '상대적' 위치에서 Y축 오프셋만 줌
+            // Vector3.zero가 아니라 원본의 localPosition이 기준이 되어야 합니다.
+            Vector3 originLocalPos = wallParts[i].transform.localPosition;
+            visualWalls[i].transform.localPosition = originLocalPos + new Vector3(0, wallUpYOffset, 0);
+            visualWalls[i].SetActive(false);
+        }
+    }
+
+    public void SetWalls(int mask) {
+        if (wallObject == null) return;
+
+        for (int i = 0; i < 4; i++) {
+            if (visualWalls[i] == null) continue;
 
             bool shouldBeActive = (mask & (1 << i)) != 0;
             bool isCurrentlyActive = (ActiveWalls & (1 << i)) != 0;
 
-            // 현재 상태와 목표 상태가 다를 때만 실행
             if (shouldBeActive != isCurrentlyActive) {
-                wallParts[i].SetActive(shouldBeActive);
+                if (wallCoroutines[i] != null) StopCoroutine(wallCoroutines[i]);
+                wallCoroutines[i] = StartCoroutine(AnimateWallSequence(i, shouldBeActive));
             }
         }
-
-        // 최종 상태 업데이트
         ActiveWalls = mask;
+        wallObject.SetActive(true);
+    }
 
-        // 부모 오브젝트 관리 (최적화)
-        if (ActiveWalls == 0) wallObject.SetActive(false);
-        else wallObject.SetActive(true);
+    private IEnumerator AnimateWallSequence(int index, bool show) {
+        GameObject vWall = visualWalls[index];
+        Tilemap vTilemap = vWall.GetComponent<Tilemap>();
+        TilemapCollider2D rCol = realColliders[index];
+
+        // 기준이 되는 로컬 위치 (원본 벽의 위치)
+        Vector3 baseLocalPos = wallParts[index].transform.localPosition;
+
+        if (show) {
+            vWall.SetActive(true);
+            if (rCol != null) rCol.enabled = true;
+        }
+
+        Vector3 startPos = show ? baseLocalPos + new Vector3(0, wallUpYOffset, 0) : baseLocalPos;
+        Vector3 targetPos = show ? baseLocalPos : baseLocalPos + new Vector3(0, wallUpYOffset, 0);
+
+        // ... (이후 Lerp 로직은 동일) ...
+        float elapsed = 0f;
+        while (elapsed < animationDuration) {
+            elapsed += Time.deltaTime;
+            float percent = Mathf.Clamp01(elapsed / animationDuration);
+            float curve = Mathf.SmoothStep(0, 1, percent);
+
+            vWall.transform.localPosition = Vector3.Lerp(startPos, targetPos, curve);
+            if (vTilemap != null) {
+                Color c = vTilemap.color;
+                c.a = Mathf.Lerp(show ? 0f : 1f, show ? 1f : 0f, curve);
+                vTilemap.color = c;
+            }
+            yield return null;
+        }
+
+        vWall.transform.localPosition = targetPos;
+        if (!show) {
+            if (rCol != null) rCol.enabled = false;
+            vWall.SetActive(false);
+        }
+        wallCoroutines[index] = null;
     }
 
     /// <summary>
