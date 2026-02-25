@@ -10417,7 +10417,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &904227750
 Transform:
   m_ObjectHideFlags: 0
@@ -10470,6 +10470,73 @@ MonoBehaviour:
   bpm: 130
   playOnStart: 1
   useVariation: 1
+--- !u!1 &925109592
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 925109594}
+  - component: {fileID: 925109595}
+  - component: {fileID: 925109593}
+  m_Layer: 0
+  m_Name: BattleStateBGM
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &925109593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925109592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15811d0e0653d4bf4beeeca1e312eb7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalTracks:
+  - {fileID: 8300000, guid: 39af4154b07ca4b6791dcb437c6f9378, type: 3}
+  combatTracks:
+  - {fileID: 8300000, guid: ed6a763cf0ce24b7bafc19f8d8853e2d, type: 3}
+  - {fileID: 8300000, guid: a1f39c917a1814f15905c120102ac38e, type: 3}
+  bossTracks:
+  - {fileID: 8300000, guid: 274fc1d206c2340d58b52597e8c5000e, type: 3}
+  currentState: 0
+--- !u!4 &925109594
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925109592}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.896112, y: -10.2948065, z: 0.045033064}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &925109595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925109592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb56668e0d5641d68b7e6568a3bbdc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 621932869}
+  detectionRadius: 50
 --- !u!4 &1055627611 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8981466137728101447, guid: 62eb18c068a597845b22d6c82bd0bff8, type: 3}
@@ -17362,6 +17429,52 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &2012600730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2012600732}
+  - component: {fileID: 2012600731}
+  m_Layer: 0
+  m_Name: BattleMusicSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2012600731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012600730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb56668e0d5641d68b7e6568a3bbdc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 621932869}
+  detectionRadius: 50
+--- !u!4 &2012600732
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012600730}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.896112, y: -10.2948065, z: 0.045033064}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2064022389
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18357,3 +18470,5 @@ SceneRoots:
   - {fileID: 2064022389}
   - {fileID: 772011607}
   - {fileID: 904227750}
+  - {fileID: 925109594}
+  - {fileID: 2012600732}
