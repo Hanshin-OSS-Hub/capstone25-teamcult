@@ -95,7 +95,17 @@ public class TabController : MonoBehaviour
             default: return weaponSlotUI;
         }
     }
-
+    public Item GetEquippedItem(Item.ItemType type)
+    {
+        switch (type)
+        {
+            case Item.ItemType.Head: return equippedHead;
+            case Item.ItemType.Weapon: return equippedWeapon;
+            case Item.ItemType.Armor: return equippedArmor;
+            case Item.ItemType.Shoes: return equippedShoes;
+            default: return null; // 장비가 아니면 null 반환
+        }
+    }
     // --- 장착 로직 (인벤토리 클릭 시 호출) ---
     public void EquipItem(Item item, ItemSlot fromSlot)
     {
@@ -116,18 +126,29 @@ public class TabController : MonoBehaviour
 
     private void UpdateSlot(ref Item equippedItem, Item newItem, Image slotImage)
     {
-        // 이미 장착 중이면 인벤토리로 되돌림
-        if (equippedItem != null) AddItem(equippedItem);
+        // 1. 이미 장착 중인 장비가 있다면? -> 기존 장비 스탯 빼기 & 인벤토리로 되돌리기
+        if (equippedItem != null)
+        {
+            PlayerStats.instance.UnequipStat(equippedItem); // [추가] 스탯 감소
+            AddItem(equippedItem);
+        }
 
+        // 2. 새 장비 장착 데이터 저장
         equippedItem = newItem;
 
+        // 3. 새 장비 장착 -> 스탯 더하기
+        if (newItem != null)
+        {
+            PlayerStats.instance.EquipStat(newItem); // [추가] 스탯 증가
+        }
+
+        // ... (아래 UI 이미지 변경 관련 코드는 기존 그대로 유지) ...
         if (slotImage != null)
         {
             slotImage.sprite = newItem.icon;
             slotImage.enabled = true;
             slotImage.color = Color.white;
 
-            // 장착 슬롯 스크립트가 있다면 데이터 동기화
             EquipSlot eSlot = slotImage.GetComponent<EquipSlot>();
             if (eSlot != null) eSlot.SetItem(newItem);
         }
@@ -137,6 +158,9 @@ public class TabController : MonoBehaviour
     public void UnequipItem(Item item)
     {
         if (item == null) return;
+
+        // 1. 장비를 벗었으니 스탯부터 뺍니다.
+        PlayerStats.instance.UnequipStat(item); // [추가] 스탯 감소
 
         switch (item.itemType)
         {

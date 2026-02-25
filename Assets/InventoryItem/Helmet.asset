@@ -17,3 +17,6 @@ MonoBehaviour:
   icon: {fileID: 309628545801974608, guid: d5be4592130124841921b253640ba653, type: 3}
   equipSprite: {fileID: 0}
   itemType: 0
+  bonusAttack: 0
+  bonusDefense: 5
+  bonusHealth: 5
