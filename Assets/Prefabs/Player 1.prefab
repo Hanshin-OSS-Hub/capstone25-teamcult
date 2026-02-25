@@ -550,14 +550,16 @@ MonoBehaviour:
   playerHealth: {fileID: 3797411090668824417}
   screenEffectImage: {fileID: 0}
   fireHeartSprites:
-  - {fileID: 8076867352368644889, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
-  - {fileID: 5113472034530473930, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
-  - {fileID: 6671131799231141830, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
-  - {fileID: 9149849721653418289, guid: 739e3c96fe757f64b94773bbc76518e2, type: 3}
+  - {fileID: 9113706974405658193, guid: 830f5a3e640a81d4db8f12e452e0bcfb, type: 3}
   iceHeartSprites:
-  - {fileID: 7634824774245119595, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
-  - {fileID: -691107167454221571, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
-  - {fileID: -1018982239767624507, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
-  - {fileID: -3683002996967730991, guid: 05776ad58a5198e4fb5c568ed6dbe740, type: 3}
+  - {fileID: -2182896496336433635, guid: bc36ac77f1881444a9317ad2b88fe4b2, type: 3}
+  poisonHeartSprites:
+  - {fileID: 8715928149708088612, guid: f9004b48a2f604843b75d74f9cf78f50, type: 3}
+  lightningHeartSprites:
+  - {fileID: -3995917078818217826, guid: 79141cc8d7efe84478131a41729e176f, type: 3}
+  holyHeartSprites:
+  - {fileID: -8791134024306484864, guid: adfb404e2ca8c444d8c03338ada0313e, type: 3}
+  grassHeartSprites:
+  - {fileID: -4619863767890207598, guid: e9fc3ba0be93dfa4997e5cb44950770d, type: 3}
   defaultHeartSprite: {fileID: 0}
   animSpeed: 8
