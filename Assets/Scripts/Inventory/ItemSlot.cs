@@ -40,7 +40,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (item != null) // 아이템이 있을 때만 툴팁 표시
         {
-            TooltipController.instance.ShowTooltip(item);
+            TooltipController.instance.ShowTooltip(item, true);
         }
     }
 
