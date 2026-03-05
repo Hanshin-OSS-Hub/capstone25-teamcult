@@ -2,21 +2,33 @@ using UnityEngine;
 
 public class SlashDamage : MonoBehaviour
 {
-    // 값은 PlayerSlash에서 넣어주므로 여기 숫자는 의미 없습니다.
-    public int damage;
-    public float lifeTime;
+    [HideInInspector] public int damage;
+    [HideInInspector] public float lifeTime;
 
     void Start()
     {
-        Destroy(gameObject, lifeTime); // 받아온 수명대로 삭제
+        // PlayerSlash에서 전달받은 수명(lifeTime)이 지나면 검기 자동 삭제
+        if (lifeTime > 0)
+        {
+            Destroy(gameObject, lifeTime);
+        }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    // ?? 충돌을 감지하는 핵심 함수 (적과 상자를 모두 때립니다!)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Enemy"))
+        // 1. 몬스터(Enemy)를 때렸을 때
+        EnemyHealth enemy = collision.GetComponent<EnemyHealth>();
+        if (enemy != null)
         {
-            EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-            if (enemy != null) enemy.TakeDamage(damage);
+            enemy.TakeDamage(damage);
+        }
+
+        // 2. 기믹(나무상자 등)을 때렸을 때
+        BreakableObject box = collision.GetComponent<BreakableObject>();
+        if (box != null)
+        {
+            box.TakeDamage(damage);
         }
     }
 }

@@ -537,6 +537,7 @@ MonoBehaviour:
   nameText: {fileID: 6706323762206736202}
   hpSlider: {fileID: 5426590261145882454}
   hpText: {fileID: 7723665171618840921}
+  damageTextPrefab: {fileID: 376637129419277497, guid: 374c147d92cdadc479519e42a56e0795, type: 3}
 --- !u!114 &5026637328627402883
 MonoBehaviour:
   m_ObjectHideFlags: 0

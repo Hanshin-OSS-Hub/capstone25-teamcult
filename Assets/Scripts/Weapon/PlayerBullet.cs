@@ -38,7 +38,7 @@ public class PlayerBullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // 적에 닿았을 때
+        // 1. 적에 닿았을 때
         if (other.CompareTag("Enemy"))
         {
             EnemyHealth enemy = other.GetComponent<EnemyHealth>();
@@ -51,7 +51,16 @@ public class PlayerBullet : MonoBehaviour
             // 적을 맞췄으니 총알 삭제
             Destroy(gameObject);
         }
-        // 벽에 닿았을 때
+        // ?? 2. [새로 추가됨] 기믹(나무통/상자)에 닿았을 때
+        else if (other.GetComponent<BreakableObject>() != null)
+        {
+            BreakableObject box = other.GetComponent<BreakableObject>();
+            box.TakeDamage((int)damage); // 상자 체력 깎기
+
+            // 상자를 맞췄으니 총알 삭제
+            Destroy(gameObject);
+        }
+        // 3. 벽에 닿았을 때
         else if (other.CompareTag("Wall"))
         {
             Destroy(gameObject);
