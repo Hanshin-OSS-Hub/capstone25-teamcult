@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class TabController : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class TabController : MonoBehaviour
     [Header("UI 패널 연결")]
     public GameObject mainPanel;
     public GameObject equipPanel;
+
+    [Header("재화 UI 연결")]
+    public TextMeshProUGUI goldText; 
 
     [Header("탭별 컨텐츠(Scroll View의 Content) 연결")]
     public GameObject weaponContent;
@@ -42,6 +46,16 @@ public class TabController : MonoBehaviour
 
         if (mainPanel != null) mainPanel.SetActive(false);
         ShowWeaponTab();
+    }
+
+
+    public void UpdateGoldUI(int currentGold)
+    {
+        if (goldText != null)
+        {
+            // {0:N0} 은 1000단위마다 쉼표(,)를 찍어주는 예쁜 포맷입니다. (예: 1,500 G)
+            goldText.text = $"{currentGold:N0} G";
+        }
     }
 
     private void InitInventory()

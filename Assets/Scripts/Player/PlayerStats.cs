@@ -14,6 +14,10 @@ public class PlayerStats : MonoBehaviour
     public int baseAttack = 10;
     public int baseDefense = 5;
     public int maxHealth = 100;
+
+    [Header("재화 정보")]
+    public int currentGold = 0;
+
     [Header("스탯 UI 창 전체 패널")]
     public GameObject statPanel;
     [Header("장비 보너스 스탯")]
@@ -36,12 +40,30 @@ public class PlayerStats : MonoBehaviour
     {
         // [추가 3] 게임 시작 시 현재 스탯으로 UI 갱신
         UpdateStatUI();
+        if (TabController.instance != null)
+        {
+            TabController.instance.UpdateGoldUI(currentGold);
+        }
         // [추가 2] 게임이 시작될 때 스탯창이 화면을 가리지 않게 일단 꺼둡니다.
         if (statPanel != null)
         {
             statPanel.SetActive(false);
         }
     }
+
+    public void AddGold(int amount)
+    {
+        currentGold += amount;
+        Debug.Log($"골드 획득! +{amount} (현재: {currentGold})");
+
+        // 골드를 얻었으니 화면의 숫자도 바꿔달라고 요청합니다.
+        if (TabController.instance != null)
+        {
+            TabController.instance.UpdateGoldUI(currentGold);
+        }
+    }
+
+
 
     // --- 최종 스탯 계산 함수 ---
     public int GetTotalAttack() => baseAttack + bonusAttack;

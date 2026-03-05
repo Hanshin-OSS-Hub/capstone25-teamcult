@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 89ee6bc439acc834f953b725e6aa3b05
+guid: d5bab4a0e282d284e9b5f6abeffecf00
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8515642957288914643
-    second: walk_front_0
-  - first:
-      213: -9024853835906218830
-    second: walk_front_1
-  - first:
-      213: 3889365407831068392
-    second: walk_front_2
+      213: -6301429047446442448
+    second: gold_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -57,9 +51,9 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 0
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -81,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -106,67 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: walk_front_0
+      name: gold_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 274
+        y: 246
+        width: 490
+        height: 526
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3de334fd624ad2670800000000000000
-      internalID: 8515642957288914643
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: walk_front_1
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2b40df0804741c280800000000000000
-      internalID: -9024853835906218830
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: walk_front_2
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ee867f4b3dc9f530800000000000000
-      internalID: 3889365407831068392
+      spriteID: 03e60a1faa3dc88a0800000000000000
+      internalID: -6301429047446442448
       vertices: []
       indices: 
       edges: []
@@ -175,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4cdfe1eb8b14b59429ceb7dbcff046af
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -185,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      walk_front_0: 8515642957288914643
-      walk_front_1: -9024853835906218830
-      walk_front_2: 3889365407831068392
+      gold_0: -6301429047446442448
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

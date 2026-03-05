@@ -58,6 +58,16 @@ public class GameManager : MonoBehaviour
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
 
+        if (PlayerStats.instance != null)
+        {
+            PlayerStats.instance.currentGold = 0;
+
+            if (TabController.instance != null)
+            {
+                TabController.instance.UpdateGoldUI(0);
+            }
+        }
+
         Debug.Log($"게임 오버! 생존시간: {gameTime:F1}초, 처치 수: {killCount}");
     }
 
