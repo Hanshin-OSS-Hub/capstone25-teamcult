@@ -47,7 +47,7 @@ public class Spike : MonoBehaviour
         if (trapRenderer != null) trapRenderer.enabled = true;
 
         // 필요하다면 여기서 애니메이션이나 소리 재생 가능
-        Debug.Log("함정 ON: 공격 가능 상태");
+        //Debug.Log("함정 ON: 공격 가능 상태");
     }
 
     // 함정 비활성화 (가시가 들어감)
@@ -55,6 +55,6 @@ public class Spike : MonoBehaviour
         if (trapCollider != null) trapCollider.enabled = false;
         if (trapRenderer != null) trapRenderer.enabled = false;
 
-        Debug.Log("함정 OFF: 안전한 상태");
+        //Debug.Log("함정 OFF: 안전한 상태");
     }
 }

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_HeatFinal
-  m_Shader: {fileID: 4800000, guid: 0cb756d158d924a478bbe6335fe8b040, type: 3}
+  m_Name: RippleCode_Mat
+  m_Shader: {fileID: 4800000, guid: 263d40d15d5753e48bc9ec4256721215, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,21 +23,33 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: 0a9443de46559094cac0177593ca780b, type: 3}
-        m_Scale: {x: 3, y: 3}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Aberration: 0.2
     - _DistortionStrength: 0
-    - _Speed: 2.72
-    - _VignetteSize: 0.45
+    - _EnableExternalAlpha: 0
+    - _WaveDensity: 40
+    - _WaveSpeed: 15
+    - _WaveWidth: 0.5
+    - _ZWrite: 0
     m_Colors:
-    - _WaveCenter: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WaveCenter: {r: 0.6655264, g: -0.02412951, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

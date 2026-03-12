@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_HeatFinal
-  m_Shader: {fileID: 4800000, guid: 0cb756d158d924a478bbe6335fe8b040, type: 3}
+  m_Name: Ripple_Mat
+  m_Shader: {fileID: -6465566751694194690, guid: d3eb108fa79d8f645a0b9f1dfff4750f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,20 +23,21 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _MainTex:
+    - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: 0a9443de46559094cac0177593ca780b, type: 3}
-        m_Scale: {x: 3, y: 3}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Aberration: 0.2
     - _DistortionStrength: 0
-    - _Speed: 2.72
-    - _VignetteSize: 0.45
     m_Colors:
     - _WaveCenter: {r: 0.5, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
