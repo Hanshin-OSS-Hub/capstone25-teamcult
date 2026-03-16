@@ -9,37 +9,31 @@ public class EnemyHealth : MonoBehaviour
     private EnemyStats stats;
 
     [Header("보상 설정")]
-    public int expReward = 10; // 적 처치 시 주는 경험치
+    public int expReward = 10;
 
-    [Header("UI 연결")]
+    [Header("UI 설정")]
     public TMP_Text nameText;
     public Slider hpSlider;
     public TMP_Text hpText;
 
     [Header("이펙트 효과")]
-    public GameObject damageTextPrefab; // 데미지 텍스트 프리팹
+    public GameObject damageTextPrefab;
 
     void Start()
     {
         stats = GetComponent<EnemyStats>();
 
-        // 체력 및 이름 초기화
         if (stats != null)
         {
             currentHealth = stats.maxHealth;
             if (nameText != null) nameText.text = stats.enemyName;
-
-            // 만약 EnemyStats에 경험치 수치가 따로 있다면 그걸로 덮어씌웁니다.
-            // expReward = stats.exp; 
         }
         else
         {
-            // 스탯 스크립트가 없을 때의 기본값
             currentHealth = 30;
             if (nameText != null) nameText.text = "Unknown";
         }
 
-        // HP 슬라이더 세팅
         if (hpSlider != null)
         {
             hpSlider.maxValue = currentHealth;
@@ -51,57 +45,35 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        // 1. 방어력을 적용한 최종 데미지 계산
         int defenseVal = (stats != null) ? stats.defense : 0;
         float reduction = 100f / (100f + defenseVal);
         int finalDamage = Mathf.RoundToInt(damage * reduction);
-        if (finalDamage < 1) finalDamage = 1; // 최소 데미지는 1
+        if (finalDamage < 1) finalDamage = 1;
 
-        // 2. 체력 깎기 및 UI 업데이트
         currentHealth -= finalDamage;
         UpdateUI();
 
-        // ?? 3. 데미지 텍스트 팝업 띄우기 (체력바 위로 위치 수정됨!)
         if (damageTextPrefab != null)
         {
             Vector3 spawnPos;
-
-            // 체력바(hpSlider)가 연결되어 있다면, 체력바 위치를 기준으로 잡습니다!
             if (hpSlider != null)
-            {
-                // 체력바 위치보다 살짝 위쪽(Y축으로 0.5f)에 생성
                 spawnPos = hpSlider.transform.position + new Vector3(0, 0.5f, 0);
-            }
             else
-            {
-                // 만약 체력바가 없는 적이라면 기본 몸통에서 좀 더 높이 띄웁니다.
                 spawnPos = transform.position + new Vector3(0, 1.5f, 0);
-            }
 
-            // 데미지 텍스트 생성
             GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
-
-            // 생성된 텍스트에 방금 입은 데미지 숫자 전달
             DamageText dmgTextScript = textObj.GetComponent<DamageText>();
             if (dmgTextScript != null)
-            {
                 dmgTextScript.Setup(finalDamage);
-            }
         }
 
-        // 4. 체력이 0 이하가 되면 사망 처리
         if (currentHealth <= 0)
-        {
             Die();
-        }
     }
 
     void UpdateUI()
     {
-        // 슬라이더 바 업데이트
         if (hpSlider != null) hpSlider.value = currentHealth;
-
-        // 텍스트(예: 30 / 100) 업데이트
         if (hpText != null)
         {
             int max = (stats != null) ? stats.maxHealth : (int)hpSlider.maxValue;
@@ -111,24 +83,47 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        // 1. 매니저의 킬 카운트 증가 (오파츠 시스템 등에서 사용)
+        // 1. 킬 카운트
         if (GameManager.instance != null)
-        {
             GameManager.instance.killCount++;
-        }
 
-        // 2. 플레이어에게 경험치 지급
+        // 2. 플레이어 찾기
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
+
+            // 3. 경험치 획득 (배율 적용)
             if (expScript != null)
             {
-                expScript.GetExp(expReward);
+                float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
+                int finalExp = Mathf.RoundToInt(expReward * multiplier);
+                expScript.GetExp(finalExp);
+            }
+
+            if (playerStats != null)
+            {
+                // 4. 적 처치 시 이동속도 영구 중첩
+                if (playerStats.killMoveSpeedStack > 0)
+                {
+                    playerStats.moveSpeed += playerStats.killMoveSpeedStack;
+                    Debug.Log($"[이동속도 중첩] +{playerStats.killMoveSpeedStack} (현재: {playerStats.moveSpeed})");
+                }
+
+                // 5. 적 처치 시 골드 확률 획득
+                if (playerStats.killGoldChance > 0)
+                {
+                    float roll = Random.Range(0f, 100f);
+                    if (roll < playerStats.killGoldChance)
+                    {
+                        playerStats.AddGold(playerStats.killGoldAmount);
+                        Debug.Log($"[골드 획득] +{playerStats.killGoldAmount}");
+                    }
+                }
             }
         }
 
-        // 3. 적 오브젝트 파괴
         Destroy(gameObject);
     }
 }

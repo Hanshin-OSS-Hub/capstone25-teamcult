@@ -13,32 +13,28 @@ public class PlayerHealth : MonoBehaviour
     public Sprite redHeartSprite;
 
     [Header("Flicker Settings (On Hit)")]
-    public SpriteRenderer playerSprite; // Drag player sprite here if auto-find fails
-    public float flickerDuration = 1.0f; // How long it flickers
-    public float flickerInterval = 0.1f; // How fast it blinks
+    public SpriteRenderer playerSprite;
+    public float flickerDuration = 1.0f;
+    public float flickerInterval = 0.1f;
 
-    // Internal Variables
     private Coroutine flickerCoroutine;
+    private bool isInvincible = false;
+
+    // 광전사 모드 상태
+    private bool isBerserker = false;
+    private PlayerStats stats;
 
     void Start()
     {
-        // 1. Auto-find SpriteRenderer if not assigned
+        stats = GetComponent<PlayerStats>();
+
         if (playerSprite == null)
         {
             playerSprite = GetComponent<SpriteRenderer>();
-            // If the script is on a parent object, try finding it in children
             if (playerSprite == null)
-            {
                 playerSprite = GetComponentInChildren<SpriteRenderer>();
-            }
-
-            if (playerSprite == null)
-            {
-                Debug.LogError("PlayerHealth: Could not find SpriteRenderer! Flickering won't work.");
-            }
         }
 
-        // 2. Auto-find Heart UI
         if (hearts == null || hearts.Length == 0)
         {
             GameObject container = GameObject.Find("HeartContainer");
@@ -46,7 +42,6 @@ public class PlayerHealth : MonoBehaviour
                 hearts = container.GetComponentsInChildren<Image>();
         }
 
-        // 3. Initialize Health
         if (hearts != null && hearts.Length > 0)
             maxHealth = hearts.Length * 2;
         else
@@ -58,46 +53,88 @@ public class PlayerHealth : MonoBehaviour
 
     void Update()
     {
-        // Test Key 7: Take Damage
         if (Input.GetKeyDown(KeyCode.Alpha7)) TakeDamage(1);
+
+        // 광전사 모드 체크
+        CheckBerserker();
+    }
+
+    void CheckBerserker()
+    {
+        if (stats == null || !stats.berserkerMode) return;
+
+        // 체력 1칸 (2 이하) 남으면 광전사 발동
+        if (currentHealth <= 2f && !isBerserker)
+        {
+            isBerserker = true;
+            stats.bonusAttackPercent += 30f;
+            stats.bonusAttackSpeed += 50f;
+            Debug.Log("[광전사] 발동! 공격력 +30%, 공격속도 +50%");
+        }
+        else if (currentHealth > 2f && isBerserker)
+        {
+            isBerserker = false;
+            stats.bonusAttackPercent -= 30f;
+            stats.bonusAttackSpeed -= 50f;
+            Debug.Log("[광전사] 해제!");
+        }
     }
 
     public void TakeDamage(int damage)
     {
+        // 무적 상태면 데미지 무시
+        if (isInvincible) return;
+
+        // 데미지 무효 확률 체크
+        if (stats != null && stats.damageNullifyChance > 0)
+        {
+            float roll = Random.Range(0f, 100f);
+            if (roll < stats.damageNullifyChance)
+            {
+                Debug.Log("[데미지 무효] 발동!");
+                return;
+            }
+        }
+
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
 
         Debug.Log($"HP Left: {currentHealth}");
         UpdateUI();
 
-        // ★ Start Flicker Effect
         if (playerSprite != null && currentHealth > 0)
         {
-            // Stop existing flicker to prevent overlapping conflicts
             if (flickerCoroutine != null) StopCoroutine(flickerCoroutine);
-            // Start new flicker
             flickerCoroutine = StartCoroutine(DamageFlicker());
+        }
+
+        // 피격 무적시간 적용
+        if (currentHealth > 0)
+        {
+            float invincTime = flickerDuration;
+            if (stats != null) invincTime += stats.invincibilityBonus;
+            StartCoroutine(InvincibilityCoroutine(invincTime));
         }
 
         if (currentHealth <= 0) Die();
     }
 
-    // ★ Flicker Coroutine logic
+    IEnumerator InvincibilityCoroutine(float duration)
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(duration);
+        isInvincible = false;
+    }
+
     IEnumerator DamageFlicker()
     {
         float timer = 0f;
-
         while (timer < flickerDuration)
         {
-            // Toggle renderer on/off
             playerSprite.enabled = !playerSprite.enabled;
-
-            // Wait for interval
             timer += flickerInterval;
             yield return new WaitForSeconds(flickerInterval);
         }
-
-        // Important: Ensure sprite is visible when finished
         playerSprite.enabled = true;
         flickerCoroutine = null;
     }
@@ -105,13 +142,10 @@ public class PlayerHealth : MonoBehaviour
     public void UpdateUI()
     {
         if (hearts == null) return;
-
         float healthPerHeart = 2f;
-
         for (int i = 0; i < hearts.Length; i++)
         {
             if (hearts[i] == null) continue;
-
             float startThreshold = i * healthPerHeart;
             float fillValue = (currentHealth - startThreshold) / healthPerHeart;
             hearts[i].fillAmount = Mathf.Clamp01(fillValue);
@@ -120,15 +154,9 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        // Ensure sprite is on before disabling object
         if (playerSprite != null) playerSprite.enabled = true;
         gameObject.SetActive(false);
     }
-
-    // =========================================================
-    // Compatibility Methods (Fixed for CS7036 Error)
-    // "int amount = 1" makes the parameter optional.
-    // =========================================================
 
     public void GetFlameHeart(int amount = 1)
     {

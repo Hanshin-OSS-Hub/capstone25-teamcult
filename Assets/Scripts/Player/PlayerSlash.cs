@@ -13,19 +13,19 @@ public class WeaponData
 
 public class PlayerSlash : MonoBehaviour
 {
-    [Header(" ���� ����")]
+    [Header("무기 설정")]
     public WeaponData[] weapons;
 
-    [Header("����")]
+    [Header("설정")]
     public int currentIndex = 0;
     public float distance = 1.0f;
-    private float nextAttackTime = 0f;
 
-    private PlayerStats stats; //  [�߰�] ���� ������ ����
+    private float nextAttackTime = 0f;
+    private PlayerStats stats;
 
     void Start()
     {
-        stats = GetComponent<PlayerStats>(); // �� ������ ���� ��������
+        stats = GetComponent<PlayerStats>();
     }
 
     void Update()
@@ -43,28 +43,59 @@ public class PlayerSlash : MonoBehaviour
     void Attack()
     {
         if (MusicDirector.Instance != null)
-        {
             MusicDirector.Instance.OnPlayerAttack();
-        }
-        
+
         if (weapons.Length == 0 || stats == null) return;
 
         WeaponData currentWeapon = weapons[currentIndex];
-        nextAttackTime = Time.time + currentWeapon.cooldown;
+
+        // 공격속도 배율 적용
+        float speedMultiplier = stats.GetTotalAttackSpeed();
+        float adjustedCooldown = currentWeapon.cooldown / speedMultiplier;
+        nextAttackTime = Time.time + adjustedCooldown;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         Vector2 direction = (mousePos - transform.position).normalized;
-        Vector3 spawnPos = transform.position + (Vector3)(direction * distance);
+
+        // 사거리 보너스 적용
+        float finalDistance = distance + stats.bonusAttackRange;
+        Vector3 spawnPos = transform.position + (Vector3)(direction * finalDistance);
+
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
-
         GameObject obj = Instantiate(currentWeapon.prefab, spawnPos, rotation);
 
-        //  [�ٽ� ����] ���� ������ = (���ⵥ���� x ����) + �߰�������
+        // 기본 데미지 계산
         float finalDamage = (currentWeapon.damage * stats.attackMultiplier) + stats.bonusDamage;
 
-        // 1. ���� ����
+        // 공격력 % 보너스 적용
+        finalDamage *= (1f + stats.bonusAttackPercent / 100f);
+
+        // 치명타 체크
+        if (stats.critChance > 0)
+        {
+            float roll = Random.Range(0f, 100f);
+            if (roll < stats.critChance)
+            {
+                finalDamage *= stats.critMultiplier;
+                Debug.Log($"[치명타!] 데미지: {finalDamage}");
+            }
+        }
+
+        // 4번째 공격 데미지 2배
+        if (stats.everyFourthAttackBonus)
+        {
+            stats.attackCounter++;
+            if (stats.attackCounter >= 4)
+            {
+                finalDamage *= 2f;
+                stats.attackCounter = 0;
+                Debug.Log($"[4번째 공격!] 데미지 2배: {finalDamage}");
+            }
+        }
+
+        // 슬래시 데미지 적용
         SlashDamage melee = obj.GetComponent<SlashDamage>();
         if (melee != null)
         {
@@ -72,7 +103,7 @@ public class PlayerSlash : MonoBehaviour
             melee.lifeTime = currentWeapon.lifeTime;
         }
 
-        // 2. �Ѿ� ����
+        // 총알 데미지 적용
         PlayerBullet bullet = obj.GetComponent<PlayerBullet>();
         if (bullet != null)
         {
