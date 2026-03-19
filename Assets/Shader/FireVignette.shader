@@ -1,4 +1,4 @@
-Shader "Custom/UniversalFireVignette"
+Shader "Custom/FireVignette"
 {
     Properties
     {
@@ -74,26 +74,19 @@ Shader "Custom/UniversalFireVignette"
 
             float Hash11(float p) { p = frac(p * 0.1031); p *= p + 33.33; p *= p + p; return frac(p); }
 
-            // ======== ⚡ Lightning helpers ========
             float LightningFlame(float2 uv, float t)
             {
                 float totalMask = 0.0;
                 {
                     float sn1 = tex2D(_NoiseTex, float2(uv.x * 2.5, uv.y * 1.5 + t * 6.0)).r;
                     float sn2 = tex2D(_NoiseTex, float2(uv.x * 1.5, uv.y * 2.5 - t * 5.0)).r;
-                    float elec = abs(sn1 - sn2);
-                    float widthMask = smoothstep(0.15, 0.0, uv.x);
-                    float spark = smoothstep(0.04, 0.01, elec) * step(0.35, sn1);
-                    totalMask += spark * widthMask * 3.0;
+                    totalMask += smoothstep(0.04, 0.01, abs(sn1 - sn2)) * step(0.35, sn1) * smoothstep(0.15, 0.0, uv.x) * 3.0;
                 }
                 {
                     float fromRight = 1.0 - uv.x;
                     float sn1 = tex2D(_NoiseTex, float2(fromRight * 2.5, uv.y * 1.5 - t * 5.5)).r;
                     float sn2 = tex2D(_NoiseTex, float2(fromRight * 1.5, uv.y * 2.5 + t * 6.5)).r;
-                    float elec = abs(sn1 - sn2);
-                    float widthMask = smoothstep(0.15, 0.0, fromRight);
-                    float spark = smoothstep(0.04, 0.01, elec) * step(0.35, sn1);
-                    totalMask += spark * widthMask * 3.0;
+                    totalMask += smoothstep(0.04, 0.01, abs(sn1 - sn2)) * step(0.35, sn1) * smoothstep(0.15, 0.0, fromRight) * 3.0;
                 }
                 return saturate(totalMask);
             }
@@ -107,17 +100,13 @@ Shader "Custom/UniversalFireVignette"
                 bx += (frac(sin(stepS + seed * 127.1) * 43758.5) - 0.5) * 0.05;
                 float reveal = smoothstep(1.0 - strike - 0.10, 1.0 - strike + 0.10, uv.y);
                 float d = abs(uv.x - bx);
-                float core = smoothstep(0.002, 0.0, d);
-                float glow = smoothstep(0.02, 0.0, d) * 0.8;
-                return saturate(core + glow) * reveal;
+                return saturate(smoothstep(0.002, 0.0, d) + smoothstep(0.02, 0.0, d) * 0.8) * reveal;
             }
 
-            // ======== ✨ Holy: 빛기둥 ========
             float GodRay(float2 uv, float centerX, float width, float t)
             {
                 float wander = sin(t * 0.15 + centerX * 6.28) * 0.015;
-                float dx = abs(uv.x - centerX - wander);
-                float rayMask = smoothstep(width, 0.0, dx);
+                float rayMask = smoothstep(width, 0.0, abs(uv.x - centerX - wander));
                 float fadeY = smoothstep(0.0, 0.25, uv.y) * smoothstep(1.0, 0.35, uv.y);
                 return rayMask * fadeY * 0.2;
             }
@@ -140,7 +129,7 @@ Shader "Custom/UniversalFireVignette"
                     mask = smoothstep(0.0, _Softness, fireShape) * smoothstep(_FireSpread + (fireNoise - 0.5) * 0.05, _FireSpread + (fireNoise - 0.5) * 0.05 - 0.06, abs(uv.x - 0.5));
                     pattern = smoothstep(0.0, 0.5, fireShape);
                 }
-                else if (_EffectType < 1.5) // ❄ Ice (얇은 외각 서리)
+                else if (_EffectType < 1.5) // ❄ Ice
                 {
                     float n1 = tex2D(_NoiseTex, uv * 3.0 + t * 0.008).r;
                     float n2 = tex2D(_NoiseTex, uv * 1.8 - t * 0.005).r;
@@ -152,48 +141,135 @@ Shader "Custom/UniversalFireVignette"
                 }
                 else if (_EffectType < 2.5) // 🧪 Poison
                 {
-                    float st = t * 0.15;
-                    float fogNoise = (tex2D(_NoiseTex, float2(uv.x * 2.0 + st * 0.5, uv.y * 1.5 + st * 0.2)).r + tex2D(_NoiseTex, float2(uv.x * 1.5 - st * 0.3, uv.y * 2.0 - st * 0.1)).r) * 0.5;
-                    float cornerDist = min(distance(uv, float2(-0.1, -0.1)), distance(uv, float2(1.1, -0.1)));
-                    float fogMask = 1.0 - smoothstep(_Radius, _Radius + _Softness, cornerDist - (fogNoise * _DistortPower * 1.5));
-                    mask = saturate(fogMask * _Progress) * 0.4;
-                    pattern = fogMask + fogNoise * 0.2;
+                    float st = t * 0.08;
+                    float pn1 = tex2D(_NoiseTex, uv * 3.0 + float2(st * 0.4, st * 0.3)).r;
+                    float pn2 = tex2D(_NoiseTex, uv * 1.8 - float2(st * 0.3, st * 0.2)).r;
+                    float poisonNoise = (pn1 + pn2) * 0.5;
+
+                    // 얼음 서리처럼: Chebyshev 거리로 가장자리에 독이 스며드는 경계
+                    // 독은 가장자리만 — 0.78 고정 (화면 중앙 보존)
+                    float dist   = max(abs(uv.x - 0.5), abs(uv.y - 0.5)) * 2.0;
+                    float sludge = dist + (poisonNoise - 0.5) * _DistortPower * 1.2;
+                    float slimeMask = smoothstep(0.78, 0.78 + _Softness, sludge) * 1.1;
+
+                    // 독 결정: 가장자리에 끈적한 얼룩이 번짐
+                    float2 crystalUV    = uv * float2(6.0, 5.0) + float2(st * 0.1, st * 0.05);
+                    float poisonCrystal = smoothstep(0.82, 1.0, tex2D(_NoiseTex, crystalUV).r)
+                                       * smoothstep(0.12, 0.0, min(min(uv.x, 1.0-uv.x), min(uv.y, 1.0-uv.y)))
+                                       * 0.8;
+
+                    // 거품: 하단에서 보글보글
+                    float2 bubbleUV = float2(uv.x * 7.0, frac(uv.y * 6.0 - t * 0.35 + poisonNoise * 0.4));
+                    float bubble    = smoothstep(0.92, 1.0, tex2D(_NoiseTex, bubbleUV).r)
+                                    * smoothstep(0.4, 0.0, uv.y)
+                                    * (0.5 + 0.5 * sin(t * 2.5 + uv.x * 10.0)) * 0.7;
+
+                    // 독액: 좌우 가장자리에서 흘러내림
+                    float2 dripUV = float2(uv.x * 5.0, frac(uv.y * 2.5 + t * 0.25 + pn1 * 0.3));
+                    float drip    = smoothstep(0.87, 1.0, tex2D(_NoiseTex, dripUV).r)
+                                  * smoothstep(0.12, 0.0, min(uv.x, 1.0 - uv.x))
+                                  * 0.6;
+
+                    mask    = saturate((slimeMask + poisonCrystal + bubble * 0.5 + drip) * _Progress);
+                    pattern = smoothstep(_Radius - 0.04, _Radius + _Softness + 0.04, sludge)
+                            + poisonCrystal * 0.5 + bubble * 0.3;
                 }
                 else if (_EffectType < 3.5) // ⚡ Lightning
                 {
                     float glitch = step(0.4, Hash11(t * 15.0));
-                    float edge = LightningFlame(uv, t) * _EdgeCurrent * (0.8 + _LightningFlash * 2.0 * glitch);
-                    float bolt = (SingleBolt(uv, t, _LightningStrike, 0.12) + SingleBolt(uv, t, _LightningStrike, 0.88)) * saturate(_LightningStrike * 5.0);
-                    float doorHeightMask = smoothstep(0.1, 0.25, abs(uv.y - 0.5));
-                    mask = saturate((edge * doorHeightMask + bolt * 1.5 + _BoomFlash));
-                    pattern = saturate((edge * 1.5 * doorHeightMask + bolt * 2.0 + _BoomFlash));
+
+                    // 번쩍임 주기
+                    float flashCycle = frac(t * 0.9 + 0.1);
+                    float flashOn    = step(0.85, flashCycle)
+                                    + step(0.60, flashCycle) * step(flashCycle, 0.63)
+                                    + _LightningFlash;
+                    flashOn = saturate(flashOn);
+
+                    float frame = floor(t * 12.0);
+
+                    float2 center = float2(0.5, 0.5);
+                    float crossBolt = 0.0;
+
+                    for (int bi = 0; bi < 6; bi++)
+                    {
+                        float bSeed = float(bi) * 91.3 + frame * 37.1;
+
+                        float edgeSel = frac(sin(bSeed * 1.1) * 43758.5);
+                        float2 startPos;
+                        float2 inDir;
+
+                        if (edgeSel < 0.25) {
+                            startPos = float2(frac(sin(bSeed * 2.3) * 43758.5), 0.0);
+                            inDir    = float2((frac(sin(bSeed*3.1)*43758.5)-0.5)*0.4, 1.0);
+                        } else if (edgeSel < 0.5) {
+                            startPos = float2(frac(sin(bSeed * 2.3) * 43758.5), 1.0);
+                            inDir    = float2((frac(sin(bSeed*3.1)*43758.5)-0.5)*0.4, -1.0);
+                        } else if (edgeSel < 0.75) {
+                            startPos = float2(0.0, frac(sin(bSeed * 2.3) * 43758.5));
+                            inDir    = float2(1.0, (frac(sin(bSeed*3.1)*43758.5)-0.5)*0.4);
+                        } else {
+                            startPos = float2(1.0, frac(sin(bSeed * 2.3) * 43758.5));
+                            inDir    = float2(-1.0, (frac(sin(bSeed*3.1)*43758.5)-0.5)*0.4);
+                        }
+                        inDir = normalize(inDir);
+
+                        float2 dFromStart = uv - startPos;
+                        float  proj = dot(dFromStart, inDir);
+                        float  perp = dFromStart.x * inDir.y - dFromStart.y * inDir.x;
+
+                        float seg    = floor(proj * 20.0);
+                        float zigzag = (frac(sin(seg + bSeed * 3.1) * 43758.5) - 0.5) * 0.018;
+                        float perpDist = abs(perp - zigzag);
+
+                        float bLen   = 0.09 + frac(sin(bSeed * 1.7) * 43758.5) * 0.02;
+                        float reveal = step(0.0, proj) * smoothstep(bLen, bLen - 0.05, proj);
+
+                        float core = smoothstep(0.003, 0.0, perpDist) * reveal;
+                        float glow = smoothstep(0.02,  0.0, perpDist) * reveal * 0.5;
+                        float aura = smoothstep(0.05,  0.0, perpDist) * reveal * 0.12;
+
+                        float branchSeed  = bSeed + seg * 7.3;
+                        float branchProb  = step(0.75, frac(sin(branchSeed) * 43758.5));
+                        float branchAngle = atan2(inDir.y, inDir.x) + (frac(sin(branchSeed*2.1)*43758.5)-0.5)*1.0;
+                        float2 bDir2  = float2(cos(branchAngle), sin(branchAngle));
+                        float  bProj2 = dot(dFromStart - inDir * seg/20.0, bDir2);
+                        float  bPerp2 = abs((dFromStart - inDir*seg/20.0).x*bDir2.y - (dFromStart-inDir*seg/20.0).y*bDir2.x);
+                        float  branch = smoothstep(0.004, 0.0, bPerp2)
+                                      * step(0.0, bProj2) * smoothstep(0.08, 0.0, bProj2)
+                                      * branchProb * 0.5 * reveal;
+
+                        float blink = 0.6 + 0.4 * sin(t * 15.0 + float(bi) * 2.3);
+                        crossBolt += (core + glow + aura + branch) * blink * flashOn;
+                    }
+
+                    float edge = LightningFlame(uv, t) * _EdgeCurrent * 0.4;
+                    float boom = _BoomFlash;
+                    float heightMask = smoothstep(0.05, 0.2, abs(uv.y - 0.5));
+                    mask    = saturate(crossBolt * 1.3 + edge * heightMask * 0.6 + boom * 0.8);
+                    pattern = saturate(crossBolt * 1.8 + edge * heightMask + boom);
                 }
-                else if (_EffectType < 4.5) // ✨ Holy (부드럽게 조정)
+                else if (_EffectType < 4.5) // ✨ Holy
                 {
                     float holyPulse = _HolyBreath * (0.5 + 0.2 * sin(t * 0.6));
                     float vignette = smoothstep(0.40, 0.70, distance(uv, float2(0.5, 0.5))) * 0.2 * holyPulse;
                     float rays = (GodRay(uv, 0.08, 0.05, t) + GodRay(uv, 0.92, 0.05, t + 1.5)) * holyPulse * 1.5;
                     float particles = smoothstep(0.85, 0.98, tex2D(_NoiseTex, float2(uv.x * 4.0, uv.y * 2.0 - t * 0.1)).r) * 0.15;
                     mask = saturate(vignette + rays + particles) * _Progress;
-                    pattern = saturate(rays * 1.0 + vignette * 0.3 + particles);
+                    pattern = saturate(rays + vignette * 0.3 + particles);
                 }
-                else // 🌿 Grass (덩굴 침식 하단 + 반딧불이)
+                else // 🌿 Grass
                 {
-                    // ── 덩굴: 하단 양쪽 모서리에서만 ──
-                    float ex = min(uv.x, 1.0 - uv.x); // 좌우 가장자리 거리
-                    float ey = uv.y;                   // 아래에서의 거리 (0=하단, 1=상단)
+                    float ex = min(uv.x, 1.0 - uv.x);
+                    float ey = uv.y;
                     float cornerMask = smoothstep(0.32, 0.0, ex) * smoothstep(0.35, 0.0, ey);
-
                     float vn1 = tex2D(_NoiseTex, uv * 4.0 + t * 0.04).r;
                     float vn2 = tex2D(_NoiseTex, uv * 2.5 - t * 0.03).r;
                     float vineNoise = (vn1 + vn2) * 0.5;
-
                     float vine     = cornerMask * (0.7 + vineNoise * 0.5);
                     float vineEdge = smoothstep(0.30, 0.10, ex) * smoothstep(0.0, 0.12, ex)
                                    * smoothstep(0.30, 0.05, ey) * smoothstep(0.0, 0.08, ey)
                                    * vineNoise * 0.9;
 
-                    // ── 반딧불이 6개 (화면 전체) ──
                     float firefly = 0.0;
                     for (int gi = 0; gi < 6; gi++) {
                         float seed = float(gi) * 127.1;
@@ -205,16 +281,21 @@ Shader "Custom/UniversalFireVignette"
                         firefly += smoothstep(0.05,  0.0, d) * blink * 0.4;
                     }
 
-                    // ── 포자 ──
                     float spores = smoothstep(0.91, 0.98, tex2D(_NoiseTex,
                         float2(uv.x * 7.0, uv.y * 5.0 - t * 0.20)).r) * 0.55;
-
                     mask    = saturate((vine * 0.5 + vineEdge * 0.6 + firefly + spores * 0.35) * _Progress);
                     pattern = saturate(vineEdge * 1.0 + firefly * 0.6 + vine * 0.4 + spores * 0.3);
                 }
 
                 float introMask = (_EffectType >= 1.5 && _EffectType < 2.5) ? 1.0 : smoothstep(0.0, 1.0, _Progress);
-                fixed4 fc = lerp(_EdgeColor, _CoreColor, pattern);
+
+                // 번개 색상: 하늘색 고정
+                fixed4 lightningEdge = fixed4(0.0, 0.6, 1.0, 1.0);
+                fixed4 lightningCore = fixed4(0.7, 0.95, 1.0, 1.0);
+                fixed4 fc = (_EffectType >= 2.5 && _EffectType < 3.5)
+                           ? lerp(lightningEdge, lightningCore, pattern)
+                           : lerp(_EdgeColor, _CoreColor, pattern);
+
                 fixed4 sp = tex2D(_MainTex, uv);
                 fc.a *= mask * introMask * sp.a * IN.color.a;
                 return fc;

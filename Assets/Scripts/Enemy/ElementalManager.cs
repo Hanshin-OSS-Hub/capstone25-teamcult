@@ -21,6 +21,13 @@ public class ElementalManager : MonoBehaviour
     public Sprite defaultHeartSprite;
     public float animSpeed = 10f;
 
+    [Header("Elemental Status")]
+    public bool hasFireHeart = false;
+    public bool hasIceHeart = false;
+
+    [Header("Noise Texture")]
+    public Texture2D noiseTex; // ? 추가
+
     private Tilemap[] allMaps;
     private float savedHealth;
     private bool isAbilityActive = false;
@@ -38,6 +45,10 @@ public class ElementalManager : MonoBehaviour
             {
                 screenMat = new Material(screenEffectImage.material);
                 screenEffectImage.material = screenMat;
+
+                // ? 추가 ? screenMat에서 노이즈 텍스처 자동으로 가져오기
+                if (noiseTex == null)
+                    noiseTex = screenMat.GetTexture("_NoiseTex") as Texture2D;
             }
         }
         if (defaultHeartSprite == null && playerHealth != null && playerHealth.hearts.Length > 0)
@@ -53,6 +64,9 @@ public class ElementalManager : MonoBehaviour
 
     public void ActivateAbility(string type)
     {
+        if (type == "Fire") hasFireHeart = true;
+        if (type == "Ice") hasIceHeart = true;
+
         if (playerHealth == null) return;
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         isAbilityActive = true;
@@ -98,7 +112,6 @@ public class ElementalManager : MonoBehaviour
         }
         else if (type == "Ice")
         {
-            // 수정: radius를 높여 외각 얇은 서리만 표시
             effectType = 1f; targetCore = new Color(0.8f, 0.97f, 1f, 0.9f); targetEdge = new Color(0.3f, 0.7f, 1f, 0.85f);
             scrollSpeed = new Vector2(0.02f, 0.05f); targetRadius = 0.88f; targetSoftness = 0.08f; distortPower = 0.35f;
         }
@@ -200,7 +213,6 @@ public class ElementalManager : MonoBehaviour
         }
     }
 
-    // Holy 인트로
     IEnumerator HolyIntro(float targetRadius, Color targetCore)
     {
         float dur = 1.2f, elapsed = 0f;
@@ -219,6 +231,7 @@ public class ElementalManager : MonoBehaviour
     }
 
     IEnumerator PoisonIntro(float targetRadius, Color targetCore) { float dur = 0.8f; float elapsed = 0f; if (screenMat != null) screenMat.SetFloat("_Radius", 0f); while (elapsed < dur) { elapsed += Time.deltaTime; float ep = 1f - Mathf.Pow(1f - Mathf.Clamp01(elapsed / dur), 3f); if (screenMat != null) { screenMat.SetFloat("_Progress", ep); screenMat.SetFloat("_Radius", Mathf.Lerp(0f, targetRadius, ep)); } if (allMaps != null) { Color sickly = Color.Lerp(Color.white, new Color(0.3f, 0.4f, 0.2f), ep * 0.4f); foreach (var map in allMaps) if (map != null) map.color = sickly; } UpdateHeartVisuals("Poison", Time.time, Mathf.Lerp(1f, GetHeartScale("Poison"), ep)); yield return null; } if (screenMat != null) { screenMat.SetFloat("_Progress", 1f); screenMat.SetFloat("_Radius", targetRadius); } }
+
     IEnumerator LightningIntro(float targetRadius, Color targetCore) { float elapsed = 0f; while (elapsed < 0.15f) { elapsed += Time.deltaTime; float p = Mathf.Clamp01(elapsed / 0.15f); if (screenMat != null) { screenMat.SetFloat("_Progress", 0f); screenMat.SetFloat("_EdgeCurrent", 0f); } if (allMaps != null) { Color dark = Color.Lerp(Color.white, new Color(0.05f, 0.05f, 0.1f), p); foreach (var map in allMaps) if (map != null) map.color = dark; } yield return null; } if (screenMat != null) { screenMat.SetFloat("_BoomFlash", 1f); screenMat.SetFloat("_EdgeCurrent", 2.0f); screenMat.SetFloat("_Radius", targetRadius); screenMat.SetColor("_CoreColor", Color.white); screenMat.SetFloat("_LightningStrike", 1f); screenMat.SetFloat("_Progress", 1f); } if (allMaps != null) foreach (var map in allMaps) if (map != null) map.color = new Color(0.8f, 0.9f, 1f); yield return new WaitForSeconds(0.08f); elapsed = 0f; while (elapsed < 0.35f) { elapsed += Time.deltaTime; float ep = 1f - Mathf.Pow(1f - Mathf.Clamp01(elapsed / 0.35f), 2f); if (screenMat != null) { screenMat.SetFloat("_BoomFlash", Mathf.Lerp(1f, 0f, ep)); screenMat.SetFloat("_LightningStrike", Mathf.Lerp(1f, 0f, ep)); screenMat.SetFloat("_EdgeCurrent", Mathf.Lerp(2.0f, 1.0f, ep)); screenMat.SetColor("_CoreColor", Color.Lerp(Color.white, targetCore, ep)); } if (allMaps != null) { Color mapFinal = Color.Lerp(Color.white, new Color(0.2f, 0.22f, 0.35f), 0.25f); foreach (var map in allMaps) if (map != null) map.color = Color.Lerp(new Color(0.8f, 0.9f, 1f), mapFinal, ep); } UpdateHeartVisuals("Lightning", Time.time, Mathf.Lerp(1f, GetHeartScale("Lightning"), ep)); yield return null; } if (screenMat != null) { screenMat.SetFloat("_BoomFlash", 0f); screenMat.SetFloat("_LightningStrike", 0f); screenMat.SetFloat("_EdgeCurrent", 1.0f); screenMat.SetColor("_CoreColor", targetCore); } flashCooldown = 1.0f; }
 
     Color GetMapColor(string type, float t) { if (type == "Fire") return new Color(1f, 0.6f, 0.4f); if (type == "Ice") return new Color(0.4f, 0.8f, 1f); if (type == "Poison") return new Color(0.35f, 0.45f, 0.20f); if (type == "Lightning") return new Color(0.2f, 0.22f, 0.35f); if (type == "Holy") return new Color(1.05f, 0.95f, 0.75f); if (type == "Grass") return new Color(0.4f, 0.6f, 0.3f); return Color.white; }
