@@ -522,8 +522,8 @@ SpriteRenderer:
   m_SortingLayerID: -2094805801
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.41113666, g: 0.7283019, b: 0.19100742, a: 1}
+  m_Sprite: {fileID: -1636875416356138586, guid: 29ec13ffbcda0b745bfb9b4090ccda2b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -587,8 +587,8 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -640,6 +640,7 @@ MonoBehaviour:
   nameText: {fileID: 3783889746874432705}
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
+  damageTextPrefab: {fileID: 0}
 --- !u!114 &5606284035456738859
 MonoBehaviour:
   m_ObjectHideFlags: 0

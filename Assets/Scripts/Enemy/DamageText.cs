@@ -1,39 +1,49 @@
 using UnityEngine;
-using TMPro; // TextMeshPro 사용
-
+using TMPro;
+using System.Collections;
 public class DamageText : MonoBehaviour
 {
-    public float moveSpeed = 2f;      // 위로 올라가는 속도
-    public float destroyTime = 1f;    // 사라지기까지 걸리는 시간
-
-    private TextMeshPro textMesh;
-    private Color textColor;
-
-    void Awake()
+    public TextMeshPro tmp;
+    public float duration = 1f;
+    public float riseSpeed = 2f;
+    // ? int만 받는 버전 (EnemyHealth에서 호출)
+    public void Setup(int damage)
     {
-        textMesh = GetComponent<TextMeshPro>();
+        Setup(damage, Color.white);
     }
-
-    void Start()
+    // ? 색상도 받는 버전 (화상 등에서 호출)
+    public void Setup(int damage, Color color)
     {
-        textColor = textMesh.color;
-        // 지정된 시간 뒤에 이 오브젝트를 파괴합니다.
-        Destroy(gameObject, destroyTime);
+        if (tmp == null) tmp = GetComponent<TextMeshPro>();
+        tmp.text = damage.ToString();
+        tmp.color = color;
+        StartCoroutine(Animate());
     }
-
-    void Update()
+    IEnumerator Animate()
     {
-        // 1. 위로 스르륵 이동
-        transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
-
-        // 2. 서서히 투명해지게 만들기 (Fade Out)
-        textColor.a = Mathf.Lerp(textColor.a, 0, Time.deltaTime * 3f);
-        textMesh.color = textColor;
-    }
-
-    // 데미지 숫자를 세팅해주는 함수 (적 스크립트에서 부를 겁니다)
-    public void Setup(int damageAmount)
-    {
-        textMesh.text = damageAmount.ToString();
+        float elapsed = 0f;
+        Vector3 startPos = transform.position;
+        float bounceHeight = 0.4f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            // 통통 튀는 효과
+            float bounce = Mathf.Abs(Mathf.Sin(t * Mathf.PI * 2.5f)) * bounceHeight * (1f - t);
+            // 위로 올라가면서 튐
+            transform.position = startPos + new Vector3(
+                0f,
+                t * riseSpeed * 0.5f + bounce,
+                0f
+            );
+            // 후반부 페이드아웃
+            float alpha = t < 0.6f ? 1f : Mathf.Lerp(1f, 0f, (t - 0.6f) / 0.4f);
+            tmp.color = new Color(tmp.color.r, tmp.color.g, tmp.color.b, alpha);
+            // 크기 통통
+            float scale = 1f + Mathf.Abs(Mathf.Sin(t * Mathf.PI * 3f)) * 0.3f * (1f - t);
+            transform.localScale = Vector3.one * scale;
+            yield return null;
+        }
+        Destroy(gameObject);
     }
 }
