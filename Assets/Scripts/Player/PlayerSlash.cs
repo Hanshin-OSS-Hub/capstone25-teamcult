@@ -54,9 +54,15 @@ public class PlayerSlash : MonoBehaviour
         float adjustedCooldown = currentWeapon.cooldown / speedMultiplier;
         nextAttackTime = Time.time + adjustedCooldown;
 
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0;
-        Vector2 direction = (mousePos - transform.position).normalized;
+        //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mousePos = Input.mousePosition;
+        Vector3 viewportPos = new Vector3(mousePos.x / Screen.width, mousePos.y / Screen.height, 0);
+        Vector3 targetWorldPos = Camera.main.ViewportToWorldPoint(viewportPos);
+        targetWorldPos.z = 0;
+
+        // 이제 targetWorldPos를 사용하여 방향(direction)을 계산합니다.
+        Vector2 direction = ((Vector2)targetWorldPos - (Vector2)transform.position).normalized;
+        //Vector2 direction = (mousePos - transform.position).normalized;
 
         // 사거리 보너스 적용
         float finalDistance = distance + stats.bonusAttackRange;

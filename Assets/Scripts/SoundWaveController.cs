@@ -75,7 +75,7 @@ public class SoundWaveController : MonoBehaviour {
                 // 3. 플레이어가 파동의 테두리(반지름) 근처에 있는지 체크
                 if (Mathf.Abs(distanceToPlayer - currentWorldRadius) < hitThreshold) {
                     wave.HasHitPlayer = true;
-                    Debug.Log($"<color=red><b>[HIT]</b></color> 파동에 맞았습니다! (파동 ID: {wave.GetHashCode()})");
+                    //Debug.Log($"<color=red><b>[HIT]</b></color> 파동에 맞았습니다! (파동 ID: {wave.GetHashCode()})");
                     // 여기서 플레이어 데미지 함수를 호출하면 됩니다. playerTransform.GetComponent<Player>().TakeDamage();
                 }
             }
