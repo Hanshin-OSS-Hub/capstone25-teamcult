@@ -31,7 +31,7 @@ Material:
     m_Floats:
     - _ChromaAmount: 0.1
     - _EffectIntensity: 0
-    - _GlitchIntensity: 0.3
+    - _GlitchIntensity: 0.135
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
