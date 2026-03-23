@@ -3,7 +3,7 @@
 public class MeleeEnemy : MonoBehaviour
 {
     [Header("설정")]
-    public float detectRange = 5f;   // 추적 범위 (파란 원)
+    public float detectRange = 25f;   // 추적 범위 (파란 원)
     public float attackRange = 1.2f; // 공격 범위 (빨간 원 - 딱 붙어야 때림)
     public float moveSpeed = 2f;     // 이동 속도
     public float attackCooldown = 1f; // 공격 속도 (1초에 한 번)

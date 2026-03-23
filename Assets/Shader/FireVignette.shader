@@ -16,17 +16,17 @@ Shader "Custom/FireVignette"
         _Progress ("Fill Progress", Range(0.0, 1.0)) = 1.0
         _EffectType ("Effect Type (0~5)", Float) = 0
 
-        // 🔥 Fire
+        // Fire
         _FireCenterY ("Fire Center Y", Float) = 1.05
         _FireSpread  ("Fire Spread", Range(0.0, 0.5)) = 0.5
 
-        // ⚡ Lightning
+        // Lightning
         _LightningFlash  ("Lightning Flash",  Range(0.0, 1.0)) = 0.0
         _LightningStrike ("Lightning Strike", Range(0.0, 1.0)) = 0.0
         _BoomFlash ("Boom Flash", Range(0.0, 1.0)) = 0.0
         _EdgeCurrent ("Edge Current", Range(0.0, 2.0)) = 1.0
 
-        // ✨ Holy
+        // Holy
         _HolyBreath ("Holy Breath", Range(0.0, 1.0)) = 1.0
         _HolyFlash  ("Holy Flash",  Range(0.0, 1.0)) = 0.0
 
@@ -36,6 +36,9 @@ Shader "Custom/FireVignette"
         _StencilWriteMask ("Stencil Write Mask", Float) = 255
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
+
+        // 캐릭터 위치 (UV 공간 0~1)
+        _PlayerPos ("Player Position", Vector) = (0.5, 0.5, 0, 0)
     }
 
     SubShader
@@ -62,6 +65,7 @@ Shader "Custom/FireVignette"
             float _FireCenterY, _FireSpread;
             float _LightningFlash, _LightningStrike, _BoomFlash, _EdgeCurrent;
             float _HolyBreath, _HolyFlash;
+            float2 _PlayerPos;
 
             v2f vert(appdata_t IN)
             {
@@ -121,7 +125,7 @@ Shader "Custom/FireVignette"
                 float mask = 0.0;
                 float pattern = pow(finalNoise, 1.5);
 
-                if (_EffectType < 0.5) // 🔥 Fire
+                if (_EffectType < 0.5) // Fire
                 {
                     float2 fs = t * float2(_ScrollSpeed.x, -_ScrollSpeed.y);
                     float fireNoise = (tex2D(_NoiseTex, uv * float2(2.5, 1.5) + fs).r + tex2D(_NoiseTex, uv * float2(1.5, 2.5) + fs * 1.3).r) * 0.5;
@@ -129,42 +133,82 @@ Shader "Custom/FireVignette"
                     mask = smoothstep(0.0, _Softness, fireShape) * smoothstep(_FireSpread + (fireNoise - 0.5) * 0.05, _FireSpread + (fireNoise - 0.5) * 0.05 - 0.06, abs(uv.x - 0.5));
                     pattern = smoothstep(0.0, 0.5, fireShape);
                 }
-                else if (_EffectType < 1.5) // ❄ Ice
+                else if (_EffectType < 1.5) // Ice
                 {
-                    float n1 = tex2D(_NoiseTex, uv * 3.0 + t * 0.008).r;
-                    float n2 = tex2D(_NoiseTex, uv * 1.8 - t * 0.005).r;
-                    float iceNoise = (n1 + n2) * 0.5;
-                    float dist = max(abs(uv.x - 0.5), abs(uv.y - 0.5)) * 2.0;
-                    float frost = dist + (iceNoise - 0.5) * _DistortPower;
-                    mask    = smoothstep(_Radius, _Radius + _Softness, frost) * 1.3;
-                    pattern = smoothstep(_Radius - 0.04, _Radius + _Softness + 0.04, frost);
+                    float n1 = tex2D(_NoiseTex, uv * 2.5 + float2(t * 0.012, t * 0.008)).r;
+                    float n2 = tex2D(_NoiseTex, uv * 5.0 - float2(t * 0.009, t * 0.015)).r;
+                    float n3 = tex2D(_NoiseTex, uv * 9.0 + float2(t * 0.006, -t * 0.010)).r;
+
+                    float frostNoise = n1 * 0.5 + n2 * 0.35 + n3 * 0.15;
+
+                    float fromLeft   = uv.x - _PlayerPos.x + 0.5;
+                    float fromRight  = _PlayerPos.x + 0.5 - uv.x;
+                    float fromBottom = uv.y - _PlayerPos.y + 0.5;
+                    float fromTop    = (_PlayerPos.y + 0.5 - uv.y) * 1.5;
+                    float edgeDist   = min(min(fromLeft, fromRight), min(fromBottom, fromTop));
+
+                    float breathe = sin(t * 0.4) * 0.018 + cos(t * 0.27) * 0.010;
+                    float grow    = sin(t * 0.2 + uv.x * 3.14) * 0.012
+                                  + cos(t * 0.17 + uv.y * 3.14) * 0.010;
+
+                    float frostDepth = _Radius * 0.26;
+
+                    float progress = 1.0 - pow(1.0 - _Progress, 2.5);
+
+                    // 노이즈 기반 불규칙 번짐 — 위치마다 다른 속도로 자라남
+                    float localSpeed = frostNoise * 0.4 + n3 * 0.3; // 0~0.7 불규칙 오프셋
+                    float localProgress = saturate((progress - (1.0 - edgeDist) * 0.0 ) * 1.0);
+                    // 각 픽셀이 가장자리에서 고유한 타이밍에 나타남
+                    float appear = saturate((progress + localSpeed * progress) * 2.0 - edgeDist * 3.5);
+
+                    // 크랙 번지는 앞부분 번쩍임
+                    float crackEdge = abs(appear - 0.5);
+                    float crackFront = smoothstep(0.25, 0.0, crackEdge)
+                                     * (1.0 - progress) * 1.5;
+
+                    float frostBoundary = edgeDist
+                                        - frostNoise * frostDepth * 2.35
+                                        + frostDepth * 0.6
+                                        - breathe
+                                        - grow;
+
+                    float frostMask = (1.0 - smoothstep(-0.015, 0.05, frostBoundary)) * appear;
+
+                    float sparkle = sin(t * 1.5 + n1 * 6.28) * 0.5 + 0.5;
+                    float crystalDetail = smoothstep(0.6, 1.0, n2 * n3 * 4.0)
+                                        * smoothstep(0.08, 0.0, abs(frostBoundary))
+                                        * (0.5 + sparkle * 0.2);
+
+                    float shimmer = smoothstep(0.02, 0.0, abs(frostBoundary + 0.01))
+                                  * (0.5 + 0.5 * sin(t * 2.0 + uv.x * 8.0 + uv.y * 5.0))
+                                  * 0.2;
+
+                    float innerFrost = smoothstep(0.0, -0.07, frostBoundary) * 0.55 * appear;
+
+                    mask    = saturate(frostMask + crystalDetail * 0.4 * appear + shimmer * appear + crackFront * 0.5);
+                    pattern = saturate(frostMask * 0.7 + crystalDetail + innerFrost + shimmer * 0.5 + crackFront);
                 }
-                else if (_EffectType < 2.5) // 🧪 Poison
+                else if (_EffectType < 2.5) // Poison
                 {
                     float st = t * 0.08;
                     float pn1 = tex2D(_NoiseTex, uv * 3.0 + float2(st * 0.4, st * 0.3)).r;
                     float pn2 = tex2D(_NoiseTex, uv * 1.8 - float2(st * 0.3, st * 0.2)).r;
                     float poisonNoise = (pn1 + pn2) * 0.5;
 
-                    // 얼음 서리처럼: Chebyshev 거리로 가장자리에 독이 스며드는 경계
-                    // 독은 가장자리만 — 0.78 고정 (화면 중앙 보존)
                     float dist   = max(abs(uv.x - 0.5), abs(uv.y - 0.5)) * 2.0;
                     float sludge = dist + (poisonNoise - 0.5) * _DistortPower * 1.2;
                     float slimeMask = smoothstep(0.78, 0.78 + _Softness, sludge) * 1.1;
 
-                    // 독 결정: 가장자리에 끈적한 얼룩이 번짐
                     float2 crystalUV    = uv * float2(6.0, 5.0) + float2(st * 0.1, st * 0.05);
                     float poisonCrystal = smoothstep(0.82, 1.0, tex2D(_NoiseTex, crystalUV).r)
                                        * smoothstep(0.12, 0.0, min(min(uv.x, 1.0-uv.x), min(uv.y, 1.0-uv.y)))
                                        * 0.8;
 
-                    // 거품: 하단에서 보글보글
                     float2 bubbleUV = float2(uv.x * 7.0, frac(uv.y * 6.0 - t * 0.35 + poisonNoise * 0.4));
                     float bubble    = smoothstep(0.92, 1.0, tex2D(_NoiseTex, bubbleUV).r)
                                     * smoothstep(0.4, 0.0, uv.y)
                                     * (0.5 + 0.5 * sin(t * 2.5 + uv.x * 10.0)) * 0.7;
 
-                    // 독액: 좌우 가장자리에서 흘러내림
                     float2 dripUV = float2(uv.x * 5.0, frac(uv.y * 2.5 + t * 0.25 + pn1 * 0.3));
                     float drip    = smoothstep(0.87, 1.0, tex2D(_NoiseTex, dripUV).r)
                                   * smoothstep(0.12, 0.0, min(uv.x, 1.0 - uv.x))
@@ -174,11 +218,10 @@ Shader "Custom/FireVignette"
                     pattern = smoothstep(_Radius - 0.04, _Radius + _Softness + 0.04, sludge)
                             + poisonCrystal * 0.5 + bubble * 0.3;
                 }
-                else if (_EffectType < 3.5) // ⚡ Lightning
+                else if (_EffectType < 3.5) // Lightning
                 {
                     float glitch = step(0.4, Hash11(t * 15.0));
 
-                    // 번쩍임 주기
                     float flashCycle = frac(t * 0.9 + 0.1);
                     float flashOn    = step(0.85, flashCycle)
                                     + step(0.60, flashCycle) * step(flashCycle, 0.63)
@@ -186,14 +229,11 @@ Shader "Custom/FireVignette"
                     flashOn = saturate(flashOn);
 
                     float frame = floor(t * 12.0);
-
-                    float2 center = float2(0.5, 0.5);
                     float crossBolt = 0.0;
 
                     for (int bi = 0; bi < 6; bi++)
                     {
                         float bSeed = float(bi) * 91.3 + frame * 37.1;
-
                         float edgeSel = frac(sin(bSeed * 1.1) * 43758.5);
                         float2 startPos;
                         float2 inDir;
@@ -248,7 +288,7 @@ Shader "Custom/FireVignette"
                     mask    = saturate(crossBolt * 1.3 + edge * heightMask * 0.6 + boom * 0.8);
                     pattern = saturate(crossBolt * 1.8 + edge * heightMask + boom);
                 }
-                else if (_EffectType < 4.5) // ✨ Holy
+                else if (_EffectType < 4.5) // Holy
                 {
                     float holyPulse = _HolyBreath * (0.5 + 0.2 * sin(t * 0.6));
                     float vignette = smoothstep(0.40, 0.70, distance(uv, float2(0.5, 0.5))) * 0.2 * holyPulse;
@@ -257,7 +297,7 @@ Shader "Custom/FireVignette"
                     mask = saturate(vignette + rays + particles) * _Progress;
                     pattern = saturate(rays + vignette * 0.3 + particles);
                 }
-                else // 🌿 Grass
+                else // Grass
                 {
                     float ex = min(uv.x, 1.0 - uv.x);
                     float ey = uv.y;
@@ -289,7 +329,6 @@ Shader "Custom/FireVignette"
 
                 float introMask = (_EffectType >= 1.5 && _EffectType < 2.5) ? 1.0 : smoothstep(0.0, 1.0, _Progress);
 
-                // 번개 색상: 하늘색 고정
                 fixed4 lightningEdge = fixed4(0.0, 0.6, 1.0, 1.0);
                 fixed4 lightningCore = fixed4(0.7, 0.95, 1.0, 1.0);
                 fixed4 fc = (_EffectType >= 2.5 && _EffectType < 3.5)

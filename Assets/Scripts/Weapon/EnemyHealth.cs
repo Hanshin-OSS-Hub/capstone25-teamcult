@@ -22,7 +22,6 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         stats = GetComponent<EnemyStats>();
-
         if (stats != null)
         {
             currentHealth = stats.maxHealth;
@@ -94,7 +93,7 @@ public class EnemyHealth : MonoBehaviour
             PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
 
-            // 3. °æÇèÄ¡ È¹µæ (¹èÀ² Àû¿ë)
+            // 3. °æÇèÄ¡ È¹µæ
             if (expScript != null)
             {
                 float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
@@ -104,14 +103,13 @@ public class EnemyHealth : MonoBehaviour
 
             if (playerStats != null)
             {
-                // 4. Àû Ã³Ä¡ ½Ã ÀÌµ¿¼Óµµ ¿µ±¸ ÁßÃ¸
+                // 4. Å³ Ã³Ä¡ ÈÄ ÀÌµ¿¼Óµµ ¹öÇÁ ½ºÅÃ
                 if (playerStats.killMoveSpeedStack > 0)
                 {
                     playerStats.moveSpeed += playerStats.killMoveSpeedStack;
-                    Debug.Log($"[ÀÌµ¿¼Óµµ ÁßÃ¸] +{playerStats.killMoveSpeedStack} (ÇöÀç: {playerStats.moveSpeed})");
+                    Debug.Log($"[ÀÌµ¿¼Óµµ ½ºÅÃ] +{playerStats.killMoveSpeedStack} (ÇöÀç: {playerStats.moveSpeed})");
                 }
-
-                // 5. Àû Ã³Ä¡ ½Ã °ñµå È®·ü È¹µæ
+                // 5. Å³ Ã³Ä¡ ÈÄ °ñµå È®·ü È¹µæ
                 if (playerStats.killGoldChance > 0)
                 {
                     float roll = Random.Range(0f, 100f);

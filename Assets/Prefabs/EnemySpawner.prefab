@@ -50,3 +50,5 @@ MonoBehaviour:
   spawnInterval: -1
   spawnRadius: 5
   enemiesPerTick: 1
+  useRoomClear: 1
+  totalEnemiesToSpawn: 2

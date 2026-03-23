@@ -8,17 +8,21 @@ public class SlowEffect : MonoBehaviour
 
     private EnemyStats enemyStats;
     private MeleeEnemy meleeEnemy;
-    private RangedEnemy rangedEnemy;    // ? 추가
+    private RangedEnemy rangedEnemy;
     private float originalSpeed;
     private bool applied = false;
-    private GameObject iceCircle;
-    private MeshRenderer iceMR;
+
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+    private ElementalManager elementalManager;
 
     void Start()
     {
         enemyStats = GetComponent<EnemyStats>();
         meleeEnemy = GetComponent<MeleeEnemy>();
-        rangedEnemy = GetComponent<RangedEnemy>(); // ? 추가
+        rangedEnemy = GetComponent<RangedEnemy>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        elementalManager = FindFirstObjectByType<ElementalManager>();
 
         if (enemyStats == null && meleeEnemy == null && rangedEnemy == null)
         {
@@ -35,7 +39,7 @@ public class SlowEffect : MonoBehaviour
                 originalSpeed = meleeEnemy.moveSpeed;
                 meleeEnemy.moveSpeed *= (1f - slowPercent / 100f);
             }
-            else if (rangedEnemy != null) // ? 추가
+            else if (rangedEnemy != null)
             {
                 originalSpeed = rangedEnemy.moveSpeed;
                 rangedEnemy.moveSpeed *= (1f - slowPercent / 100f);
@@ -47,82 +51,54 @@ public class SlowEffect : MonoBehaviour
             }
 
             Debug.Log($"[슬로우] 이동속도 {slowPercent}% 감소");
-            CreateIceCircle();
+
+            if (spriteRenderer != null)
+                originalColor = spriteRenderer.color;
+
+            StartCoroutine(ApplyColorEffect());
             StartCoroutine(RemoveSlow());
         }
     }
 
-    void CreateIceCircle()
+    IEnumerator ApplyColorEffect()
     {
-        iceCircle = new GameObject("IceCircle");
-        iceCircle.transform.SetParent(transform);
-        iceCircle.transform.localPosition = new Vector3(0f, -0.5f, 0f);
-        iceCircle.transform.localScale = new Vector3(2.0f, 0.8f, 1f);
-
-        MeshFilter mf = iceCircle.AddComponent<MeshFilter>();
-        MeshRenderer mr = iceCircle.AddComponent<MeshRenderer>();
-
-        Mesh mesh = new Mesh();
-        mesh.vertices = new Vector3[]
-        {
-            new Vector3(-0.5f, -0.5f, 0),
-            new Vector3( 0.5f, -0.5f, 0),
-            new Vector3(-0.5f,  0.5f, 0),
-            new Vector3( 0.5f,  0.5f, 0)
-        };
-        mesh.triangles = new int[] { 0, 2, 1, 2, 3, 1 };
-        mesh.uv = new Vector2[]
-        {
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(0, 1),
-            new Vector2(1, 1)
-        };
-        mf.mesh = mesh;
-
-        Material mat = new Material(Shader.Find("Custom/FireVignette"));
-
-        ElementalManager em = GetComponentInParent<ElementalManager>();
-        if (em == null) em = FindFirstObjectByType<ElementalManager>();
-        if (em != null && em.noiseTex != null)
-            mat.SetTexture("_NoiseTex", em.noiseTex);
-
-        mat.SetFloat("_EffectType", 1f);
-        mat.SetColor("_CoreColor", new Color(0.8f, 0.97f, 1f, 0.9f));
-        mat.SetColor("_EdgeColor", new Color(0.3f, 0.7f, 1f, 0.85f));
-        mat.SetVector("_ScrollSpeed", new Vector4(0.02f, 0.05f, 0, 0));
-        mat.SetFloat("_Radius", 0.85f);
-        mat.SetFloat("_Softness", 0.08f);
-        mat.SetFloat("_DistortPower", 0.35f);
-        mat.SetFloat("_Progress", 0f);
-
-        mr.material = mat;
-        mr.sortingLayerName = "Player";
-        mr.sortingOrder = 97;
-
-        iceMR = mr;
-        StartCoroutine(AnimateIceCircle());
-    }
-
-    IEnumerator AnimateIceCircle()
-    {
+        // 페이드인: 원본 → 파란색
         float elapsed = 0f;
-        float introTime = 0.4f;
-        while (elapsed < introTime)
+        float fadeTime = 0.3f;
+        Color iceColor = new Color(0.4f, 0.8f, 1.0f, 1.0f);
+
+        while (elapsed < fadeTime)
         {
             elapsed += Time.deltaTime;
-            float p = Mathf.Clamp01(elapsed / introTime);
-            if (iceMR != null) iceMR.material.SetFloat("_Progress", p);
+            float t = Mathf.Clamp01(elapsed / fadeTime);
+            if (spriteRenderer != null)
+                spriteRenderer.color = Color.Lerp(originalColor, iceColor, t);
             yield return null;
         }
 
-        while (iceCircle != null && applied)
+        // 슬로우 지속 중 살짝 깜빡임
+        while (applied)
         {
-            float pulse = (Mathf.Sin(Time.time * 2f) + 1f) * 0.5f;
-            float radius = Mathf.Lerp(0.82f, 0.88f, pulse);
-            if (iceMR != null) iceMR.material.SetFloat("_Radius", radius);
+            // ? 얼음 하트 없어지면 즉시 슬로우 해제
+            if (elementalManager != null && !elementalManager.hasIceHeart)
+            {
+                applied = false;
+                break;
+            }
+
+            float pulse = 0.75f + 0.25f * Mathf.Sin(Time.time * 3.0f);
+            if (spriteRenderer != null)
+                spriteRenderer.color = new Color(
+                    Mathf.Lerp(originalColor.r, 0.4f, pulse),
+                    Mathf.Lerp(originalColor.g, 0.8f, pulse),
+                    Mathf.Lerp(originalColor.b, 1.0f, pulse),
+                    1.0f
+                );
             yield return null;
         }
+
+        // 루프 빠져나오면 페이드아웃
+        yield return StartCoroutine(FadeOutColor());
     }
 
     IEnumerator RemoveSlow()
@@ -133,36 +109,50 @@ public class SlowEffect : MonoBehaviour
 
         if (meleeEnemy != null)
             meleeEnemy.moveSpeed = originalSpeed;
-        else if (rangedEnemy != null) // ? 추가
+        else if (rangedEnemy != null)
             rangedEnemy.moveSpeed = originalSpeed;
         else if (enemyStats != null)
             enemyStats.moveSpeed = originalSpeed;
 
         Debug.Log("[슬로우] 해제");
 
-        StartCoroutine(FadeOutCircle());
         yield return new WaitForSeconds(0.4f);
         Destroy(this);
     }
 
-    IEnumerator FadeOutCircle()
+    IEnumerator FadeOutColor()
     {
+        // 이동속도 복원
+        if (meleeEnemy != null)
+            meleeEnemy.moveSpeed = originalSpeed;
+        else if (rangedEnemy != null)
+            rangedEnemy.moveSpeed = originalSpeed;
+        else if (enemyStats != null)
+            enemyStats.moveSpeed = originalSpeed;
+
+        // 페이드아웃: 파란색 → 원본
         float elapsed = 0f;
-        float fadeTime = 0.4f;
+        float fadeTime = 0.3f;
+        Color currentColor = spriteRenderer != null ? spriteRenderer.color : originalColor;
+
         while (elapsed < fadeTime)
         {
             elapsed += Time.deltaTime;
-            float p = Mathf.Lerp(1f, 0f, elapsed / fadeTime);
-            if (iceMR != null) iceMR.material.SetFloat("_Progress", p);
+            float t = Mathf.Clamp01(elapsed / fadeTime);
+            if (spriteRenderer != null)
+                spriteRenderer.color = Color.Lerp(currentColor, originalColor, t);
             yield return null;
         }
-        if (iceCircle != null)
-            Destroy(iceCircle);
+
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
+
+        Destroy(this);
     }
 
     void OnDestroy()
     {
-        if (iceCircle != null)
-            Destroy(iceCircle);
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
     }
 }

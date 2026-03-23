@@ -8,6 +8,8 @@ public class ElementalManager : MonoBehaviour
     [Header("References")]
     public PlayerHealth playerHealth;
     public Image screenEffectImage;
+    public Camera mainCamera;
+    public Transform playerTransform;
 
     [Header("Elemental Heart Sprites")]
     public Sprite[] fireHeartSprites;
@@ -26,12 +28,13 @@ public class ElementalManager : MonoBehaviour
     public bool hasIceHeart = false;
 
     [Header("Noise Texture")]
-    public Texture2D noiseTex; // ? 추가
+    public Texture2D noiseTex;
 
     private Tilemap[] allMaps;
     private float savedHealth;
     private bool isAbilityActive = false;
     private Material screenMat;
+    private string currentType = ""; // ? 현재 활성화된 속성 저장
 
     private float flashCooldown = 0f;
     private float flashCooldownMax = 2.5f;
@@ -46,7 +49,6 @@ public class ElementalManager : MonoBehaviour
                 screenMat = new Material(screenEffectImage.material);
                 screenEffectImage.material = screenMat;
 
-                // ? 추가 ? screenMat에서 노이즈 텍스처 자동으로 가져오기
                 if (noiseTex == null)
                     noiseTex = screenMat.GetTexture("_NoiseTex") as Texture2D;
             }
@@ -54,22 +56,45 @@ public class ElementalManager : MonoBehaviour
         if (defaultHeartSprite == null && playerHealth != null && playerHealth.hearts.Length > 0)
             if (playerHealth.hearts[0] != null) defaultHeartSprite = playerHealth.hearts[0].sprite;
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+
+        if (mainCamera == null) mainCamera = Camera.main;
     }
 
     void Update()
     {
         if (isAbilityActive) if (playerHealth.currentHealth <= savedHealth - 2.0f) DeactivateAbility();
         if (flashCooldown > 0f) flashCooldown -= Time.deltaTime;
+
+        // 캐릭터 위치 셰이더에 실시간 전달
+        if (screenMat != null && playerTransform != null && mainCamera != null)
+        {
+            Vector3 vp = mainCamera.WorldToViewportPoint(playerTransform.position);
+            screenMat.SetVector("_PlayerPos", new Vector4(vp.x, vp.y, 0, 0));
+        }
     }
 
     public void ActivateAbility(string type)
     {
+        // ? 이미 같은 속성이 활성화되어 있으면 무시
+        if (isAbilityActive && currentType == type)
+        {
+            Debug.Log($"[{type}] 이미 활성화 중 ? 중첩 무시");
+            return;
+        }
+
+        // ? 다른 속성이 활성화 중이면 먼저 해제
+        if (isAbilityActive && currentType != type)
+        {
+            DeactivateAbility();
+        }
+
         if (type == "Fire") hasFireHeart = true;
         if (type == "Ice") hasIceHeart = true;
 
         if (playerHealth == null) return;
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         isAbilityActive = true;
+        currentType = type; // ? 현재 속성 저장
         savedHealth = playerHealth.currentHealth;
         flashCooldown = 0f;
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(true);
@@ -81,6 +106,9 @@ public class ElementalManager : MonoBehaviour
     {
         if (!isAbilityActive) return;
         isAbilityActive = false;
+        currentType = ""; // ? 속성 초기화
+        hasFireHeart = false;
+        hasIceHeart = false;
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(false);
         if (playerHealth.hearts != null)
             foreach (var img in playerHealth.hearts)
