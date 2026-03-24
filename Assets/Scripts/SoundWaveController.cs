@@ -62,7 +62,7 @@ public class SoundWaveController : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Z)) {
+        if (Input.GetKeyDown(KeyCode.X)) {
             CreateWave();
         }
 
