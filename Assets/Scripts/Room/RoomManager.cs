@@ -2,6 +2,15 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
+public enum RoomType { Start, Normal, Empty, Shop, Boss }
+
+[System.Serializable]
+public class RoomTypeGroup
+{
+    public RoomType type;
+    public List<GameObject> interiorPrefabs; // 해당 타입에 속하는 내부 레이아웃 프리팹들
+}
+
 [System.Serializable]
 public class RewardWeight
 {
@@ -15,6 +24,7 @@ public class RoomData
     public enum RoomStatus { Empty, Locked, Cleared }
 
     public RoomStatus status = RoomStatus.Empty;
+    public RoomType type = RoomType.Normal;
     public bool isFirstVisit = true;
     public bool shouldLockOnVisit = true;
 
@@ -25,9 +35,15 @@ public class RoomData
 public class RoomManager : MonoBehaviour
 {
     [SerializeField] Vector2Int roomSize = new Vector2Int(20, 20);
-    [SerializeField] List<GameObject> allRooms;
-    [SerializeField] List<GameObject>[] roomByDoors = new List<GameObject>[16];
+    [SerializeField] List<GameObject> allWalls;
+    [SerializeField] List<GameObject>[] wallByDoors = new List<GameObject>[16];
     [SerializeField] int mapSize = 11;
+
+    [Header("Room Interior Settings")]
+    // 인스펙터에서 RoomType별로 프리팹 리스트를 설정할 수 있습니다.
+    [SerializeField] List<RoomTypeGroup> roomGroups = new List<RoomTypeGroup>();
+    // 빠른 탐색을 위한 딕셔너리
+    private Dictionary<RoomType, List<GameObject>> roomGroupDict = new Dictionary<RoomType, List<GameObject>>();
     public int MapSize
     {
         get { return mapSize; }
@@ -53,14 +69,20 @@ public class RoomManager : MonoBehaviour
 
     void Awake()
     {
-        for (int i = 0; i < 16; i++) roomByDoors[i] = new List<GameObject>();
-        foreach (GameObject prefab in allRooms)
+        for (int i = 0; i < 16; i++) wallByDoors[i] = new List<GameObject>();
+        foreach (GameObject prefab in allWalls)
         {
             RoomConnector connector = prefab.GetComponent<RoomConnector>();
             if (connector == null) continue;
             int doorMask = 0;
             foreach (Direction direct in connector.availableDoors) doorMask |= 1 << (int)direct;
-            roomByDoors[doorMask].Add(prefab);
+            wallByDoors[doorMask].Add(prefab);
+        }
+
+        // 방 그룹 딕셔너리 초기화
+        foreach (var group in roomGroups) {
+            if (!roomGroupDict.ContainsKey(group.type))
+                roomGroupDict.Add(group.type, group.interiorPrefabs);
         }
     }
 
@@ -156,6 +178,8 @@ public class RoomManager : MonoBehaviour
             }
 
             generationSuccess = true;
+            Debug.Log($"<color=green><b>[1] 지도 생성 성공!</b></color> 생성된 방 개수: {1 + mainBranchRooms.Count + subBranchRooms.Count + twigRooms.Count}");
+            AssignRoomTypes(startPos, mainBranchRooms, subBranchRooms, twigRooms);
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<color=cyan><b>[던전 생성 보고서]</b></color>");
@@ -167,6 +191,8 @@ public class RoomManager : MonoBehaviour
             sb.AppendLine($"<color=yellow>총 방 개수: {finalCount}</color>");
             Debug.Log(sb.ToString());
         }
+
+        
 
         PreparePrefixWeights();
         for (int x = 0; x < mapSize; x++)
@@ -184,6 +210,8 @@ public class RoomManager : MonoBehaviour
 
         DrawMap();
     }
+
+
 
     string ListToString(List<Vector2Int> list, string separator)
     {
@@ -229,7 +257,7 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    void DrawMap()
+    void DrawMapBefor()
     {
         for (int x = 0; x < mapSize; x++)
         {
@@ -245,20 +273,57 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    void DrawMap() {
+        int spawnCount = 0;
+        for (int x = 0; x < mapSize; x++) {
+            for (int y = 0; y < mapSize; y++) {
+                int requiredMask = mapPlan[x, y];
+                if (requiredMask > 0) {
+                    // 1. 벽(구조) 배치
+                    GameObject wallPrefab = GetRandomRoomByMask(requiredMask);
+                    if (wallPrefab != null) {
+                        GameObject spawnedRoom = PlaceRoom(x - (mapSize / 2), y - (mapSize / 2), wallPrefab);
+                        spawnCount++;
+
+                        // 2. 내부 레이아웃 배치
+                        RoomType currentType = rooms[x, y].type;
+                        GameObject interiorPrefab = GetRandomInteriorByType(currentType);
+
+                        if (interiorPrefab != null) {
+                            // 내부 프리팹을 벽 프리팹의 자식으로 생성하거나 같은 위치에 생성
+                            Instantiate(interiorPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
+                        }
+                    }
+                }
+            }
+        }
+        Debug.Log($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
+    }
+    GameObject GetRandomInteriorByType(RoomType type) {
+        if (roomGroupDict.ContainsKey(type) && roomGroupDict[type].Count > 0) {
+            int randomIndex = Random.Range(0, roomGroupDict[type].Count);
+            return roomGroupDict[type][randomIndex];
+        }
+        return null;
+    }
+
+
     bool IsInsideMap(Vector2Int pos)
     {
         return pos.x >= 0 && pos.x < mapSize && pos.y >= 0 && pos.y < mapSize;
     }
 
-    void PlaceRoom(int gridX, int gridY, GameObject roomPrefab)
+    GameObject PlaceRoom(int gridX, int gridY, GameObject roomPrefab)
     {
         Vector3 spawnPos = new Vector3(gridX * roomSize.x, gridY * roomSize.y, 0);
-        Instantiate(roomPrefab, spawnPos, Quaternion.identity);
+        return Instantiate(roomPrefab, spawnPos, Quaternion.identity);
     }
 
     GameObject GetRandomRoomByMask(int mask)
     {
-        if (roomByDoors[mask].Count > 0) return roomByDoors[mask][Random.Range(0, roomByDoors[mask].Count)];
+        if (wallByDoors[mask].Count > 0) return wallByDoors[mask][Random.Range(0, wallByDoors[mask].Count)];
+        // 다 하나씩만 있어서 문제 없어야함
+        Debug.LogError($"<color=red><b>[2] 벽 프리팹 없음!</b></color> Mask {mask} (이진수: {System.Convert.ToString(mask, 2).PadLeft(4, '0')})에 해당하는 벽 프리팹이 allWalls에 없습니다.");
         return null;
     }
 
@@ -280,6 +345,18 @@ public class RoomManager : MonoBehaviour
             totalWeightSum += rw.weight;
             prefixWeights.Add(totalWeightSum);
         }
+    }
+
+    // 방의 위치와 리스트를 바탕으로 타입을 결정하는 메서드
+    void AssignRoomTypes(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub, List<Vector2Int> twigs) {
+        // 시작점은 무조건 Start (또는 요청하신대로 Empty 리스트에서 뽑도록 설정 가능)
+        rooms[startPos.x, startPos.y].type = RoomType.Start;
+
+        // 메인 가지의 마지막 방을 보스방으로 만들고 싶다면 여기서 수정 가능
+        // 예: rooms[main[main.Count-1].x, main[main.Count-1].y].type = RoomType.Boss;
+
+        // 나머지는 기본적으로 Normal로 설정 (이미 초기값이 Normal이므로 특수 상황만 체크)
+        // 만약 특정 위치(예: 잔가지 끝)를 상점으로 만들고 싶다면 여기서 로직 추가
     }
 
     void AssignRandomRewards(RoomData room)
