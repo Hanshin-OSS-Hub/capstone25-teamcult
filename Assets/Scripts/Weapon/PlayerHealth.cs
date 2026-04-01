@@ -17,10 +17,14 @@ public class PlayerHealth : MonoBehaviour
     public float flickerDuration = 1.0f;
     public float flickerInterval = 0.1f;
 
+    [Header("Death Settings")]
+    public float deathAnimDuration = 1.5f;
+
     private Coroutine flickerCoroutine;
     private bool isInvincible = false;
+    private bool isDead = false;
 
-    // 광전사 모드 상태
+    // 광전사 모드
     private bool isBerserker = false;
     private PlayerStats stats;
 
@@ -54,8 +58,6 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha7)) TakeDamage(1);
-
-        // 광전사 모드 체크
         CheckBerserker();
     }
 
@@ -63,13 +65,12 @@ public class PlayerHealth : MonoBehaviour
     {
         if (stats == null || !stats.berserkerMode) return;
 
-        // 체력 1칸 (2 이하) 남으면 광전사 발동
         if (currentHealth <= 2f && !isBerserker)
         {
             isBerserker = true;
             stats.bonusAttackPercent += 30f;
             stats.bonusAttackSpeed += 50f;
-            Debug.Log("[광전사] 발동! 공격력 +30%, 공격속도 +50%");
+            Debug.Log("[광전사] 발동!");
         }
         else if (currentHealth > 2f && isBerserker)
         {
@@ -82,10 +83,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        // 무적 상태면 데미지 무시
+        if (isDead) return;
         if (isInvincible) return;
 
-        // 데미지 무효 확률 체크
+        // 데미지 무효 확률
         if (stats != null && stats.damageNullifyChance > 0)
         {
             float roll = Random.Range(0f, 100f);
@@ -108,7 +109,6 @@ public class PlayerHealth : MonoBehaviour
             flickerCoroutine = StartCoroutine(DamageFlicker());
         }
 
-        // 피격 무적시간 적용
         if (currentHealth > 0)
         {
             float invincTime = flickerDuration;
@@ -116,7 +116,112 @@ public class PlayerHealth : MonoBehaviour
             StartCoroutine(InvincibilityCoroutine(invincTime));
         }
 
-        if (currentHealth <= 0) Die();
+        if (currentHealth <= 0) StartCoroutine(HandleDeath());
+    }
+
+    // ── 사망 처리 ────────────────────────────────────────────────
+    IEnumerator HandleDeath()
+    {
+        if (isDead) yield break;
+        isDead = true;
+
+        if (flickerCoroutine != null)
+        {
+            StopCoroutine(flickerCoroutine);
+            flickerCoroutine = null;
+        }
+
+        // 부활 아이템 체크
+        if (GameManager.instance != null && GameManager.instance.HasRevive())
+        {
+            Debug.Log("[사망] 부활 아이템 발동!");
+            GameManager.instance.UseRevive();
+            yield return StartCoroutine(ReviveSequence());
+            yield break;
+        }
+
+        // 사망 연출
+        yield return StartCoroutine(DeathAnimation());
+
+        // GameManager에 게임오버 통보
+        if (GameManager.instance != null)
+            GameManager.instance.GameOver();
+        else
+            gameObject.SetActive(false);
+    }
+
+    // ── 사망 연출 ────────────────────────────────────────────────
+    IEnumerator DeathAnimation()
+    {
+        if (playerSprite != null)
+        {
+            // 빠른 점멸
+            float timer = 0f;
+            float fastInterval = 0.05f;
+            while (timer < deathAnimDuration * 0.6f)
+            {
+                playerSprite.enabled = !playerSprite.enabled;
+                timer += fastInterval;
+                yield return new WaitForSeconds(fastInterval);
+            }
+
+            // 페이드 아웃
+            Color c = playerSprite.color;
+            float fadeTimer = 0f;
+            float fadeDuration = deathAnimDuration * 0.4f;
+            playerSprite.enabled = true;
+            while (fadeTimer < fadeDuration)
+            {
+                fadeTimer += Time.deltaTime;
+                c.a = Mathf.Lerp(1f, 0f, fadeTimer / fadeDuration);
+                playerSprite.color = c;
+                yield return null;
+            }
+            c.a = 0f;
+            playerSprite.color = c;
+        }
+        else
+        {
+            yield return new WaitForSeconds(deathAnimDuration);
+        }
+    }
+
+    // ── 부활 시퀀스 ──────────────────────────────────────────────
+    IEnumerator ReviveSequence()
+    {
+        currentHealth = Mathf.Max(1f, maxHealth * 0.5f);
+        isDead = false;
+        UpdateUI();
+
+        if (playerSprite != null)
+        {
+            playerSprite.enabled = true;
+            Color c = playerSprite.color;
+            c.a = 1f;
+            playerSprite.color = c;
+        }
+
+        float reviveInvincDuration = 3f;
+        if (stats != null) reviveInvincDuration += stats.invincibilityBonus;
+
+        Debug.Log($"[부활] 완료! 무적 {reviveInvincDuration}초");
+
+        StartCoroutine(InvincibilityCoroutine(reviveInvincDuration));
+        yield return StartCoroutine(ReviveFlicker(reviveInvincDuration));
+    }
+
+    IEnumerator ReviveFlicker(float duration)
+    {
+        if (playerSprite == null) yield break;
+        float timer = 0f;
+        float interval = 0.15f;
+        while (timer < duration)
+        {
+            playerSprite.enabled = !playerSprite.enabled;
+            timer += interval;
+            yield return new WaitForSeconds(interval);
+        }
+        playerSprite.enabled = true;
     }
 
     IEnumerator InvincibilityCoroutine(float duration)
@@ -152,10 +257,10 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    void Die()
+    public void Heal(float amount)
     {
-        if (playerSprite != null) playerSprite.enabled = true;
-        gameObject.SetActive(false);
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        UpdateUI();
     }
 
     public void GetFlameHeart(int amount = 1)

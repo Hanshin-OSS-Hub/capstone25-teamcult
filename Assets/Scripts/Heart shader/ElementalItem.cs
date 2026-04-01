@@ -8,19 +8,25 @@ public class ElementalItem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check if the object colliding is the Player
         if (other.CompareTag("Player"))
         {
-            // Find the ElementalManager in the scene
             ElementalManager manager = FindFirstObjectByType<ElementalManager>();
 
             if (manager != null)
             {
-                // Activate the ability based on this item's element type
                 manager.ActivateAbility(elementType);
             }
 
-            // Destroy the item object after pickup
+            // 검은 재 파티클
+            if (elementType == "Fire")
+            {
+                GameObject pfxObj = new GameObject("AshPFX");
+                pfxObj.transform.position = transform.position;
+                HeartPickupParticle pfx = pfxObj.AddComponent<HeartPickupParticle>();
+                pfx.Play(transform.position);
+                Destroy(pfxObj, 3f);
+            }
+
             Destroy(gameObject);
         }
     }

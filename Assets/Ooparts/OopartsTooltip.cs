@@ -1,21 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
 public class OopartsTooltip : MonoBehaviour
 {
     public static OopartsTooltip instance;
-
     [Header("툴팁 UI")]
     public GameObject tooltipPanel;
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI descText;
     public TextMeshProUGUI statText;
     public Image iconImage;
-
     private RectTransform tooltipRect;
     private Canvas parentCanvas;
-
     private void Awake()
     {
         instance = this;
@@ -26,51 +22,36 @@ public class OopartsTooltip : MonoBehaviour
             parentCanvas = tooltipPanel.GetComponentInParent<Canvas>();
         }
     }
-
     private void Update()
     {
         if (tooltipPanel == null || !tooltipPanel.activeSelf || tooltipRect == null) return;
-
         Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             parentCanvas.GetComponent<RectTransform>(),
             Input.mousePosition,
-            parentCanvas.worldCamera,
+            null,
             out pos
         );
-
         float w = tooltipRect.rect.width;
         float h = tooltipRect.rect.height;
-
         RectTransform canvasRect = parentCanvas.GetComponent<RectTransform>();
         float canvasW = canvasRect.rect.width;
         float canvasH = canvasRect.rect.height;
-
-        // 기본: 오른쪽에 표시
-        float offsetX = w + 10f;
-        float offsetY = 0f;
-
-        // 오른쪽 벗어나면 왼쪽에 표시
+        float offsetX = 15f;
+        float offsetY = 15f;
         if (pos.x + offsetX + w > canvasW / 2f)
-            offsetX = -w - 10f;
-
-        // 아래쪽 벗어나면 위로 올림
-        if (pos.y + offsetY - h < -canvasH / 2f)
-            offsetY = h;
-
+            offsetX = -w - 15f;
+        if (pos.y + offsetY + h > canvasH / 2f)
+            offsetY = -h - 15f;
         tooltipRect.anchoredPosition = pos + new Vector2(offsetX, offsetY);
     }
-
     public void Show(OopartsData data)
     {
         if (data == null || tooltipPanel == null) return;
-
         tooltipPanel.SetActive(true);
-
         if (nameText != null) nameText.text = data.oopartsName;
         if (descText != null) descText.text = data.description;
         if (iconImage != null && data.icon != null) iconImage.sprite = data.icon;
-
         string stats = "";
         if (data.bonusAttack != 0) stats += $"ATK +{data.bonusAttack}\n";
         if (data.bonusDefense != 0) stats += $"DEF +{data.bonusDefense}\n";
@@ -88,10 +69,8 @@ public class OopartsTooltip : MonoBehaviour
         if (data.bonusKillGoldAmount != 0) stats += $"Gold +{data.bonusKillGoldAmount}\n";
         if (data.enableBerserker) stats += $"Berserker Mode\n";
         if (data.enableFourthAttackBonus) stats += $"4th Attack x2\n";
-
         if (statText != null) statText.text = stats.TrimEnd('\n');
     }
-
     public void Hide()
     {
         if (tooltipPanel != null) tooltipPanel.SetActive(false);
