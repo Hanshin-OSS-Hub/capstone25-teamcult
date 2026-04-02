@@ -18185,8 +18185,10 @@ MonoBehaviour:
   maxWorldRadius: 50
   waveThickness: 0.05
   hitThreshold: 1
+  waveScore: 0
+  maxScore: 100
+  scoreDecayDelay: 10
   rendererData: {fileID: 11400000, guid: c39a50e2891368b448fd7b43fece1f95, type: 2}
-  glitchMaxDuration: 3
 --- !u!4 &1801308479
 Transform:
   m_ObjectHideFlags: 0
@@ -18243,6 +18245,26 @@ PrefabInstance:
     - target: {fileID: 2161364432344883021, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_LocalPosition.y
       value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[0].color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[0].color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[0].color.g
+      value: 0.9282434
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[0].color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3264184341807976020, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: playerTarget

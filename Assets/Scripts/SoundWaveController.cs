@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
-using System.Collections;
 
 public class SoundWaveController : MonoBehaviour {
     private class Wave {
@@ -14,7 +13,7 @@ public class SoundWaveController : MonoBehaviour {
     }
 
     [Header("Wave Visuals (Ripple)")]
-    [SerializeField] private Material rippleMaterial; // 파동 쉐이더가 적용된 머티리얼
+    [SerializeField] private Material rippleMaterial;
     [SerializeField] private Transform enemyTransform;
     [SerializeField] private Transform playerTransform;
 
@@ -27,9 +26,14 @@ public class SoundWaveController : MonoBehaviour {
     [SerializeField] private float waveThickness = 0.05f;
     [SerializeField] private float hitThreshold = 1.0f;
 
+    [Header("Score & Dynamic Effect Settings")]
+    [SerializeField] private int waveScore = 0;
+    [SerializeField] private int maxScore = 100; // 점수 최대치
+    [SerializeField] private float scoreDecayDelay = 10f; // 점수 감소 시작 대기시간
+    private float _lastHitTime; // 마지막으로 맞은 시간 저장
+
     [Header("Screen Distortion (URP Feature)")]
     [SerializeField] private UniversalRendererData rendererData;
-    [SerializeField] private float glitchMaxDuration = 3.0f; // 총 지속 시간
 
     private List<Wave> _activeWaves = new List<Wave>();
     private Camera _mainCam;
@@ -40,20 +44,15 @@ public class SoundWaveController : MonoBehaviour {
     private float[] _strengthsArray = new float[30];
 
     private float _glitchTimer = 100f;
+    private float _currentDynamicDuration = 1.0f; // 현재 계산된 지속 시간
     private static readonly int IntensityID = Shader.PropertyToID("_EffectIntensity");
     private Material _glitchMaterial;
 
     void Start() {
         if (rendererData != null) {
             _glitchFeature = rendererData.rendererFeatures.Find(x => x.name == "ScreenDistortionRF");
-
             if (_glitchFeature is FullScreenPassRendererFeature fullScreenPass) {
-                // 원본 머티리얼을 직접 참조 (에디터 에셋 자체를 수정하게 됨)
                 _glitchMaterial = fullScreenPass.passMaterial;
-
-                if (_glitchMaterial == null) {
-                    Debug.LogError("Renderer Feature에 머티리얼이 안 꽂혀있습니다!");
-                }
             }
         }
 
@@ -62,76 +61,66 @@ public class SoundWaveController : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.X)) {
-            CreateWave();
-        }
+        if (Input.GetKeyDown(KeyCode.X)) CreateWave();
 
         UpdateAndUploadWaves();
         UpdateGlitchIntensity();
-    }
-    private void OnDisable() {
-        // 에디터에서 스크립트를 비활성화하거나 게임을 종료할 때 효과를 끕니다.
-        if (_glitchFeature != null) {
-            _glitchFeature.SetActive(false);
-        }
-
-        // 머티리얼 수치도 0으로 초기화해서 잔상이 남지 않게 합니다.
-        if (_glitchMaterial != null) {
-            _glitchMaterial.SetFloat(IntensityID, 0f);
-        }
+        HandleScoreDecay(); // 점수 감소 로직 추가
     }
 
-    private void OnDestroy() {
-        // 오브젝트가 파괴될 때도 확실히 꺼줍니다.
-        if (_glitchFeature != null) {
-            _glitchFeature.SetActive(false);
-        }
-    }
-
-    // [추가 팁] 유니티 에디터의 인스펙터 값을 수정할 때 호출되는 함수
-    private void OnValidate() {
-        // 에디터에서 실수로 켜져 있다면 수동으로 끄기 편하게 체크박스를 연동할 수 있습니다.
-        // 하지만 위 OnDisable만으로도 실행 전에는 꺼지게 됩니다.
-    }
-
-    // 효과를 시작하거나 리셋하는 함수 (명칭 변경)
+    // [변경] 피격 시 점수 기반 로직
     public void TriggerScreenDistortion() {
-        _glitchTimer = 0f; // 맞을 때마다 0으로 초기화 (중첩 처리)
+        // 1. 점수 추가 및 마지막 피격 시간 갱신
+        waveScore = Mathf.Min(waveScore + 10, maxScore);
+        _lastHitTime = Time.time;
 
-        if (_glitchFeature != null) {
-            _glitchFeature.SetActive(true);
-        }
+        // 2. 점수에 따른 이펙트 지속 시간 계산 (최소 1초 ~ 최대 3초)
+        // 예: 0점일 때 1초, 100점일 때 3초
+        _currentDynamicDuration = Mathf.Lerp(1.0f, 3.0f, (float)waveScore / maxScore);
+
+        // 3. 타이머 리셋 및 피쳐 활성화
+        _glitchTimer = 0f;
+        if (_glitchFeature != null) _glitchFeature.SetActive(true);
     }
 
     private void UpdateGlitchIntensity() {
-
-
-        if (_glitchFeature == null || _glitchTimer > glitchMaxDuration) return;
+        if (_glitchFeature == null || _glitchTimer > _currentDynamicDuration) return;
 
         _glitchTimer += Time.deltaTime;
         float intensity = 0f;
 
-        if (_glitchTimer <= 1.0f) {
-            intensity = 1.0f;
+        // 점수가 높을수록 이펙트의 기본 강도(Base Intensity)도 강해지게 설정 가능
+        float maxIntensity = Mathf.Lerp(0.3f, 1.0f, (float)waveScore / maxScore);
+
+        if (_glitchTimer <= 0.5f) { // 도입부는 빠르게 강해짐
+            intensity = maxIntensity;
         }
-        else if (_glitchTimer <= glitchMaxDuration) {
-            float t = (_glitchTimer - 1.0f) / (glitchMaxDuration - 1.0f);
-            intensity = Mathf.Lerp(1.0f, 0.0f, t);
+        else if (_glitchTimer <= _currentDynamicDuration) {
+            float t = (_glitchTimer - 0.5f) / (_currentDynamicDuration - 0.5f);
+            intensity = Mathf.Lerp(maxIntensity, 0.0f, t);
         }
         else {
-            intensity = 0f;
             _glitchFeature.SetActive(false);
-            //Debug.Log("Glitch Effect Finished and Disabled");
         }
 
-        // 로그 2: 실제 계산된 강도와 머티리얼 연결 상태 확인
         if (_glitchMaterial != null) {
             _glitchMaterial.SetFloat(IntensityID, intensity);
-            // 이 로그가 콘솔에 찍혀야 정상입니다.
-            //Debug.Log($"Glitch Active! Intensity: {intensity} | Material: {_glitchMaterial.name}");
         }
-        else {
-            Debug.LogError("Glitch Material is MISSING! Start에서 참조를 못 가져왔습니다.");
+    }
+
+    // [추가] 점수 감소 로직
+    private void HandleScoreDecay() {
+        if (waveScore <= 0) return;
+
+        // 마지막 피격으로부터 10초가 지났는지 확인
+        if (Time.time - _lastHitTime >= scoreDecayDelay) {
+            // 초당 1점씩 감소 (Time.deltaTime 사용)
+            float decayAmount = Time.deltaTime * 1.0f;
+
+            // 정수 점수 처리를 위해 별도의 float 변수를 쓰거나, 점진적으로 깎음
+            if (Time.frameCount % 60 == 0) { // 매 프레임 깎으면 너무 빠르므로 대략 1초마다 1점 하락
+                waveScore = Mathf.Max(waveScore - 1, 0);
+            }
         }
     }
 
@@ -163,7 +152,7 @@ public class SoundWaveController : MonoBehaviour {
 
                 if (Mathf.Abs(distanceToPlayer - currentWorldRadius) < hitThreshold) {
                     wave.HasHitPlayer = true;
-                    TriggerScreenDistortion(); // 플레이어 피격 시 실행
+                    TriggerScreenDistortion();
                 }
             }
 
@@ -188,5 +177,10 @@ public class SoundWaveController : MonoBehaviour {
         if (enemyTransform == null || _mainCam == null) return new Vector4(0.5f, 0.5f, 0, 0);
         Vector3 viewPos = _mainCam.WorldToViewportPoint(enemyTransform.position);
         return new Vector4(viewPos.x, viewPos.y, 0, 0);
+    }
+
+    private void OnDisable() {
+        if (_glitchFeature != null) _glitchFeature.SetActive(false);
+        if (_glitchMaterial != null) _glitchMaterial.SetFloat(IntensityID, 0f);
     }
 }
