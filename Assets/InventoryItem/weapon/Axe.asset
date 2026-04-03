@@ -13,5 +13,10 @@ MonoBehaviour:
   m_Name: Axe
   m_EditorClassIdentifier: 
   itemName: AXE
+  itemDesc: "\uB3C4\uB07C"
   icon: {fileID: 7451049502576452310, guid: 84d74c27eb79ebc4f9e21210d947fc8e, type: 3}
+  equipSprite: {fileID: 7451049502576452310, guid: 84d74c27eb79ebc4f9e21210d947fc8e, type: 3}
   itemType: 1
+  bonusAttack: 80
+  bonusDefense: 0
+  bonusHealth: 0

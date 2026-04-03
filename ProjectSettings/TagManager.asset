@@ -17,6 +17,7 @@ TagManager:
   - Enemy (Weird)
   - Bottom_armor
   - Upper_armor
+  - Weapon
   layers:
   - Default
   - TransparentFX

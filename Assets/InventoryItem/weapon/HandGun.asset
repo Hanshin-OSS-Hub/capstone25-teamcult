@@ -13,5 +13,10 @@ MonoBehaviour:
   m_Name: HandGun
   m_EditorClassIdentifier: 
   itemName: HG
+  itemDesc: "\uAD8C\uCD1D"
   icon: {fileID: -963157203481525993, guid: e8b62ca0bbe890e41bd9ef1c2dcb28ec, type: 3}
+  equipSprite: {fileID: -963157203481525993, guid: e8b62ca0bbe890e41bd9ef1c2dcb28ec, type: 3}
   itemType: 1
+  bonusAttack: 30
+  bonusDefense: 0
+  bonusHealth: 0
