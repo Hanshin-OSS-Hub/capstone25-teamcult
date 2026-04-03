@@ -10,14 +10,13 @@ TagManager:
   - IceHeartItem
   - Damage
   - Helmet
-  - Breastplate
-  - Sabaton
-  - Weapon
   - Wall
   - Enemy (Normal)
   - Enemy (Heavy)
   - Enemy (Speed)
   - Enemy (Weird)
+  - Bottom_armor
+  - Upper_armor
   layers:
   - Default
   - TransparentFX
