@@ -15,8 +15,9 @@ MonoBehaviour:
   itemName: Upper_T2
   itemDesc: "\uC0C1\uC758\uC785\uB2C8\uB2E4."
   icon: {fileID: 7777698908678288222, guid: 47d32bad21ca4234cbd9d23d50790422, type: 3}
-  equipSprite: {fileID: 7777698908678288222, guid: 47d32bad21ca4234cbd9d23d50790422, type: 3}
   itemType: 2
+  tier: 1
   bonusAttack: 0
   bonusDefense: 3
   bonusHealth: 3
+  currentOptions: []

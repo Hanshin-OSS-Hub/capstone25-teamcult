@@ -4,11 +4,10 @@ public class ItemPickUp : MonoBehaviour
 {
     public Item item;
     private bool isPlayerInRange = false;
-    private bool hasBeenPickedUp = false; // 중복 습득 방지용 변수 추가
+    private bool hasBeenPickedUp = false; 
 
     void Update()
     {
-        // 이미 주운 상태라면 실행하지 않음
         if (!hasBeenPickedUp && isPlayerInRange && Input.GetKeyDown(KeyCode.Z))
         {
             Pickup();
@@ -17,16 +16,19 @@ public class ItemPickUp : MonoBehaviour
 
     void Pickup()
     {
-        hasBeenPickedUp = true; // 줍기 시작하면 즉시 true로 변경하여 중복 방지
+        hasBeenPickedUp = true; 
 
-        if (TabController.instance.AddItem(item))
+        // 원본 아이템을 제네레이터에 넣어 랜덤 옵션이 붙은 복제본을 생성
+        Item newItemWithOption = OptionGenerator.GenerateDroppedItem(item);
+
+        // 생성된 복제본을 인벤토리에 넣습니다.
+        if (TabController.instance.AddItem(newItemWithOption))
         {
-            Debug.Log($"{item.itemName} 획득 완료!");
+            Debug.Log($"{newItemWithOption.itemName} 획득 완료! (부여된 옵션 개수: {newItemWithOption.currentOptions.Count}개)");
             Destroy(gameObject);
         }
         else
         {
-            // 인벤토리가 꽉 차서 실패한 경우에만 다시 false로
             hasBeenPickedUp = false;
         }
     }

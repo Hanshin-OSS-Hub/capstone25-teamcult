@@ -15,8 +15,9 @@ MonoBehaviour:
   itemName: Bottom_T3
   itemDesc: "\uD558\uC758\uC785\uB2C8\uB2E4.\n"
   icon: {fileID: 2240586303619349324, guid: 3b0fd8e67d5874c408071fce3c113fed, type: 3}
-  equipSprite: {fileID: 2240586303619349324, guid: 3b0fd8e67d5874c408071fce3c113fed, type: 3}
   itemType: 3
+  tier: 2
   bonusAttack: 0
   bonusDefense: 5
   bonusHealth: 5
+  currentOptions: []

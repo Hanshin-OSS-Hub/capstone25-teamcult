@@ -15,8 +15,9 @@ MonoBehaviour:
   itemName: Helmet_T2
   itemDesc: "\uD5EC\uBA67\uC785\uB2C8\uB2E4."
   icon: {fileID: 6058515197682660730, guid: 5a969dccb993a4349a53dbcea997181b, type: 3}
-  equipSprite: {fileID: 6058515197682660730, guid: 5a969dccb993a4349a53dbcea997181b, type: 3}
   itemType: 0
+  tier: 1
   bonusAttack: 0
   bonusDefense: 3
   bonusHealth: 3
+  currentOptions: []

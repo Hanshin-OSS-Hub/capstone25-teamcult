@@ -22,10 +22,13 @@ public class PlayerStats : MonoBehaviour
     [Header("스탯 UI 창 전체 패널")]
     public GameObject statPanel;
 
-    [Header("장비 보너스 스탯")]
+    [Header("장비 보너스 스탯 (기본+랜덤옵션)")]
     [HideInInspector] public int bonusAttack = 0;
     [HideInInspector] public int bonusDefense = 0;
     [HideInInspector] public int bonusHealth = 0;
+    //장비 랜덤 옵션으로 올라가는 스피드 변수
+    [HideInInspector] public float itemBonusMoveSpeed = 0f;
+    [HideInInspector] public float itemBonusAttackSpeed = 0f;
 
     [Header("오파츠 퍼센트 보너스")]
     [HideInInspector] public float bonusAttackPercent = 0f;
@@ -80,24 +83,58 @@ public class PlayerStats : MonoBehaviour
 
     public int GetTotalDefense() => baseDefense + bonusDefense;
     public int GetTotalHealth() => maxHealth + bonusHealth;
-    public float GetTotalAttackSpeed() => attackSpeed * (1f + bonusAttackSpeed / 100f);
-    public float GetTotalMoveSpeed() => moveSpeed * (1f + killMoveSpeedStack);
 
+    public float GetTotalAttackSpeed() => (attackSpeed + itemBonusAttackSpeed) * (1f + bonusAttackSpeed / 100f);
+
+    public float GetTotalMoveSpeed() => (moveSpeed + itemBonusMoveSpeed) * (1f + killMoveSpeedStack);
+
+    // 장비 장착
     public void EquipStat(Item item)
     {
         if (item == null) return;
+
+        // 장비 기본 스탯 적용
         bonusAttack += item.bonusAttack;
         bonusDefense += item.bonusDefense;
         bonusHealth += item.bonusHealth;
+
+        // 장비 랜덤 옵션 적용
+        foreach (ItemOption option in item.currentOptions)
+        {
+            switch (option.optionType)
+            {
+                case OptionType.Attack: bonusAttack += (int)option.value; break;
+                case OptionType.Defense: bonusDefense += (int)option.value; break;
+                case OptionType.AttackSpeed: itemBonusAttackSpeed += option.value; break;
+                case OptionType.MoveSpeed: itemBonusMoveSpeed += option.value; break;
+            }
+        }
+
         UpdateStatUI();
     }
 
+    // 장비 해제 
     public void UnequipStat(Item item)
     {
         if (item == null) return;
+
+        // 장비 기본 스탯 해제
         bonusAttack -= item.bonusAttack;
         bonusDefense -= item.bonusDefense;
         bonusHealth -= item.bonusHealth;
+
+        // 장비 랜덤 옵션 해제
+        foreach (ItemOption option in item.currentOptions)
+        {
+            switch (option.optionType)
+            {
+                case OptionType.Attack: bonusAttack -= (int)option.value; break;
+                case OptionType.Defense: bonusDefense -= (int)option.value; break;
+                case OptionType.AttackSpeed: itemBonusAttackSpeed -= option.value; break;
+                case OptionType.MoveSpeed: itemBonusMoveSpeed -= option.value; break;
+            }
+        }
+
         UpdateStatUI();
     }
 

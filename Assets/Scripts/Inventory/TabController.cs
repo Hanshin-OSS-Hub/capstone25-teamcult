@@ -35,7 +35,7 @@ public class TabController : MonoBehaviour
     private List<ItemSlot> consumableSlotUI = new List<ItemSlot>();
     private List<ItemSlot> oopartsSlotUI = new List<ItemSlot>();
 
-    private Item equippedHead, equippedWeapon, equippedArmor, equippedShoes;
+    private Item equippedHead, equippedWeapon, equippedUpper, equippedBottom;
 
     void Awake() { instance = this; }
 
@@ -113,10 +113,10 @@ public class TabController : MonoBehaviour
     {
         switch (type)
         {
-            case Item.ItemType.Head: return equippedHead;
+            case Item.ItemType.Helmet: return equippedHead;
             case Item.ItemType.Weapon: return equippedWeapon;
-            case Item.ItemType.Armor: return equippedArmor;
-            case Item.ItemType.Shoes: return equippedShoes;
+            case Item.ItemType.Upper: return equippedUpper;
+            case Item.ItemType.Bottom: return equippedBottom;
             default: return null; // 장비가 아니면 null 반환
         }
     }
@@ -127,10 +127,10 @@ public class TabController : MonoBehaviour
 
         switch (item.itemType)
         {
-            case Item.ItemType.Head: UpdateSlot(ref equippedHead, item, headSlotImage); break;
+            case Item.ItemType.Helmet: UpdateSlot(ref equippedHead, item, headSlotImage); break;
             case Item.ItemType.Weapon: UpdateSlot(ref equippedWeapon, item, weaponSlotImage); break;
-            case Item.ItemType.Armor: UpdateSlot(ref equippedArmor, item, armorSlotImage); break;
-            case Item.ItemType.Shoes: UpdateSlot(ref equippedShoes, item, shoesSlotImage); break;
+            case Item.ItemType.Upper: UpdateSlot(ref equippedUpper, item, armorSlotImage); break;
+            case Item.ItemType.Bottom: UpdateSlot(ref equippedBottom, item, shoesSlotImage); break;
             default: return; // 소비템 등은 장착 불가
         }
 
@@ -178,10 +178,10 @@ public class TabController : MonoBehaviour
 
         switch (item.itemType)
         {
-            case Item.ItemType.Head: equippedHead = null; headSlotImage.enabled = false; break;
+            case Item.ItemType.Helmet: equippedHead = null; headSlotImage.enabled = false; break;
             case Item.ItemType.Weapon: equippedWeapon = null; weaponSlotImage.enabled = false; break;
-            case Item.ItemType.Armor: equippedArmor = null; armorSlotImage.enabled = false; break;
-            case Item.ItemType.Shoes: equippedShoes = null; shoesSlotImage.enabled = false; break;
+            case Item.ItemType.Upper: equippedUpper = null; armorSlotImage.enabled = false; break;
+            case Item.ItemType.Bottom: equippedBottom = null; shoesSlotImage.enabled = false; break;
         }
 
         AddItem(item); // 인벤토리의 빈 칸으로 돌아감
