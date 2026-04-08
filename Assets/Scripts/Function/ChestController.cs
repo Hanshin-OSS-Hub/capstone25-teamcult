@@ -53,16 +53,19 @@ public class ChestController : MonoBehaviour
         SpawnLoot();
     }
 
-    private void SpawnLoot()
-    {
+    private void SpawnLoot() {
+        // 리스트가 비어있는지 확인
         if (lootPrefabs == null || lootPrefabs.Length == 0) return;
 
-        foreach (GameObject loot in lootPrefabs)
-        {
-            // 상자 위치보다 살짝 위(y축 +0.5)로 스폰 위치 조정
-            Vector3 spawnPosition = transform.position + new Vector3(0, 0.5f, 0);
-            Instantiate(loot, spawnPosition, Quaternion.identity);
-        }
+        // 1. 랜덤 인덱스 선택 (0부터 lootPrefabs.Length - 1까지)
+        int randomIndex = UnityEngine.Random.Range(0, lootPrefabs.Length);
+        GameObject selectedLoot = lootPrefabs[randomIndex];
+
+        // 2. 스폰 위치 설정 (상자 위치보다 y축으로 1.5만큼 아래)
+        Vector3 spawnPosition = transform.position + new Vector3(0, -1.5f, 0);
+
+        // 3. 선택된 하나의 아이템만 생성
+        Instantiate(selectedLoot, spawnPosition, Quaternion.identity);
     }
 
     // 플레이어가 트리거(큰 투명 영역)에 들어왔을 때
