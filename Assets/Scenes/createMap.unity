@@ -20800,6 +20800,14 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: enemyPrefabs.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 5071164012658712244, guid: f1b683f57e3bf884ebaad822ece3782b, type: 3}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
