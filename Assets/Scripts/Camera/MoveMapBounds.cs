@@ -60,8 +60,9 @@ public class MoveMapBounds : MonoBehaviour {
         UpdateCameraPosition();
         HandleWallLock();
         CheckEnemiesStatus();
-
-        if (Input.GetKeyDown(KeyCode.Z)) {
+        
+        // ¹Ì»ç¿ë
+        if (false && Input.GetKeyDown(KeyCode.C)) {
             ReduceMonsterCountTest();
         }
     }

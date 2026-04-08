@@ -360,7 +360,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChestController
   interactKey: 102
-  lootPrefabs: []
+  lootPrefabs:
+  - {fileID: 1084652883148240085, guid: 835f8ba2920b2734ca6a46723b6e0967, type: 3}
   interactionUI: {fileID: 8836753133224838460}
 --- !u!1 &8836753133224838460
 GameObject:

@@ -289,6 +289,7 @@ public class RoomManager : MonoBehaviour
                         // 2. 내부 레이아웃 배치
                         RoomType currentType = rooms[x, y].type;
                         GameObject interiorPrefab = GetRandomInteriorByType(currentType);
+                        spawnedRoom.name = $"({x}, {y}) - {currentType}"; // 이름
 
                         if (interiorPrefab != null) {
                             // 내부 프리팹을 벽 프리팹의 자식으로 생성하거나 같은 위치에 생성
