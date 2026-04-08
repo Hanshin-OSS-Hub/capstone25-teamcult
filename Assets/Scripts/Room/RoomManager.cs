@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-public enum RoomType { Start, Normal, Empty, Shop, Boss }
+public enum RoomType { Start, Normal, Empty, Shop, Boss, Chest }
 
 [System.Serializable]
 public class RoomTypeGroup
@@ -28,7 +28,8 @@ public class RoomData
     public bool isFirstVisit = true;
     public bool shouldLockOnVisit = true;
 
-    public int monsterCount = 1;
+    public int monsterCount = 0;
+    public int bossIndex = 0;
     public List<GameObject> rewardPrefabs = new List<GameObject>();
 }
 
@@ -349,19 +350,37 @@ public class RoomManager : MonoBehaviour
 
     // 방의 위치와 리스트를 바탕으로 타입을 결정하는 메서드
     void AssignRoomTypes(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub, List<Vector2Int> twigs) {
-        // 시작점은 무조건 Start (또는 요청하신대로 Empty 리스트에서 뽑도록 설정 가능)
+        // 1. 모든 방을 기본적으로 Normal로 초기화 (혹시 모를 중복 생성 방지)
+        // (기존 코드에서 이미 생성되어 있다면 이 과정은 생략 가능합니다.)
+
+        // 2. 시작 지점 설정
         rooms[startPos.x, startPos.y].type = RoomType.Start;
 
-        // 메인 가지의 마지막 방을 보스방으로 만들고 싶다면 여기서 수정 가능
-        // 예: rooms[main[main.Count-1].x, main[main.Count-1].y].type = RoomType.Boss;
+        // 3. 메인 가지(Main Branch)의 마지막 방 -> 보스방
+        if (main != null && main.Count > 0) {
+            Vector2Int bossPos = main[main.Count - 1];
+            rooms[bossPos.x, bossPos.y].type = RoomType.Boss;
+        }
 
-        // 나머지는 기본적으로 Normal로 설정 (이미 초기값이 Normal이므로 특수 상황만 체크)
-        // 만약 특정 위치(예: 잔가지 끝)를 상점으로 만들고 싶다면 여기서 로직 추가
+        // 4. 서브 가지(Sub Branch)의 마지막 방 -> 상점
+        if (sub != null && sub.Count > 0) {
+            Vector2Int shopPos = sub[sub.Count - 1];
+            rooms[shopPos.x, shopPos.y].type = RoomType.Shop;
+        }
+
+        // 5. 모든 잔가지(Twigs) -> 보물상자 방 (Chest)
+        if (twigs != null) {
+            foreach (var twigPos in twigs) {
+                rooms[twigPos.x, twigPos.y].type = RoomType.Chest;
+                // 보물상자 방에는 몬스터가 없어야 한다면 아래 설정 추가
+                rooms[twigPos.x, twigPos.y].monsterCount = 0;
+            }
+        }
     }
 
-    void AssignRandomRewards(RoomData room)
-    {
+    void AssignRandomRewards(RoomData room) {
         if (allRewards == null || allRewards.Count == 0) return;
+        if (room.type != RoomType.Normal && room.type != RoomType.Boss) { return; }
 
         // ? 항상 정확히 1개만 나오게
         float randomValue = Random.Range(0, totalWeightSum);

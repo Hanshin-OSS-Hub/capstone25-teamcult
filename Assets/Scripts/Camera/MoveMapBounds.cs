@@ -156,12 +156,32 @@ public class MoveMapBounds : MonoBehaviour {
     }
 
     private void SpawnMonsters(RoomData room) {
-        if (room.monsterCount <= 0) return;
-        Debug.Log($"<color=red>전투 시작!</color> {room.monsterCount}마리 소환 시도");
+        // 1. 방 타입이 일반(Normal)인 경우
+        if (room.type == RoomType.Normal) {
+            if (room.monsterCount <= 0) return;
 
-        if (enemySpawner != null) {
-            // EnemySpawner로부터 생성된 적 리스트를 전달받음
-            currentRoomEnemies = enemySpawner.SpawnEnemy(room.monsterCount);
+            Debug.Log($"<color=red>전투 시작!</color> {room.monsterCount}마리 소환 시도");
+
+            if (enemySpawner != null) {
+                // EnemySpawner로부터 생성된 적 리스트를 전달받아 저장
+                currentRoomEnemies = enemySpawner.SpawnEnemy(room.monsterCount);
+            }
+        }
+        // 2. 방 타입이 보스(Boss)인 경우
+        else if (room.type == RoomType.Boss) {
+            Debug.Log("<color=purple>보스 출현!</color>");
+
+            if (enemySpawner != null) {
+                // 리스트가 null이라면 초기화 (에러 방지)
+                if (currentRoomEnemies == null) currentRoomEnemies = new List<GameObject>();
+
+                // 첫 번째 보스(인덱스 0)를 소환
+                GameObject boss = enemySpawner.SpawnBoss(room.bossIndex);
+
+                if (boss != null) {
+                    currentRoomEnemies.Add(boss);
+                }
+            }
         }
     }
 

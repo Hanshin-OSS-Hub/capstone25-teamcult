@@ -410,6 +410,15 @@ MonoBehaviour:
     - {fileID: 4866158564602013184, guid: 055bd25ec4d850c46b972760fae10acd, type: 3}
     - {fileID: 4866158564602013184, guid: 2417addd8db528445aa788d6e6259616, type: 3}
     - {fileID: 4866158564602013184, guid: e697455643676354e85ea7e28527b2c5, type: 3}
+  - type: 4
+    interiorPrefabs:
+    - {fileID: 4866158564602013184, guid: 95788e85d0a10bc409da080632e32a10, type: 3}
+  - type: 5
+    interiorPrefabs:
+    - {fileID: 4866158564602013184, guid: 802ab2fd29732c3478c458c45f2b2ac4, type: 3}
+  - type: 3
+    interiorPrefabs:
+    - {fileID: 4866158564602013184, guid: 9d508a7f5658db34e94f0b46cc9394ef, type: 3}
   maxRooms: 15
   mainBranchLength: 6
   subBranchLength: 5
@@ -20766,7 +20775,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.size
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.data[0].color.a
@@ -20774,15 +20783,75 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.data[0].color.b
-      value: 0
+      value: 0.3443396
       objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.data[0].color.g
-      value: 0.9282434
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.data[0].color.r
+      value: 0.64344025
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[1].color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[1].color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[1].color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[1].color.r
+      value: 0.98210716
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[2].color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[2].color.b
+      value: 0.2028302
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[2].color.g
+      value: 0.5133559
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[2].color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[3].color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[3].color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[3].color.g
+      value: 0.8893056
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[3].color.r
+      value: 0.3160377
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[1].roomType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[2].roomType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: roomTypeColors.Array.data[3].roomType
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3264184341807976020, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: playerTarget
@@ -20801,9 +20870,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: enemyPrefabs.Array.size
-      value: 3
+      propertyPath: bossPrefabs.Array.size
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: enemyPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: 'bossPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8399003209789750144, guid: 251a8bb89bb8a5a448c8f5cc4502046e, type: 3}
     - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[2]'
       value: 
