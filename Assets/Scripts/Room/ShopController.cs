@@ -45,42 +45,39 @@ public class ShopController : MonoBehaviour {
             return;
         }
 
-        // 기존 아이템 제거
         ClearOldItems();
 
-
-
-        // 4. 배치 로직 수행
         List<int> indices = GetRandomIndices(_itemPrefabs.Count, _spawnCount);
         float interval = _totalWidth / (_spawnCount + 1);
         float startX = -(_totalWidth / 2f);
 
         for (int i = 0; i < _spawnCount; i++) {
-            // [수정] xOffset을 기반으로 실제 소환 위치(spawnPos)를 계산합니다.
             float xOffset = startX + (interval * (i + 1));
             Vector3 spawnPos = transform.position + (transform.right * xOffset);
 
-            // 1. 아이템 생성 (이제 계산된 spawnPos를 사용합니다)
+            // 1. 아이템 생성
             GameObject itemObj = Instantiate(_itemPrefabs[indices[i]], spawnPos, transform.rotation);
-            itemObj.transform.SetParent(this.transform);
+            itemObj.transform.SetParent(this.transform); // ShopController의 자식으로 (아이템 스케일엔 영향 X)
             _spawnedItems.Add(itemObj);
 
-            // 2. 가격표 생성 및 아이템의 자식으로 설정
+            // 2. 가격표 생성 (아이템의 자식으로 넣지 않음!)
             if (_priceTextPrefab != null) {
-                GameObject priceObj = Instantiate(_priceTextPrefab, itemObj.transform);
-                priceObj.transform.localPosition = _textOffset; // 아이템 기준 상대 위치
+                // 위치 계산: 아이템 위치 + 설정한 오프셋
+                // 아이템의 스케일과 상관없이 일정한 월드 위치에 생성됩니다.
+                Vector3 textWorldPos = spawnPos + _textOffset;
+
+                GameObject priceObj = Instantiate(_priceTextPrefab, textWorldPos, Quaternion.identity);
+
+                // 텍스트도 나중에 한꺼번에 삭제될 수 있도록 _spawnedItems에 추가하거나, 
+                // 관리용 리스트를 따로 만들어 관리하는 것이 좋습니다.
+                _spawnedItems.Add(priceObj);
 
                 // 3. 컴포넌트 초기화
                 if (itemObj.TryGetComponent(out ItemPickUp pickUpScript)) {
                     int randomPrice = Random.Range(_minPrice, _maxPrice + 1);
-
-                    // 생성한 TMP를 전달하며 초기화 (TextMeshPro 컴포넌트 추출)
                     var tmp = priceObj.GetComponent<TextMeshPro>();
                     pickUpScript.InitializeShopItem(randomPrice, tmp);
                 }
-            }
-            else {
-                Debug.LogWarning($"{gameObject.name}: 가격표 프리팹(_priceTextPrefab)이 설정되지 않았습니다.");
             }
         }
     }
