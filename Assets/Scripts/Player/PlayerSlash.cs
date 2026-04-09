@@ -41,8 +41,12 @@ public class PlayerSlash : MonoBehaviour
 
     void Attack()
     {
-        if (MusicDirector.Instance != null)
-            MusicDirector.Instance.OnPlayerAttack();
+        // ★ [수정됨] 기존 MusicDirector 대신 새로운 BGM 엔진을 호출하여 공격음을 냅니다.
+        if (BattleStateBGM.Instance != null)
+        {
+            BattleStateBGM.Instance.PlayAttackFX();
+        }
+
         if (weapons.Length == 0 || stats == null) return;
         WeaponData currentWeapon = weapons[currentIndex];
 

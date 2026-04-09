@@ -24,7 +24,6 @@ public class PlayerHealth : MonoBehaviour
     private bool isInvincible = false;
     private bool isDead = false;
 
-    // 광전사 모드
     private bool isBerserker = false;
     private PlayerStats stats;
 
@@ -35,21 +34,17 @@ public class PlayerHealth : MonoBehaviour
         if (playerSprite == null)
         {
             playerSprite = GetComponent<SpriteRenderer>();
-            if (playerSprite == null)
-                playerSprite = GetComponentInChildren<SpriteRenderer>();
+            if (playerSprite == null) playerSprite = GetComponentInChildren<SpriteRenderer>();
         }
 
         if (hearts == null || hearts.Length == 0)
         {
             GameObject container = GameObject.Find("HeartContainer");
-            if (container != null)
-                hearts = container.GetComponentsInChildren<Image>();
+            if (container != null) hearts = container.GetComponentsInChildren<Image>();
         }
 
-        if (hearts != null && hearts.Length > 0)
-            maxHealth = hearts.Length * 2;
-        else
-            maxHealth = 6;
+        if (hearts != null && hearts.Length > 0) maxHealth = hearts.Length * 2;
+        else maxHealth = 6;
 
         currentHealth = maxHealth;
         UpdateUI();
@@ -70,14 +65,12 @@ public class PlayerHealth : MonoBehaviour
             isBerserker = true;
             stats.bonusAttackPercent += 30f;
             stats.bonusAttackSpeed += 50f;
-            Debug.Log("[광전사] 발동!");
         }
         else if (currentHealth > 2f && isBerserker)
         {
             isBerserker = false;
             stats.bonusAttackPercent -= 30f;
             stats.bonusAttackSpeed -= 50f;
-            Debug.Log("[광전사] 해제!");
         }
     }
 
@@ -86,22 +79,21 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
         if (isInvincible) return;
 
-        // 데미지 무효 확률
         if (stats != null && stats.damageNullifyChance > 0)
         {
-            float roll = Random.Range(0f, 100f);
-            if (roll < stats.damageNullifyChance)
-            {
-                Debug.Log("[데미지 무효] 발동!");
-                return;
-            }
+            if (Random.Range(0f, 100f) < stats.damageNullifyChance) return;
         }
+
+        if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.TriggerGlitch();
 
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
 
-        Debug.Log($"HP Left: {currentHealth}");
         UpdateUI();
+
+        // ★ [추가] 데미지 입은 후 체력 체크 강제 업데이트
+        if (BattleStateBGM.Instance != null) 
+            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
 
         if (playerSprite != null && currentHealth > 0)
         {
@@ -119,43 +111,32 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0) StartCoroutine(HandleDeath());
     }
 
-    // ── 사망 처리 ────────────────────────────────────────────────
     IEnumerator HandleDeath()
     {
         if (isDead) yield break;
         isDead = true;
 
-        if (flickerCoroutine != null)
-        {
-            StopCoroutine(flickerCoroutine);
-            flickerCoroutine = null;
-        }
+        if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.TriggerGameOver();
 
-        // 부활 아이템 체크
+        if (flickerCoroutine != null) { StopCoroutine(flickerCoroutine); flickerCoroutine = null; }
+
         if (GameManager.instance != null && GameManager.instance.HasRevive())
         {
-            Debug.Log("[사망] 부활 아이템 발동!");
             GameManager.instance.UseRevive();
             yield return StartCoroutine(ReviveSequence());
             yield break;
         }
 
-        // 사망 연출
         yield return StartCoroutine(DeathAnimation());
 
-        // GameManager에 게임오버 통보
-        if (GameManager.instance != null)
-            GameManager.instance.GameOver();
-        else
-            gameObject.SetActive(false);
+        if (GameManager.instance != null) GameManager.instance.GameOver();
+        else gameObject.SetActive(false);
     }
 
-    // ── 사망 연출 ────────────────────────────────────────────────
     IEnumerator DeathAnimation()
     {
         if (playerSprite != null)
         {
-            // 빠른 점멸
             float timer = 0f;
             float fastInterval = 0.05f;
             while (timer < deathAnimDuration * 0.6f)
@@ -165,7 +146,6 @@ public class PlayerHealth : MonoBehaviour
                 yield return new WaitForSeconds(fastInterval);
             }
 
-            // 페이드 아웃
             Color c = playerSprite.color;
             float fadeTimer = 0f;
             float fadeDuration = deathAnimDuration * 0.4f;
@@ -180,69 +160,29 @@ public class PlayerHealth : MonoBehaviour
             c.a = 0f;
             playerSprite.color = c;
         }
-        else
-        {
-            yield return new WaitForSeconds(deathAnimDuration);
-        }
+        else yield return new WaitForSeconds(deathAnimDuration);
     }
 
-    // ── 부활 시퀀스 ──────────────────────────────────────────────
     IEnumerator ReviveSequence()
     {
         currentHealth = Mathf.Max(1f, maxHealth * 0.5f);
         isDead = false;
         UpdateUI();
+        
+        if (BattleStateBGM.Instance != null) 
+            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
 
-        if (playerSprite != null)
-        {
-            playerSprite.enabled = true;
-            Color c = playerSprite.color;
-            c.a = 1f;
-            playerSprite.color = c;
-        }
+        if (playerSprite != null) { playerSprite.enabled = true; Color c = playerSprite.color; c.a = 1f; playerSprite.color = c; }
 
         float reviveInvincDuration = 3f;
         if (stats != null) reviveInvincDuration += stats.invincibilityBonus;
-
-        Debug.Log($"[부활] 완료! 무적 {reviveInvincDuration}초");
-
         StartCoroutine(InvincibilityCoroutine(reviveInvincDuration));
         yield return StartCoroutine(ReviveFlicker(reviveInvincDuration));
     }
 
-    IEnumerator ReviveFlicker(float duration)
-    {
-        if (playerSprite == null) yield break;
-        float timer = 0f;
-        float interval = 0.15f;
-        while (timer < duration)
-        {
-            playerSprite.enabled = !playerSprite.enabled;
-            timer += interval;
-            yield return new WaitForSeconds(interval);
-        }
-        playerSprite.enabled = true;
-    }
-
-    IEnumerator InvincibilityCoroutine(float duration)
-    {
-        isInvincible = true;
-        yield return new WaitForSeconds(duration);
-        isInvincible = false;
-    }
-
-    IEnumerator DamageFlicker()
-    {
-        float timer = 0f;
-        while (timer < flickerDuration)
-        {
-            playerSprite.enabled = !playerSprite.enabled;
-            timer += flickerInterval;
-            yield return new WaitForSeconds(flickerInterval);
-        }
-        playerSprite.enabled = true;
-        flickerCoroutine = null;
-    }
+    IEnumerator ReviveFlicker(float duration) { if (playerSprite == null) yield break; float timer = 0f; float interval = 0.15f; while (timer < duration) { playerSprite.enabled = !playerSprite.enabled; timer += interval; yield return new WaitForSeconds(interval); } playerSprite.enabled = true; }
+    IEnumerator InvincibilityCoroutine(float duration) { isInvincible = true; yield return new WaitForSeconds(duration); isInvincible = false; }
+    IEnumerator DamageFlicker() { float timer = 0f; while (timer < flickerDuration) { playerSprite.enabled = !playerSprite.enabled; timer += flickerInterval; yield return new WaitForSeconds(flickerInterval); } playerSprite.enabled = true; flickerCoroutine = null; }
 
     public void UpdateUI()
     {
@@ -261,17 +201,9 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateUI();
+        if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
     }
 
-    public void GetFlameHeart(int amount = 1)
-    {
-        ElementalManager manager = GetComponent<ElementalManager>();
-        if (manager != null) manager.ActivateAbility("Fire");
-    }
-
-    public void GetIceHeart(int amount = 1)
-    {
-        ElementalManager manager = GetComponent<ElementalManager>();
-        if (manager != null) manager.ActivateAbility("Ice");
-    }
+    public void GetFlameHeart(int amount = 1) { ElementalManager manager = GetComponent<ElementalManager>(); if (manager != null) manager.ActivateAbility("Fire"); }
+    public void GetIceHeart(int amount = 1) { ElementalManager manager = GetComponent<ElementalManager>(); if (manager != null) manager.ActivateAbility("Ice"); }
 }

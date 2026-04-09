@@ -34,7 +34,7 @@ public class ElementalManager : MonoBehaviour
     private float savedHealth;
     private bool isAbilityActive = false;
     private Material screenMat;
-    private string currentType = ""; // ? ÇöÀç È°¼ºÈ­µÈ ¼Ó¼º ÀúÀå
+    private string currentType = ""; 
 
     private float flashCooldown = 0f;
     private float flashCooldownMax = 2.5f;
@@ -65,7 +65,6 @@ public class ElementalManager : MonoBehaviour
         if (isAbilityActive) if (playerHealth.currentHealth <= savedHealth - 2.0f) DeactivateAbility();
         if (flashCooldown > 0f) flashCooldown -= Time.deltaTime;
 
-        // Ä³¸¯ÅÍ À§Ä¡ ¼ÎÀÌ´õ¿¡ ½Ç½Ã°£ Àü´Ş
         if (screenMat != null && playerTransform != null && mainCamera != null)
         {
             Vector3 vp = mainCamera.WorldToViewportPoint(playerTransform.position);
@@ -75,14 +74,12 @@ public class ElementalManager : MonoBehaviour
 
     public void ActivateAbility(string type)
     {
-        // ? ÀÌ¹Ì °°Àº ¼Ó¼ºÀÌ È°¼ºÈ­µÇ¾î ÀÖÀ¸¸é ¹«½Ã
         if (isAbilityActive && currentType == type)
         {
-            Debug.Log($"[{type}] ÀÌ¹Ì È°¼ºÈ­ Áß ? ÁßÃ¸ ¹«½Ã");
+            Debug.Log($"[{type}] ì´ë¯¸ í™œì„±í™” ë¨");
             return;
         }
 
-        // ? ´Ù¸¥ ¼Ó¼ºÀÌ È°¼ºÈ­ ÁßÀÌ¸é ¸ÕÀú ÇØÁ¦
         if (isAbilityActive && currentType != type)
         {
             DeactivateAbility();
@@ -91,10 +88,16 @@ public class ElementalManager : MonoBehaviour
         if (type == "Fire") hasFireHeart = true;
         if (type == "Ice") hasIceHeart = true;
 
+        // â˜… [ì‚¬ìš´ë“œ ì—”ì§„ ì—°ë™] ì•„ì´í…œ ë¨¹ì—ˆì„ ë•Œ BGMì— ì›ì†Œ ì´í™íŠ¸ ì ìš©!
+        if (BattleStateBGM.Instance != null)
+        {
+            BattleStateBGM.Instance.ApplyElementalEffect(type);
+        }
+
         if (playerHealth == null) return;
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         isAbilityActive = true;
-        currentType = type; // ? ÇöÀç ¼Ó¼º ÀúÀå
+        currentType = type; 
         savedHealth = playerHealth.currentHealth;
         flashCooldown = 0f;
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(true);
@@ -106,9 +109,16 @@ public class ElementalManager : MonoBehaviour
     {
         if (!isAbilityActive) return;
         isAbilityActive = false;
-        currentType = ""; // ? ¼Ó¼º ÃÊ±âÈ­
+        currentType = ""; 
         hasFireHeart = false;
         hasIceHeart = false;
+
+        // â˜… [ì‚¬ìš´ë“œ ì—”ì§„ ì—°ë™] ìƒíƒœê°€ ëë‚¬ì„ ë•Œ ìŒì•… ì›ìƒë³µêµ¬!
+        if (BattleStateBGM.Instance != null)
+        {
+            BattleStateBGM.Instance.ClearElementalEffect();
+        }
+
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(false);
         if (playerHealth.hearts != null)
             foreach (var img in playerHealth.hearts)

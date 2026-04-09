@@ -31,26 +31,20 @@ public class BattleMusicSensor : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            if (hitBuffer[i] != null)
+            if (hitBuffer[i] != null && hitBuffer[i].CompareTag("Enemy"))
             {
-                // ★ 1. 콜라이더가 잡힌 오브젝트 중에 "Enemy" 태그를 가진 놈이 있는지 확인
-                if (hitBuffer[i].CompareTag("Enemy"))
-                {
-                    string objName = hitBuffer[i].gameObject.name;
-                    
-                    // 🚨 여기에 찍히는 이름을 정확히 봐야 합니다!
-                    Debug.Log($"👀 [레이더] Enemy 태그 감지됨! 실제 이름: {objName}");
+                string objName = hitBuffer[i].gameObject.name;
 
-                    // C#은 대소문자와 띄어쓰기를 엄격하게 구분합니다.
-                    if (objName.Contains("RangedEnemy"))
-                    {
-                        foundBoss = true;
-                        break; 
-                    }
-                    else if (objName.Contains("EnemyAI"))
-                    {
-                        foundCombat = true;
-                    }
+                // ★ 1. 보스 인식 (이름에 Boss나 Devil 2가 포함될 때)
+                if (objName.Contains("Boss") || objName.Contains("Devil 2"))
+                {
+                    foundBoss = true;
+                    break; 
+                }
+                // ★ 2. 일반 전투 인식 (EnemyAI, RangedEnemy, Devil 등)
+                else if (objName.Contains("EnemyAI") || objName.Contains("RangedEnemy") || objName.Contains("Devil"))
+                {
+                    foundCombat = true;
                 }
             }
         }
@@ -58,17 +52,13 @@ public class BattleMusicSensor : MonoBehaviour
         if (BattleStateBGM.Instance != null)
         {
             RoomState targetState = RoomState.Normal;
+            
             if (foundBoss) targetState = RoomState.Boss;
             else if (foundCombat) targetState = RoomState.Combat;
 
             if (BattleStateBGM.Instance.currentState != targetState)
             {
-                // 로그 메시지를 명확하게 수정했습니다.
-                if (targetState == RoomState.Normal) 
-                    Debug.Log("🕊️ [음악 변경] 주변에 적이 없습니다. Normal 모드로 전환!");
-                else 
-                    Debug.Log($"🔥 [음악 변경] {targetState} 모드로 전환!");
-
+                Debug.Log($"🔥 [레이더] 상태를 {targetState} (으)로 변경합니다.");
                 BattleStateBGM.Instance.SetBattleState(targetState);
             }
         }

@@ -4,8 +4,8 @@ using System.Collections;
 public class PlayerHitEffect : MonoBehaviour
 {
     [Header("Settings")]
-    public int flashCount = 3;         // �� �� ��������
-    public float flashInterval = 0.1f; // �����̴� �ӵ�
+    public int flashCount = 3;         
+    public float flashInterval = 0.1f; 
 
     private SpriteRenderer spriteRenderer;
 
@@ -16,16 +16,13 @@ public class PlayerHitEffect : MonoBehaviour
 
     public void TakeDamage()
     {
-        if (MusicDirector.Instance != null)
+        // ★ [추가] 맞았을 때 BGM 엔진에 글리치(지지직) 효과 발동 명령!
+        if (BattleStateBGM.Instance != null)
         {
-            MusicDirector.Instance.OnPlayerDamaged();
+            BattleStateBGM.Instance.TriggerGlitch();
         }
         
-        
-        // ��������Ʈ �������� ���ų� �̹� �����̴� ���̸� ���� �� ��
         if (spriteRenderer == null) return;
-
-        // �ڷ�ƾ(������ ����) ����
         StartCoroutine(FlashRoutine());
     }
 
@@ -33,16 +30,11 @@ public class PlayerHitEffect : MonoBehaviour
     {
         for (int i = 0; i < flashCount; i++)
         {
-            // 1. ���� (����)
             spriteRenderer.enabled = false;
             yield return new WaitForSeconds(flashInterval);
-
-            // 2. �Ѱ� (���󺹱�)
             spriteRenderer.enabled = true;
             yield return new WaitForSeconds(flashInterval);
         }
-
-        // ������ Ȯ���ϰ� �ѵα�
         spriteRenderer.enabled = true;
     }
 }
