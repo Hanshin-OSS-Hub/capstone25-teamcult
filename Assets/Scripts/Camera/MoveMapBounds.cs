@@ -218,6 +218,19 @@ public class MoveMapBounds : MonoBehaviour {
                 Debug.Log($"<color=cyan>보상 생성됨:</color> {prefab.name}");
             }
         }
+
+        if (room.type == RoomType.Boss) {
+            GameObject elevatorDoorClose = GameObject.Find("ElevatorDoorClose");
+
+            if (elevatorDoorClose != null) {
+                elevatorDoorClose.SetActive(false); // 오브젝트 비활성화
+                Debug.Log("<color=green>성공:</color> ElevatorDoorClose 오브젝트를 비활성화했습니다.");
+            }
+            else {
+                // 오브젝트가 이미 꺼져있거나 씬에 없을 경우
+                Debug.LogWarning("<color=red>실패:</color> 'ElevatorDoorClose' 오브젝트를 찾을 수 없습니다. (이미 비활성화되었거나 이름이 다를 수 있음)");
+            }
+        }
     }
 
     private void PrintRoomInfo() {
