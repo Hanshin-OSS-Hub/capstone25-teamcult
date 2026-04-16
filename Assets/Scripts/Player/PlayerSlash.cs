@@ -20,12 +20,17 @@ public class PlayerSlash : MonoBehaviour
     public float distance = 1.0f;
     private float nextAttackTime = 0f;
     private PlayerStats stats;
-    private ElementalManager elementalManager; // ✅ 추가
+    private ElementalManager elementalManager;
+
+    [Header("번개 체인 설정")]
+    public float lightningChainRadius = 4f;      // 체인 범위
+    public float lightningChainDamageRatio = 0.5f; // 체인 데미지 비율 (0.5 = 50%)
+    public float lightningDuration = 1.5f;         // 지속 시간
 
     void Start()
     {
         stats = GetComponent<PlayerStats>();
-        elementalManager = GetComponent<ElementalManager>(); // ✅ 추가
+        elementalManager = GetComponent<ElementalManager>();
     }
 
     void Update()
@@ -41,7 +46,6 @@ public class PlayerSlash : MonoBehaviour
 
     void Attack()
     {
-        // ★ [수정됨] 기존 MusicDirector 대신 새로운 BGM 엔진을 호출하여 공격음을 냅니다.
         if (BattleStateBGM.Instance != null)
         {
             BattleStateBGM.Instance.PlayAttackFX();
@@ -54,15 +58,12 @@ public class PlayerSlash : MonoBehaviour
         float adjustedCooldown = currentWeapon.cooldown / speedMultiplier;
         nextAttackTime = Time.time + adjustedCooldown;
 
-        //Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 mousePos = Input.mousePosition;
         Vector3 viewportPos = new Vector3(mousePos.x / Screen.width, mousePos.y / Screen.height, 0);
         Vector3 targetWorldPos = Camera.main.ViewportToWorldPoint(viewportPos);
         targetWorldPos.z = 0;
 
-        // 이제 targetWorldPos를 사용하여 방향(direction)을 계산합니다.
         Vector2 direction = ((Vector2)targetWorldPos - (Vector2)transform.position).normalized;
-        //Vector2 direction = (mousePos - transform.position).normalized;
 
         float finalDistance = distance + stats.bonusAttackRange;
         Vector3 spawnPos = transform.position + (Vector3)(direction * finalDistance);
@@ -109,7 +110,7 @@ public class PlayerSlash : MonoBehaviour
             Destroy(obj, currentWeapon.lifeTime);
         }
 
-        // ✅ 속성 효과 부착
+        // 속성 효과 부착
         if (elementalManager != null)
         {
             if (melee != null)
@@ -118,6 +119,14 @@ public class PlayerSlash : MonoBehaviour
                     melee.gameObject.AddComponent<BurnOnHit>().elementalManager = elementalManager;
                 if (elementalManager.hasIceHeart)
                     melee.gameObject.AddComponent<SlowOnHit>().elementalManager = elementalManager;
+                if (elementalManager.hasLightningHeart)
+                {
+                    LightningOnHit lo = melee.gameObject.AddComponent<LightningOnHit>();
+                    lo.elementalManager = elementalManager;
+                    lo.chainRadius = lightningChainRadius;
+                    lo.chainDamageRatio = lightningChainDamageRatio;
+                    lo.duration = lightningDuration;
+                }
             }
             if (bullet != null)
             {
@@ -125,6 +134,14 @@ public class PlayerSlash : MonoBehaviour
                     bullet.gameObject.AddComponent<BurnOnHit>().elementalManager = elementalManager;
                 if (elementalManager.hasIceHeart)
                     bullet.gameObject.AddComponent<SlowOnHit>().elementalManager = elementalManager;
+                if (elementalManager.hasLightningHeart)
+                {
+                    LightningOnHit lo = bullet.gameObject.AddComponent<LightningOnHit>();
+                    lo.elementalManager = elementalManager;
+                    lo.chainRadius = lightningChainRadius;
+                    lo.chainDamageRatio = lightningChainDamageRatio;
+                    lo.duration = lightningDuration;
+                }
             }
         }
     }
