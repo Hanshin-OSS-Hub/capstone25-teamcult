@@ -329,8 +329,8 @@ Shader "Custom/FireVignette"
 
                 float introMask = (_EffectType >= 1.5 && _EffectType < 2.5) ? 1.0 : smoothstep(0.0, 1.0, _Progress);
 
-                fixed4 lightningEdge = fixed4(0.0, 0.6, 1.0, 1.0);
-                fixed4 lightningCore = fixed4(0.7, 0.95, 1.0, 1.0);
+                fixed4 lightningEdge = fixed4(1.0, 0.6, 0.0, 1.0);  // 주황
+fixed4 lightningCore = fixed4(1.0, 0.95, 0.7, 1.0); // 흰/노랑
                 fixed4 fc = (_EffectType >= 2.5 && _EffectType < 3.5)
                            ? lerp(lightningEdge, lightningCore, pattern)
                            : lerp(_EdgeColor, _CoreColor, pattern);

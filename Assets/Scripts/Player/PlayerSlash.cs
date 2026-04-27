@@ -23,9 +23,9 @@ public class PlayerSlash : MonoBehaviour
     private ElementalManager elementalManager;
 
     [Header("번개 체인 설정")]
-    public float lightningChainRadius = 4f;      // 체인 범위
-    public float lightningChainDamageRatio = 0.5f; // 체인 데미지 비율 (0.5 = 50%)
-    public float lightningDuration = 1.5f;         // 지속 시간
+    public float lightningChainRadius = 4f;
+    public float lightningChainDamageRatio = 0.5f;
+    public float lightningDuration = 1.5f;
 
     void Start()
     {
@@ -110,7 +110,6 @@ public class PlayerSlash : MonoBehaviour
             Destroy(obj, currentWeapon.lifeTime);
         }
 
-        // 속성 효과 부착
         if (elementalManager != null)
         {
             if (melee != null)

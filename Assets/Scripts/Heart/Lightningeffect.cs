@@ -5,97 +5,85 @@ using System.Collections.Generic;
 public class LightningEffect : MonoBehaviour
 {
     [Header("체인 설정")]
-    public float chainRadius = 4f;
-    public float damage = 10f;
-    public float chainDamageRatio = 0.5f; // 체인 데미지 비율 (0.5 = 50%)
-    public float duration = 1.5f;
-    public bool isChained = false;
-
     public ElementalManager elementalManager;
+    public float chainRadius = 4f;
+    public float chainDamageRatio = 0.5f;
+    public float duration = 1.5f;
+    public int maxChainCount = 3;
+    public int originalDamage = 10;
+    public Vector3 chainOrigin;
 
-    private bool applied = false;
-    private static HashSet<GameObject> chainedThisFrame = new HashSet<GameObject>();
-
-    private SpriteRenderer spriteRenderer;
-    private Color originalColor;
+    private bool hasChained = false;
 
     void Start()
     {
-        if (applied) return;
-        applied = true;
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color;
-
-        StartCoroutine(ChainLightning());
-        StartCoroutine(RemoveEffect());
+        if (chainOrigin == Vector3.zero)
+            chainOrigin = transform.position;
+        StartCoroutine(DoLightningEffect());
     }
 
-    IEnumerator ChainLightning()
+    IEnumerator DoLightningEffect()
     {
-        yield return null;
+        yield return new WaitForSeconds(0.1f);
 
-        StartCoroutine(FlashEffect());
+        if (!hasChained)
+        {
+            hasChained = true;
+            ChainToNearbyEnemies(chainOrigin, maxChainCount);
+        }
 
-        if (isChained) yield break;
+        yield return new WaitForSeconds(duration);
+        if (this != null) Destroy(this);
+    }
 
-        chainedThisFrame.Clear();
-        chainedThisFrame.Add(this.gameObject);
+    void ChainToNearbyEnemies(Vector3 origin, int remainingChains)
+    {
+        if (remainingChains <= 0) return;
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, chainRadius);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(origin, chainRadius);
+        List<GameObject> chainTargets = new List<GameObject>();
 
         foreach (Collider2D hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
-            if (chainedThisFrame.Contains(hit.gameObject)) continue;
-
-            chainedThisFrame.Add(hit.gameObject);
-
-            if (hit.GetComponent<LightningEffect>() == null)
-            {
-                Debug.Log($"[번개 체인] {hit.gameObject.name} 에게 전파! (데미지 {chainDamageRatio * 100f}%)");
-                LightningEffect chainEffect = hit.gameObject.AddComponent<LightningEffect>();
-                chainEffect.elementalManager = elementalManager;
-                chainEffect.isChained = true;
-                chainEffect.duration = duration;
-                chainEffect.damage = damage;
-                chainEffect.chainDamageRatio = chainDamageRatio;
-            }
-
-            EnemyHealth health = hit.GetComponent<EnemyHealth>();
-            if (health != null)
-                health.TakeDamage(Mathf.RoundToInt(damage * chainDamageRatio));
+            // gameObject 비교 대신 위치로 제외 (죽어서 사라진 경우 대비)
+            if (Vector3.Distance(hit.transform.position, origin) < 0.1f) continue;
+            chainTargets.Add(hit.gameObject);
         }
-    }
 
-    IEnumerator FlashEffect()
-    {
-        if (spriteRenderer == null) yield break;
+        if (chainTargets.Count == 0) return;
 
-        spriteRenderer.color = Color.white;
-        yield return new WaitForSeconds(0.05f);
+        // 1. 비주얼 먼저
+        foreach (GameObject target in chainTargets)
+            LightningVisual.Spawn(origin, target.transform.position);
 
-        spriteRenderer.color = new Color(0.0f, 1.0f, 0.9f, 1.0f);
-        yield return new WaitForSeconds(0.05f);
+        // 2. 체인 컴포넌트 붙이기 (데미지 전에)
+        foreach (GameObject target in chainTargets)
+        {
+            LightningEffect existing = target.GetComponent<LightningEffect>();
+            if (existing != null) Destroy(existing);
 
-        spriteRenderer.color = Color.white;
-        yield return new WaitForSeconds(0.05f);
+            LightningEffect chainEffect = target.AddComponent<LightningEffect>();
+            chainEffect.elementalManager = elementalManager;
+            chainEffect.chainRadius = chainRadius;
+            chainEffect.chainDamageRatio = chainDamageRatio;
+            chainEffect.originalDamage = originalDamage;
+            chainEffect.chainOrigin = target.transform.position;
+            chainEffect.duration = duration * 0.5f;
+            chainEffect.maxChainCount = remainingChains - 1;
+        }
 
-        spriteRenderer.color = originalColor;
-    }
-
-    IEnumerator RemoveEffect()
-    {
-        yield return new WaitForSeconds(duration);
-        applied = false;
-        Destroy(this);
-    }
-
-    void OnDestroy()
-    {
-        if (spriteRenderer != null)
-            spriteRenderer.color = originalColor;
+        // 3. 데미지 맨 나중에 (죽어도 체인은 이미 걸림)
+        foreach (GameObject target in chainTargets)
+        {
+            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                int chainDamage = Mathf.RoundToInt(originalDamage * chainDamageRatio);
+                if (chainDamage < 1) chainDamage = 1;
+                enemyHealth.TakeDamage(chainDamage);
+            }
+        }
     }
 
     void OnDrawGizmosSelected()

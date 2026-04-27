@@ -11,24 +11,118 @@ public class BurnEffect : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     private bool burning = false;
+    private ParticleSystem firePS;
 
     void Start()
     {
         enemyHealth = GetComponent<EnemyHealth>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        if (enemyHealth == null)
-        {
-            Destroy(this);
-            return;
-        }
+        if (enemyHealth == null) { Destroy(this); return; }
+        if (spriteRenderer != null) originalColor = spriteRenderer.color;
 
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color;
+        // 파티클 생성
+        firePS = CreateFireParticle();
 
         burning = true;
         StartCoroutine(BurnTick());
         StartCoroutine(BurnFlicker());
+    }
+
+    ParticleSystem CreateFireParticle()
+    {
+        GameObject psObj = new GameObject("FireParticle");
+        psObj.transform.SetParent(transform);
+
+        // 적 스프라이트 중앙 위에 위치
+        Bounds bounds = spriteRenderer != null ? spriteRenderer.bounds : new Bounds(transform.position, Vector3.one);
+        psObj.transform.position = new Vector3(
+            transform.position.x,
+            bounds.min.y,
+            transform.position.z - 0.1f
+        );
+
+        ParticleSystem ps = psObj.AddComponent<ParticleSystem>();
+        ParticleSystemRenderer psr = psObj.GetComponent<ParticleSystemRenderer>();
+
+        // Additive 머티리얼
+        Material mat = new Material(Shader.Find("Sprites/Default"));
+        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        mat.SetInt("_ZWrite", 0);
+        mat.color = Color.white;
+        psr.material = mat;
+        psr.sortingLayerName = "Overhead";
+        psr.sortingOrder = 100;
+        psr.renderMode = ParticleSystemRenderMode.Billboard;
+
+        // 메인 설정
+        var main = ps.main;
+        main.loop = true;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(0.3f, 0.6f);
+        main.startSpeed = new ParticleSystem.MinMaxCurve(0.8f, 2.0f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.25f);
+        main.startColor = new ParticleSystem.MinMaxGradient(
+            new Color(1f, 0.8f, 0.0f, 1f),  // 노랑
+            new Color(1f, 0.2f, 0.0f, 1f)   // 빨강
+        );
+        main.gravityModifier = new ParticleSystem.MinMaxCurve(-0.3f, -0.8f); // 위로 올라감
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles = 50;
+
+        // 방출
+        var emission = ps.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 20f;
+
+        // 모양: 적 스프라이트 너비만큼 퍼짐
+        float width = bounds.size.x * 0.6f;
+        var shape = ps.shape;
+        shape.enabled = true;
+        shape.shapeType = ParticleSystemShapeType.Box;
+        shape.scale = new Vector3(width, 0.05f, 0.01f);
+
+        // 크기 변화 (위로 올라갈수록 작아짐)
+        var sizeOverLifetime = ps.sizeOverLifetime;
+        sizeOverLifetime.enabled = true;
+        AnimationCurve sizeCurve = new AnimationCurve();
+        sizeCurve.AddKey(0f, 1.0f);
+        sizeCurve.AddKey(0.5f, 0.7f);
+        sizeCurve.AddKey(1f, 0f);
+        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+
+        // 색상 변화 (노랑 → 빨강 → 투명)
+        var colorOverLifetime = ps.colorOverLifetime;
+        colorOverLifetime.enabled = true;
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[]
+            {
+                new GradientColorKey(new Color(1f, 1f,  0.0f), 0.0f),  // 노랑
+                new GradientColorKey(new Color(1f, 0.4f,0.0f), 0.4f),  // 주황
+                new GradientColorKey(new Color(1f, 0.1f,0.0f), 0.7f),  // 빨강
+                new GradientColorKey(new Color(0.3f,0f, 0.0f), 1.0f),  // 어두운 빨강
+            },
+            new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(1f,   0.0f),
+                new GradientAlphaKey(0.8f, 0.5f),
+                new GradientAlphaKey(0f,   1.0f),
+            }
+        );
+        colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+        // 속도 변화 제거 (노이즈로 대체)
+
+        // 노이즈 (흔들림)
+        var noise = ps.noise;
+        noise.enabled = true;
+        noise.strength = 0.2f;
+        noise.frequency = 2f;
+        noise.scrollSpeed = 1f;
+
+        ps.Play();
+        return ps;
     }
 
     IEnumerator BurnTick()
@@ -39,15 +133,16 @@ public class BurnEffect : MonoBehaviour
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
             if (enemyHealth != null)
-            {
-                // ? TakeDamage에서 텍스트 생성하므로 여기선 데미지만 줌
                 enemyHealth.TakeDamage((int)damage);
-                Debug.Log($"[화상] {damage} 데미지 / 남은시간: {duration - elapsed:F1}초");
-            }
         }
-
-        Debug.Log("[화상] 종료");
         burning = false;
+
+        // 파티클 정지
+        if (firePS != null)
+        {
+            firePS.Stop();
+            Destroy(firePS.gameObject, 1f);
+        }
 
         yield return StartCoroutine(FadeToOriginal());
         Destroy(this);
@@ -55,10 +150,11 @@ public class BurnEffect : MonoBehaviour
 
     IEnumerator BurnFlicker()
     {
-        // 페이드인: 원본 → 빨간색
+        // 페이드인: 원본 → 주황빛
         float elapsed = 0f;
         float fadeTime = 0.2f;
-        Color fireColor = new Color(1f, 0.3f, 0.1f, 1f);
+        Color fireColor = new Color(1f, 0.4f, 0.1f, 1f);
+
         while (elapsed < fadeTime)
         {
             elapsed += Time.deltaTime;
@@ -68,14 +164,14 @@ public class BurnEffect : MonoBehaviour
             yield return null;
         }
 
-        // 불꽃 깜빡임: 빨강 ↔ 주황/노랑 빠르게 반복
+        // 불꽃 깜빡임
         while (burning)
         {
             float flicker = 0.5f + 0.5f * Mathf.Sin(Time.time * 20f);
             if (spriteRenderer != null)
                 spriteRenderer.color = new Color(
                     1f,
-                    Mathf.Lerp(0.0f, 0.6f, flicker),
+                    Mathf.Lerp(0.1f, 0.5f, flicker),
                     0f,
                     1.0f
                 );
@@ -87,24 +183,22 @@ public class BurnEffect : MonoBehaviour
     {
         float elapsed = 0f;
         float fadeTime = 0.3f;
-        Color currentColor = spriteRenderer != null ? spriteRenderer.color : originalColor;
+        Color curColor = spriteRenderer != null ? spriteRenderer.color : originalColor;
 
         while (elapsed < fadeTime)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / fadeTime);
             if (spriteRenderer != null)
-                spriteRenderer.color = Color.Lerp(currentColor, originalColor, t);
+                spriteRenderer.color = Color.Lerp(curColor, originalColor, t);
             yield return null;
         }
-
-        if (spriteRenderer != null)
-            spriteRenderer.color = originalColor;
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
     }
 
     void OnDestroy()
     {
-        if (spriteRenderer != null)
-            spriteRenderer.color = originalColor;
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+        if (firePS != null) Destroy(firePS.gameObject);
     }
 }
