@@ -20,11 +20,13 @@ public class LightningVisual : MonoBehaviour
         if (em != null) em.TriggerLightningFlash();
 
         // FireVignette »ö»ó + HDR·Î ¹à°Ô
-        LineRenderer aura = MakeLine(new Color(0.0f, 1.2f, 4.0f, 1f), 0.4f, 0.2f);   // HDR ÆÄ¶û
-        LineRenderer glow = MakeLine(new Color(0.5f, 1.8f, 4.0f, 1f), 0.18f, 0.09f);  // HDR ÇÏ´Ã»ö
-        LineRenderer core = MakeLine(new Color(3.0f, 4.0f, 5.0f, 1f), 0.06f, 0.03f);  // HDR Èò/ÇÏ´Ã
+        LineRenderer aura = MakeLine(new Color(0.0f, 1.2f, 4.0f, 1f), 0.4f, 0.2f);   
+        LineRenderer glow = MakeLine(new Color(0.5f, 1.8f, 4.0f, 1f), 0.18f, 0.09f);  
+        LineRenderer core = MakeLine(new Color(3.0f, 4.0f, 5.0f, 1f), 0.06f, 0.03f);  
 
-        // Ã¹ ¹øÂ½
+       
+
+
         SetPositions(aura, start, end, perp, 20, 0.45f);
         SetPositions(glow, start, end, perp, 20, 0.42f);
         SetPositions(core, start, end, perp, 20, 0.38f);

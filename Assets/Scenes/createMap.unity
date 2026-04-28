@@ -12655,55 +12655,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1605573854889644106, guid: 893161cec032d004ab35ac4f3ffcbeb6, type: 3}
   m_PrefabInstance: {fileID: 382500818895201242}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &656866880
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 656866882}
-  - component: {fileID: 656866881}
-  m_Layer: 0
-  m_Name: Global Volume
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &656866881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656866880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
-  m_IsGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: 5ca1f8f4a6198e1478335c4ceecb44c6, type: 2}
---- !u!4 &656866882
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656866880}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.09248, y: -0.4033047, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &688122035
 GameObject:
   m_ObjectHideFlags: 0
@@ -25602,65 +25553,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &1967208196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1967208198}
-  - component: {fileID: 1967208197}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1967208197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967208196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b4a74a522b903a419c8d66d10516117, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightningSettings
-  auraColor: {r: 0, g: 0.5, b: 2, a: 1}
-  glowColor: {r: 0.3, g: 0.9, b: 2, a: 1}
-  coreColor: {r: 4, g: 4, b: 6, a: 1}
-  auraWidth: 1.4
-  glowWidth: 0.65
-  coreWidth: 0.18
-  displacement: 0.35
-  flickerAmount: 0.3
-  lifetime: 0.28
-  bloomIntensity: 8
-  useLights: 1
-  lightColor: {r: 0.3, g: 0.7, b: 1, a: 1}
-  lightIntensity: 8
-  lightRadius: 4
-  lightSortingLayer: Overhead
---- !u!4 &1967208198
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967208196}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 103.68273, y: 31.37383, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2017743208
 GameObject:
   m_ObjectHideFlags: 0
@@ -25970,6 +25862,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 207573765330185006, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: lightningChainRadius
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 323192177233174994, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
       propertyPath: m_SortingOrder
       value: 2
@@ -27079,5 +26975,3 @@ SceneRoots:
   - {fileID: 597329871}
   - {fileID: 1585239920}
   - {fileID: 1604219993}
-  - {fileID: 656866882}
-  - {fileID: 1967208198}
