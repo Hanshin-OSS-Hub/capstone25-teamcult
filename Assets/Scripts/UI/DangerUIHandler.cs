@@ -33,20 +33,20 @@ public class DangerUIHandler : MonoBehaviour {
         UpdateDangerUI(0);
     }
 
-    private void Update() {
-        // 테스트 입력 로직
-        // 숫자 5: 위험도 랜덤 감소 (1~5)
-        if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            int randomDecrease = Random.Range(1, 6); // 1~5 사이의 정수
-            ModifyDanger(-randomDecrease);
-        }
+    //private void Update() {
+    //    // 테스트 입력 로직
+    //    // 숫자 5: 위험도 랜덤 감소 (1~5)
+    //    if (Input.GetKeyDown(KeyCode.Alpha5)) {
+    //        int randomDecrease = Random.Range(1, 6); // 1~5 사이의 정수
+    //        ModifyDanger(-randomDecrease);
+    //    }
 
-        // 숫자 6: 위험도 랜덤 증가 (1~5)
-        if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            int randomIncrease = Random.Range(1, 6); // 1~5 사이의 정수
-            ModifyDanger(randomIncrease);
-        }
-    }
+    //    // 숫자 6: 위험도 랜덤 증가 (1~5)
+    //    if (Input.GetKeyDown(KeyCode.Alpha6)) {
+    //        int randomIncrease = Random.Range(1, 6); // 1~5 사이의 정수
+    //        ModifyDanger(randomIncrease);
+    //    }
+    //}
 
     private void ModifyDanger(int amount) {
         int maxDanger = MAX_SKULL_COUNT * dangerThresholdPerSkull;
