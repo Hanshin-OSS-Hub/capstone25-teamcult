@@ -46,9 +46,9 @@ public class PlayerSlash : MonoBehaviour
 
     void Attack()
     {
-        if (BattleStateBGM.Instance != null)
+        if (SFXManager.Instance != null)
         {
-            BattleStateBGM.Instance.PlayAttackFX();
+            SFXManager.Instance.PlaySFX(SFXType.PlayerAttack);
         }
 
         if (weapons.Length == 0 || stats == null) return;

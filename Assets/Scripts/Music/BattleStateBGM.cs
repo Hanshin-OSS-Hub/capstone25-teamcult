@@ -1,39 +1,34 @@
 using UnityEngine;
 using System.Collections;
 
-public enum RoomState { Normal, Combat, Boss }
+// ★ 4단계로 확장된 RoomState
+public enum RoomState { Normal, Tension, Combat, Boss }
 
 public class BattleStateBGM : MonoBehaviour
 {
     public static BattleStateBGM Instance;
 
-    [Header("통음원 파일")]
+    [Header("통음원 파일 (4단계 변주)")]
     public AudioClip[] normalTracks;
+    public AudioClip[] tensionTracks; // ★ 1~2마리 감지 시 재생될 긴장감 있는 곡
     public AudioClip[] combatTracks;
     public AudioClip[] bossTracks;
 
-    [Header("효과음 설정")]
-    public AudioClip attackSound;
+    [Header("심박동 설정")]
     public AudioClip heartMonitorSound; 
 
-    [Header("Current Status")]
     public RoomState currentState = RoomState.Normal;
     public string currentElement = ""; 
 
-    // 스피커 설정
     private AudioSource[] musicSources = new AudioSource[2];
     private int activeIndex = 0;
     private Coroutine fadeRoutine;
     private float targetVolume = 1.0f;
 
-    private AudioSource sfxSource;
     private AudioSource heartMonitorSource; 
-
-    // 이펙터
     private AudioDistortionFilter distortionFilter;
     private AudioChorusFilter poisonFilter; 
 
-    // 상태 변수
     private bool isGlitching = false;
     private float glitchTimer = 0f;
     private float glitchDuration = 0.3f;
@@ -45,14 +40,10 @@ public class BattleStateBGM : MonoBehaviour
     private float beepTimer = 0f;
     private bool isGameOver = false;
 
-    // 플레이어 체력 관찰용
     private PlayerHealth playerObserver;
     private float lastKnownHealth = -1f;
 
-    void Awake()
-    {
-        Instance = this; 
-    }
+    void Awake() { Instance = this; }
 
     void Start()
     {
@@ -66,11 +57,6 @@ public class BattleStateBGM : MonoBehaviour
             musicSources[i].ignoreListenerPause = true; 
         }
 
-        GameObject sfxObj = new GameObject("SFX_Speaker");
-        sfxObj.transform.SetParent(this.transform);
-        sfxSource = sfxObj.AddComponent<AudioSource>();
-        sfxSource.loop = false;
-
         GameObject monitorObj = new GameObject("Monitor_Speaker");
         monitorObj.transform.SetParent(this.transform);
         heartMonitorSource = monitorObj.AddComponent<AudioSource>();
@@ -79,10 +65,7 @@ public class BattleStateBGM : MonoBehaviour
         heartMonitorSource.ignoreListenerPause = true;
 
         distortionFilter = gameObject.AddComponent<AudioDistortionFilter>();
-        distortionFilter.distortionLevel = 0f;
-
         poisonFilter = gameObject.AddComponent<AudioChorusFilter>();
-        poisonFilter.enabled = false; 
 
         PlayRandomTrack(false);
     }
@@ -94,11 +77,8 @@ public class BattleStateBGM : MonoBehaviour
         ObservePlayerHealth();
 
         if (!musicSources[activeIndex].isPlaying && musicSources[activeIndex].clip != null && fadeRoutine == null)
-        {
             PlayRandomTrack(false);
-        }
 
-        // ★ 문제의 F키 입력(HandleInput) 호출을 완전히 삭제했습니다! ★
         HandleLowHealthBeep();
 
         if (isGlitching)
@@ -111,11 +91,7 @@ public class BattleStateBGM : MonoBehaviour
                 musicSources[1].pitch = randPitch;
                 distortionFilter.distortionLevel = Random.Range(0.6f, 0.9f); 
             }
-            else
-            {
-                isGlitching = false;
-                ApplyElementalFilters(); 
-            }
+            else { isGlitching = false; ApplyElementalFilters(); }
         }
         else
         {
@@ -135,15 +111,22 @@ public class BattleStateBGM : MonoBehaviour
         }
 
         float currentHP = playerObserver.currentHealth;
-
         if (lastKnownHealth < 0) lastKnownHealth = currentHP;
 
+        // 체력이 깎였을 때 (글리치 + 플레이어 피격음 자동 재생)
         if (currentHP < lastKnownHealth)
         {
             TriggerGlitch();
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.PlayerHit);
         }
-        lastKnownHealth = currentHP;
 
+        // 플레이어 사망 시 (사망음 자동 재생)
+        if (currentHP <= 0 && lastKnownHealth > 0)
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.PlayerDeath);
+        }
+
+        lastKnownHealth = currentHP;
         SetLowHealth(currentHP > 0f && currentHP <= 2f);
     }
 
@@ -164,11 +147,7 @@ public class BattleStateBGM : MonoBehaviour
     {
         if (isGameOver) return;
         isLowHealth = low;
-        if (!low) 
-        {
-            beepTimer = 0f;
-            if (heartMonitorSource.isPlaying) heartMonitorSource.Stop();
-        }
+        if (!low) { beepTimer = 0f; if (heartMonitorSource.isPlaying) heartMonitorSource.Stop(); }
     }
 
     public void TriggerGameOver()
@@ -176,69 +155,42 @@ public class BattleStateBGM : MonoBehaviour
         if (isGameOver) return;
         isGameOver = true;
         isLowHealth = false;
-        
         distortionFilter.distortionLevel = 0f;
         poisonFilter.enabled = false;
-
         StartCoroutine(FadeOutAllAudio());
     }
 
     IEnumerator FadeOutAllAudio()
     {
-        float dur = 1.5f; 
-        float timer = 0f;
-        float s0 = musicSources[0].volume;
-        float s1 = musicSources[1].volume;
-
+        float dur = 1.5f, timer = 0f, s0 = musicSources[0].volume, s1 = musicSources[1].volume;
         while (timer < dur)
         {
             timer += Time.unscaledDeltaTime; 
-            float p = timer / dur;
-            musicSources[0].volume = Mathf.Lerp(s0, 0f, p);
-            musicSources[1].volume = Mathf.Lerp(s1, 0f, p);
+            musicSources[0].volume = Mathf.Lerp(s0, 0f, timer / dur);
+            musicSources[1].volume = Mathf.Lerp(s1, 0f, timer / dur);
             yield return null; 
         }
-
-        musicSources[0].Stop();
-        musicSources[1].Stop();
-        heartMonitorSource.Stop(); 
+        musicSources[0].Stop(); musicSources[1].Stop(); heartMonitorSource.Stop(); 
     }
 
     public void ApplyElementalEffect(string type)
     {
         if (string.IsNullOrEmpty(type)) return;
         currentElement = type.ToLower().Trim(); 
-        
-        if (currentElement == "ice") { targetPitch = 0.6f; }
-        else if (currentElement == "lightning") { targetPitch = 1.4f; }
-        else { targetPitch = 1.0f; }
-
+        if (currentElement == "ice") targetPitch = 0.6f; 
+        else if (currentElement == "lightning") targetPitch = 1.4f; 
+        else targetPitch = 1.0f;
         ApplyElementalFilters();
     }
 
-    public void ClearElementalEffect()
-    {
-        currentElement = "";
-        targetPitch = 1.0f;
-        ApplyElementalFilters();
-    }
+    public void ClearElementalEffect() { currentElement = ""; targetPitch = 1.0f; ApplyElementalFilters(); }
 
     void ApplyElementalFilters()
     {
         if (isGlitching) return;
         poisonFilter.enabled = (currentElement == "poison");
-
-        if (currentElement == "fire")
-        {
-            distortionFilter.distortionLevel = 0.5f; 
-            targetVolume = 1.0f; 
-        }
-        else
-        {
-            distortionFilter.distortionLevel = 0f;
-            targetVolume = 1.0f;
-        }
-
+        distortionFilter.distortionLevel = (currentElement == "fire") ? 0.5f : 0f;
+        targetVolume = 1.0f; 
         if (fadeRoutine == null) musicSources[activeIndex].volume = targetVolume;
     }
 
@@ -252,7 +204,8 @@ public class BattleStateBGM : MonoBehaviour
     void PlayRandomTrack(bool doCrossfade)
     {
         AudioClip[] activeArray = normalTracks;
-        if (currentState == RoomState.Combat) activeArray = combatTracks;
+        if (currentState == RoomState.Tension) activeArray = tensionTracks; // ★ 2단계 트랙 추가
+        else if (currentState == RoomState.Combat) activeArray = combatTracks;
         else if (currentState == RoomState.Boss) activeArray = bossTracks;
 
         if (activeArray != null && activeArray.Length > 0)
@@ -286,5 +239,4 @@ public class BattleStateBGM : MonoBehaviour
     }
 
     public void TriggerGlitch() { if(!isGameOver) { isGlitching = true; glitchTimer = glitchDuration; } }
-    public void PlayAttackFX() { if (attackSound != null && !isGameOver) sfxSource.PlayOneShot(attackSound); }
 }

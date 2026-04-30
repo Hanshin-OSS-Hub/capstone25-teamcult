@@ -4,19 +4,19 @@ using TMPro;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("Ã¼·Â ¼³Á¤")]
+    [Header("Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public int currentHealth;
     private EnemyStats stats;
 
-    [Header("º¸»ó ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public int expReward = 10;
 
-    [Header("UI ¼³Á¤")]
+    [Header("UI ï¿½ï¿½ï¿½ï¿½")]
     public TMP_Text nameText;
     public Slider hpSlider;
     public TMP_Text hpText;
 
-    [Header("ÀÌÆåÆ® È¿°ú")]
+    [Header("ï¿½ï¿½ï¿½ï¿½Æ® È¿ï¿½ï¿½")]
     public GameObject damageTextPrefab;
 
     void Start()
@@ -67,7 +67,19 @@ public class EnemyHealth : MonoBehaviour
         }
 
         if (currentHealth <= 0)
+        {
+            // â˜… [ì—¬ê¸°ì— ì¶”ê°€!] ì  ì‚¬ë§ íš¨ê³¼ìŒ
+            if (SFXManager.Instance != null) 
+                SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            
             Die();
+        }
+        else
+        {
+            // â˜… [ì—¬ê¸°ì— ì¶”ê°€!] ì  í”¼ê²© íš¨ê³¼ìŒ
+            if (SFXManager.Instance != null) 
+                SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+        }
     }
 
     void UpdateUI()
@@ -82,18 +94,18 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        // 1. Å³ Ä«¿îÆ®
+        // 1. Å³ Ä«ï¿½ï¿½Æ®
         if (GameManager.instance != null)
             GameManager.instance.killCount++;
 
-        // 2. ÇÃ·¹ÀÌ¾î Ã£±â
+        // 2. ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã£ï¿½ï¿½
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
             PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
 
-            // 3. °æÇèÄ¡ È¹µæ
+            // 3. ï¿½ï¿½ï¿½ï¿½Ä¡ È¹ï¿½ï¿½
             if (expScript != null)
             {
                 float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
@@ -103,20 +115,20 @@ public class EnemyHealth : MonoBehaviour
 
             if (playerStats != null)
             {
-                // 4. Å³ Ã³Ä¡ ÈÄ ÀÌµ¿¼Óµµ ¹öÇÁ ½ºÅÃ
+                // 4. Å³ Ã³Ä¡ ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 if (playerStats.killMoveSpeedStack > 0)
                 {
                     playerStats.moveSpeed += playerStats.killMoveSpeedStack;
-                    Debug.Log($"[ÀÌµ¿¼Óµµ ½ºÅÃ] +{playerStats.killMoveSpeedStack} (ÇöÀç: {playerStats.moveSpeed})");
+                    Debug.Log($"[ï¿½Ìµï¿½ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½] +{playerStats.killMoveSpeedStack} (ï¿½ï¿½ï¿½ï¿½: {playerStats.moveSpeed})");
                 }
-                // 5. Å³ Ã³Ä¡ ÈÄ °ñµå È®·ü È¹µæ
+                // 5. Å³ Ã³Ä¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ È®ï¿½ï¿½ È¹ï¿½ï¿½
                 if (playerStats.killGoldChance > 0)
                 {
                     float roll = Random.Range(0f, 100f);
                     if (roll < playerStats.killGoldChance)
                     {
                         playerStats.AddGold(playerStats.killGoldAmount);
-                        Debug.Log($"[°ñµå È¹µæ] +{playerStats.killGoldAmount}");
+                        Debug.Log($"[ï¿½ï¿½ï¿½ È¹ï¿½ï¿½] +{playerStats.killGoldAmount}");
                     }
                 }
             }

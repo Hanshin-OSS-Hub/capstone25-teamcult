@@ -12,6 +12,7 @@ public class MeleeEnemy : MonoBehaviour
     private Transform player;
     private float lastAttackTime;
     private PlayerHealth playerHealth;
+    private bool hasSpotted = false;
 
     void Start()
     {
@@ -34,6 +35,13 @@ public class MeleeEnemy : MonoBehaviour
         // 1. 공격 범위 안에 들어왔는가?
         if (distance <= attackRange)
         {
+            if (!hasSpotted)
+            {
+                hasSpotted = true;
+                if (SFXManager.Instance != null) 
+                 SFXManager.Instance.PlaySFX(SFXType.EnemyEncounter);
+            }
+            
             // 쿨타임 됐으면 공격!
             if (Time.time > lastAttackTime + attackCooldown)
             {

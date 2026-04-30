@@ -27,7 +27,7 @@ public class BattleMusicSensor : MonoBehaviour
         int count = Physics2D.OverlapCircle(player.position, detectionRadius, contactFilter, hitBuffer);
         
         bool foundBoss = false;
-        bool foundCombat = false;
+        int enemyCount = 0; // ★ 적 마릿수 카운트
 
         for (int i = 0; i < count; i++)
         {
@@ -35,16 +35,14 @@ public class BattleMusicSensor : MonoBehaviour
             {
                 string objName = hitBuffer[i].gameObject.name;
 
-                // ★ 1. 보스 인식 (이름에 Boss나 Devil 2가 포함될 때)
                 if (objName.Contains("Boss") || objName.Contains("Devil 2"))
                 {
                     foundBoss = true;
                     break; 
                 }
-                // ★ 2. 일반 전투 인식 (EnemyAI, RangedEnemy, Devil 등)
                 else if (objName.Contains("EnemyAI") || objName.Contains("RangedEnemy") || objName.Contains("Devil"))
                 {
-                    foundCombat = true;
+                    enemyCount++; // 발견된 일반 적 마릿수 누적
                 }
             }
         }
@@ -54,11 +52,11 @@ public class BattleMusicSensor : MonoBehaviour
             RoomState targetState = RoomState.Normal;
             
             if (foundBoss) targetState = RoomState.Boss;
-            else if (foundCombat) targetState = RoomState.Combat;
+            else if (enemyCount >= 3) targetState = RoomState.Combat;  // 3마리 이상: Combat (전투)
+            else if (enemyCount > 0) targetState = RoomState.Tension; // 1~2마리: Tension (긴장)
 
             if (BattleStateBGM.Instance.currentState != targetState)
             {
-                Debug.Log($"🔥 [레이더] 상태를 {targetState} (으)로 변경합니다.");
                 BattleStateBGM.Instance.SetBattleState(targetState);
             }
         }

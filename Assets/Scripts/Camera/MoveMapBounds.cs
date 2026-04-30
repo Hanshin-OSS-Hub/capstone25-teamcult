@@ -11,21 +11,20 @@ public class MoveMapBounds : MonoBehaviour
     public Vector2Int CurrentRoomIndex => currentRoomIndex;
 
     private RoomManager roomManager;
-    private BoxCollider2D areaCollider; // ¹æ ³»ºÎ Äİ¶óÀÌ´õ
-    private GameObject wallObject; // º®
-    private GameObject[] wallParts = new GameObject[4]; // º® »ó(0), ¿ì(1), ÇÏ(2), ÁÂ(3) ¼ø¼­·Î ÀúÀåµÉ ¹è¿­
+    private BoxCollider2D areaCollider; 
+    private GameObject wallObject; 
+    private GameObject[] wallParts = new GameObject[4]; 
     private int ActiveWalls = 0;
-    private List<GameObject> currentRoomEnemies = new List<GameObject>(); // ÇöÀç ¹æ¿¡¼­ ¼ÒÈ¯µÈ ÀûµéÀ» ÃßÀûÇÏ´Â ¸®½ºÆ®
+    private List<GameObject> currentRoomEnemies = new List<GameObject>(); 
     private EnemySpawner enemySpawner;
 
-    private GameObject[] visualWalls = new GameObject[4]; // ¾Ö´Ï¸ŞÀÌ¼Ç¿ë º¹Á¦º»
-    private TilemapCollider2D[] realColliders = new TilemapCollider2D[4]; // ¿øº»ÀÇ Äİ¶óÀÌ´õ
+    private GameObject[] visualWalls = new GameObject[4]; 
+    private TilemapCollider2D[] realColliders = new TilemapCollider2D[4]; 
 
     [Header("Wall Animation Settings")]
     [SerializeField] private float animationDuration = 0.5f;
     [SerializeField] private float wallUpYOffset = 2.0f;
     private Coroutine[] wallCoroutines = new Coroutine[4];
-
 
     void Start()
     {
@@ -48,8 +47,8 @@ public class MoveMapBounds : MonoBehaviour
         roomManager = Object.FindAnyObjectByType<RoomManager>();
         enemySpawner = Object.FindAnyObjectByType<EnemySpawner>();
 
-        if (roomManager == null) { Debug.LogError("RoomManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!"); }
-        if (enemySpawner == null) { Debug.LogError("EnemySpawner¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!"); }
+        if (roomManager == null) { Debug.LogError("RoomManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!"); }
+        if (enemySpawner == null) { Debug.LogError("EnemySpawnerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!"); }
 
         int startIdx = roomManager.MapSize / 2;
         currentRoomIndex = new Vector2Int(startIdx, startIdx);
@@ -75,7 +74,7 @@ public class MoveMapBounds : MonoBehaviour
         if (room.status == RoomData.RoomStatus.Locked)
         {
             room.monsterCount--;
-            Debug.Log($"¸ó½ºÅÍ Ã³Ä¡! ³²Àº ¼ö: {room.monsterCount}");
+            Debug.Log($"ëª¬ìŠ¤í„° ì²˜ì¹˜! ë‚¨ì€ ìˆ˜: {room.monsterCount}");
         }
     }
 
@@ -175,7 +174,7 @@ public class MoveMapBounds : MonoBehaviour
         {
             if (room.monsterCount <= 0) return;
 
-            Debug.Log($"<color=red>ÀüÅõ ½ÃÀÛ!</color> {room.monsterCount}¸¶¸® ¼ÒÈ¯ ½Ãµµ");
+            Debug.Log($"<color=red>ì „íˆ¬ ì‹œì‘!</color> {room.monsterCount}ë§ˆë¦¬ ì†Œí™˜ ì‹œë„");
 
             if (enemySpawner != null)
             {
@@ -184,7 +183,7 @@ public class MoveMapBounds : MonoBehaviour
         }
         else if (room.type == RoomType.Boss)
         {
-            Debug.Log("<color=purple>º¸½º ÃâÇö!</color>");
+            Debug.Log("<color=purple>ë³´ìŠ¤ì „ ì‹œì‘!</color>");
 
             if (enemySpawner != null)
             {
@@ -203,15 +202,12 @@ public class MoveMapBounds : MonoBehaviour
     [SerializeField] private DangerUIHandler dangerUIHandler;
 
     private void CheckEnemiesStatus() {
-        // 1. Àü¼öÁ¶»ç ¹× null Á¦°Å (¿ª¼øÀ¸·Î ÁøÇà)
         for (int i = currentRoomEnemies.Count - 1; i >= 0; i--) {
             if (currentRoomEnemies[i] == null) {
                 currentRoomEnemies.RemoveAt(i);
-                //LogManager.Instance.AddLog("Àû »ç¸Á");
             }
         }
 
-        // 2. ¸®½ºÆ® ±æÀÌ¿¡ µû¸¥ UI ¾÷µ¥ÀÌÆ®
         if (dangerUIHandler != null) {
             dangerUIHandler.UpdateDangerUI(currentRoomEnemies.Count * 10);
         }
@@ -220,13 +216,12 @@ public class MoveMapBounds : MonoBehaviour
     private void UnlockAndReward(RoomData room)
     {
         room.status = RoomData.RoomStatus.Cleared;
-        SetWalls(0); // ¸ğµç º® ºñÈ°¼ºÈ­
+        SetWalls(0); 
 
-        // ? ¹æ Å¬¸®¾î ½Ã ¿ÀÆÄÃ÷ Æ÷ÀÎÆ® +1 Áö±Ş
         if (OopartsTreeManager.instance != null)
         {
             OopartsTreeManager.instance.AddPoint(1);
-            Debug.Log("¹æ Å¬¸®¾î! ¿ÀÆÄÃ÷ Æ÷ÀÎÆ® +1 Áö±Ş!");
+            Debug.Log("ë°© í´ë¦¬ì–´! ì˜¤íŒŒì¸  í¬ì¸íŠ¸ +1 íšë“!");
         }
 
         if (room.rewardPrefabs != null && room.rewardPrefabs.Count > 0)
@@ -238,7 +233,7 @@ public class MoveMapBounds : MonoBehaviour
                 Vector3 spawnOffset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0);
                 Instantiate(prefab, transform.position + spawnOffset, Quaternion.identity);
 
-                Debug.Log($"<color=cyan>º¸»ó »ı¼ºµÊ:</color> {prefab.name}");
+                Debug.Log($"<color=cyan>ë³´ìƒ ìƒì„±:</color> {prefab.name}");
             }
         }
 
@@ -249,11 +244,11 @@ public class MoveMapBounds : MonoBehaviour
             if (elevatorDoorClose != null)
             {
                 elevatorDoorClose.SetActive(false);
-                Debug.Log("<color=green>¼º°ø:</color> ElevatorDoorClose ¿ÀºêÁ§Æ®¸¦ ºñÈ°¼ºÈ­Çß½À´Ï´Ù.");
+                Debug.Log("<color=green>ì„±ê³µ:</color> ElevatorDoorClose ì˜¤ë¸Œì íŠ¸ë¥¼ ë¹„í™œì„±í™”í–ˆìŠµë‹ˆë‹¤.");
             }
             else
             {
-                Debug.LogWarning("<color=red>½ÇÆĞ:</color> 'ElevatorDoorClose' ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù. (ÀÌ¹Ì ºñÈ°¼ºÈ­µÇ¾ú°Å³ª ÀÌ¸§ÀÌ ´Ù¸¦ ¼ö ÀÖÀ½)");
+                Debug.LogWarning("<color=red>ê²½ê³ :</color> 'ElevatorDoorClose' ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             }
         }
     }
@@ -262,7 +257,7 @@ public class MoveMapBounds : MonoBehaviour
     {
         if (roomManager.rooms == null) return;
         var room = roomManager.rooms[currentRoomIndex.x, currentRoomIndex.y];
-        Debug.Log($"¹æ ÀÌµ¿: [{currentRoomIndex.x}, {currentRoomIndex.y}] »óÅÂ: {room.status}, ³²Àº¸÷: {room.monsterCount}");
+        Debug.Log($"ë°© ì´ë™: [{currentRoomIndex.x}, {currentRoomIndex.y}] ìƒíƒœ: {room.status}, ëª¬ìŠ¤í„°: {room.monsterCount}");
     }
 
     private void SetupWallSeparation()
@@ -305,9 +300,13 @@ public class MoveMapBounds : MonoBehaviour
         }
     }
 
+    // â˜… ìˆ˜ì •ëœ SetWalls í•¨ìˆ˜: ë¬¸ì´ ì—¬ëŸ¬ ê°œ ì›€ì§ì—¬ë„ ì‚¬ìš´ë“œëŠ” í•œ ë²ˆë§Œ ì¬ìƒ
     public void SetWalls(int mask)
     {
         if (wallObject == null) return;
+
+        bool anyWallClosed = false; // ë¬¸ì´ ë‹«í˜ (ë²½ì´ ìƒì„±ë¨)
+        bool anyWallOpened = false; // ë¬¸ì´ ì—´ë¦¼ (ë²½ì´ ì‚¬ë¼ì§)
 
         for (int i = 0; i < 4; i++)
         {
@@ -318,10 +317,21 @@ public class MoveMapBounds : MonoBehaviour
 
             if (shouldBeActive != isCurrentlyActive)
             {
+                if (shouldBeActive) anyWallClosed = true;
+                else anyWallOpened = true;
+
                 if (wallCoroutines[i] != null) StopCoroutine(wallCoroutines[i]);
                 wallCoroutines[i] = StartCoroutine(AnimateWallSequence(i, shouldBeActive));
             }
         }
+
+        // â˜… ì‚¬ìš´ë“œ ì¬ìƒ ë¡œì§ (forë¬¸ ë°”ê¹¥ì—ì„œ í•œ ë²ˆë§Œ ì¬ìƒ)
+        if (SFXManager.Instance != null)
+        {
+            if (anyWallClosed) SFXManager.Instance.PlaySFX(SFXType.DoorClose);
+            if (anyWallOpened) SFXManager.Instance.PlaySFX(SFXType.DoorOpen);
+        }
+
         ActiveWalls = mask;
         wallObject.SetActive(true);
     }

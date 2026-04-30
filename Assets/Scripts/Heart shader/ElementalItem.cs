@@ -10,6 +10,11 @@ public class ElementalItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain);
+            }
+
             ElementalManager manager = FindFirstObjectByType<ElementalManager>();
 
             if (manager != null)
@@ -17,7 +22,7 @@ public class ElementalItem : MonoBehaviour
                 manager.ActivateAbility(elementType);
             }
 
-            // °ËÀº Àç ÆÄÆ¼Å¬
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ¼Å¬
             if (elementType == "Fire")
             {
                 GameObject pfxObj = new GameObject("AshPFX");
