@@ -200,19 +200,20 @@ public class MoveMapBounds : MonoBehaviour
         }
     }
 
-    private void CheckEnemiesStatus()
-    {
-        while (currentRoomEnemies.Count > 0)
-        {
-            int lastIndex = currentRoomEnemies.Count - 1;
-            if (currentRoomEnemies[lastIndex] == null)
-            {
-                currentRoomEnemies.RemoveAt(lastIndex);
+    [SerializeField] private DangerUIHandler dangerUIHandler;
+
+    private void CheckEnemiesStatus() {
+        // 1. 전수조사 및 null 제거 (역순으로 진행)
+        for (int i = currentRoomEnemies.Count - 1; i >= 0; i--) {
+            if (currentRoomEnemies[i] == null) {
+                currentRoomEnemies.RemoveAt(i);
+                //LogManager.Instance.AddLog("적 사망");
             }
-            else
-            {
-                break;
-            }
+        }
+
+        // 2. 리스트 길이에 따른 UI 업데이트
+        if (dangerUIHandler != null) {
+            dangerUIHandler.UpdateDangerUI(currentRoomEnemies.Count * 10);
         }
     }
 
