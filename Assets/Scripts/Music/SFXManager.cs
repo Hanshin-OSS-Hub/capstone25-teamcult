@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// ★ EnemyEncounter, StageClear, HeartObtain 추가
 public enum SFXType 
 { 
     Gold, ChestOpen, ElevatorOpen, ElevatorClose, 
-    DoorOpen, DoorClose, PlayerHit, PlayerDeath, PlayerAttack, EnemyHit, EnemyDeath,
-    BossGreeting, BossAttack, BossHit, BossDeath,
+    DoorOpen, DoorClose, PlayerHit, PlayerDeath, 
+    // ★ 무기별 공격음 및 재장전음 추가
+    PlayerAttack_1, PlayerAttack_2, PlayerAttack_3, PlayerReload_3,
+    EnemyHit, EnemyDeath, BossGreeting, BossAttack, BossHit, BossDeath,
     EnemyEncounter, StageClear, HeartObtain 
 }
 
@@ -15,57 +16,53 @@ public struct SFXData
 {
     public SFXType type;
     public AudioClip clip;
+    [Range(0f, 1f)] public float volume; // ★ 개별 볼륨 설정을 위한 슬라이더
 }
 
 public class SFXManager : MonoBehaviour
 {
     public static SFXManager Instance;
 
-    [Header("효과음 리스트 (여기서 파일들을 매핑하세요)")]
+    [Header("효과음 리스트")]
     public List<SFXData> sfxList = new List<SFXData>();
 
     private AudioSource[] sfxSources;
-    private Dictionary<SFXType, AudioClip> sfxDictionary;
+    private Dictionary<SFXType, SFXData> sfxDictionary; // ★ 클립 대신 데이터 전체를 저장
 
-    void Awake()
+    void Awake() { Instance = this; }
+
+    void Start()
     {
-        Instance = this;
-        sfxDictionary = new Dictionary<SFXType, AudioClip>();
-
+        sfxDictionary = new Dictionary<SFXType, SFXData>();
         foreach (var sfx in sfxList)
         {
             if (!sfxDictionary.ContainsKey(sfx.type) && sfx.clip != null)
             {
-                sfxDictionary.Add(sfx.type, sfx.clip);
+                sfxDictionary.Add(sfx.type, sfx);
             }
         }
 
-        sfxSources = new AudioSource[5];
+        sfxSources = new AudioSource[10]; // 스피커 개수를 조금 더 늘렸습니다.
         for (int i = 0; i < sfxSources.Length; i++)
         {
             sfxSources[i] = gameObject.AddComponent<AudioSource>();
-            sfxSources[i].loop = false;
             sfxSources[i].playOnAwake = false;
         }
     }
 
     public void PlaySFX(SFXType type)
     {
-        if (sfxDictionary.TryGetValue(type, out AudioClip clip))
+        if (sfxDictionary.TryGetValue(type, out SFXData data))
         {
             foreach (var source in sfxSources)
             {
                 if (!source.isPlaying)
                 {
-                    source.PlayOneShot(clip);
+                    // ★ 재생 시 설정된 개별 볼륨(data.volume)을 적용합니다.
+                    source.PlayOneShot(data.clip, data.volume);
                     return;
                 }
             }
-            sfxSources[0].PlayOneShot(clip);
-        }
-        else
-        {
-            Debug.LogWarning($"[SFX 매니저] {type} 효과음이 인스펙터에 할당되지 않았습니다!");
         }
     }
 }
