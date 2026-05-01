@@ -456,6 +456,7 @@ GameObject:
   - component: {fileID: 4318164848150652596}
   - component: {fileID: 8097645234907946754}
   - component: {fileID: 5606284035456738859}
+  - component: {fileID: -3488884844288335399}
   m_Layer: 0
   m_Name: RangedEnemy
   m_TagString: Enemy
@@ -646,6 +647,8 @@ MonoBehaviour:
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
   damageTextPrefab: {fileID: 0}
+  maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
+  maSeokDropChance: 5
 --- !u!114 &5606284035456738859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -665,6 +668,18 @@ MonoBehaviour:
   moveSpeed: 2
   defense: 0
   expReward: 10
+--- !u!114 &-3488884844288335399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5992420211836326638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3622d40062d56bc4087c9f6ef2df5d22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaSeokAura
 --- !u!1 &7922831894381807307
 GameObject:
   m_ObjectHideFlags: 0

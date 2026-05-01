@@ -218,11 +218,7 @@ public class MoveMapBounds : MonoBehaviour
         room.status = RoomData.RoomStatus.Cleared;
         SetWalls(0); 
 
-        if (OopartsTreeManager.instance != null)
-        {
-            OopartsTreeManager.instance.AddPoint(1);
-            Debug.Log("방 클리어! 오파츠 포인트 +1 획득!");
-        }
+        
 
         if (room.rewardPrefabs != null && room.rewardPrefabs.Count > 0)
         {

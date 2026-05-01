@@ -4,20 +4,25 @@ using TMPro;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("ü�� ����")]
+    [Header("체력 설정")]
     public int currentHealth;
     private EnemyStats stats;
 
-    [Header("���� ����")]
+    [Header("보상 설정")]
     public int expReward = 10;
 
-    [Header("UI ����")]
+    [Header("UI 설정")]
     public TMP_Text nameText;
     public Slider hpSlider;
     public TMP_Text hpText;
 
-    [Header("����Ʈ ȿ��")]
+    [Header("플로팅 효과")]
     public GameObject damageTextPrefab;
+
+    [Header("마석")]
+    public GameObject maSeokPrefab;
+    [Range(0f, 100f)]
+    public float maSeokDropChance = 50f;
 
     void Start()
     {
@@ -68,16 +73,14 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            // ★ [여기에 추가!] 적 사망 효과음
-            if (SFXManager.Instance != null) 
+            if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
-            
+
             Die();
         }
         else
         {
-            // ★ [여기에 추가!] 적 피격 효과음
-            if (SFXManager.Instance != null) 
+            if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
         }
     }
@@ -94,18 +97,26 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        // 1. ų ī��Ʈ
+        // 1. 킬 카운트
         if (GameManager.instance != null)
             GameManager.instance.killCount++;
 
-        // 2. �÷��̾� ã��
+        // 2. 마석 드롭 (5% 확률)
+        if (maSeokPrefab != null)
+        {
+            float roll = Random.Range(0f, 100f);
+            if (roll < maSeokDropChance)
+                Instantiate(maSeokPrefab, transform.position, Quaternion.identity);
+        }
+
+        // 3. 플레이어 찾기
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
             PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
 
-            // 3. ����ġ ȹ��
+            // 4. 경험치 획득
             if (expScript != null)
             {
                 float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
@@ -115,20 +126,20 @@ public class EnemyHealth : MonoBehaviour
 
             if (playerStats != null)
             {
-                // 4. ų óġ �� �̵��ӵ� ���� ����
+                // 5. 킬 처치 후 이동속도 증가 처리
                 if (playerStats.killMoveSpeedStack > 0)
                 {
                     playerStats.moveSpeed += playerStats.killMoveSpeedStack;
-                    Debug.Log($"[�̵��ӵ� ����] +{playerStats.killMoveSpeedStack} (����: {playerStats.moveSpeed})");
+                    Debug.Log($"[이동속도 증가] +{playerStats.killMoveSpeedStack} (합계: {playerStats.moveSpeed})");
                 }
-                // 5. ų óġ �� ��� Ȯ�� ȹ��
+                // 6. 킬 처치 후 골드 확률 획득
                 if (playerStats.killGoldChance > 0)
                 {
                     float roll = Random.Range(0f, 100f);
                     if (roll < playerStats.killGoldChance)
                     {
                         playerStats.AddGold(playerStats.killGoldAmount);
-                        Debug.Log($"[��� ȹ��] +{playerStats.killGoldAmount}");
+                        Debug.Log($"[골드 획득] +{playerStats.killGoldAmount}");
                     }
                 }
             }

@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502ab6748711c9444ac742fb2c269837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRange: 1
+  detectRange: 25
   attackRange: 1.2
   moveSpeed: 2
   attackCooldown: 1
@@ -543,6 +543,8 @@ MonoBehaviour:
   hpSlider: {fileID: 5426590261145882454}
   hpText: {fileID: 7723665171618840921}
   damageTextPrefab: {fileID: 4564337897028911482, guid: 5df6cde4faae9b348a15afd20c517f33, type: 3}
+  maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
+  maSeokDropChance: 5
 --- !u!114 &5026637328627402883
 MonoBehaviour:
   m_ObjectHideFlags: 0
