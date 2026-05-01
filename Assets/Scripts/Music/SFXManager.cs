@@ -5,7 +5,6 @@ public enum SFXType
 { 
     Gold, ChestOpen, ElevatorOpen, ElevatorClose, 
     DoorOpen, DoorClose, PlayerHit, PlayerDeath, 
-    // ★ 무기별 공격음 및 재장전음 추가
     PlayerAttack_1, PlayerAttack_2, PlayerAttack_3, PlayerReload_3,
     EnemyHit, EnemyDeath, BossGreeting, BossAttack, BossHit, BossDeath,
     EnemyEncounter, StageClear, HeartObtain 
@@ -16,7 +15,7 @@ public struct SFXData
 {
     public SFXType type;
     public AudioClip clip;
-    [Range(0f, 1f)] public float volume; // ★ 개별 볼륨 설정을 위한 슬라이더
+    [Range(0f, 1f)] public float volume;
 }
 
 public class SFXManager : MonoBehaviour
@@ -27,12 +26,13 @@ public class SFXManager : MonoBehaviour
     public List<SFXData> sfxList = new List<SFXData>();
 
     private AudioSource[] sfxSources;
-    private Dictionary<SFXType, SFXData> sfxDictionary; // ★ 클립 대신 데이터 전체를 저장
+    private Dictionary<SFXType, SFXData> sfxDictionary;
 
-    void Awake() { Instance = this; }
-
-    void Start()
+    void Awake()
     {
+        Instance = this;
+        
+        // ★ [수정] 씬이 시작되자마자 딕셔너리를 미리 채워둡니다.
         sfxDictionary = new Dictionary<SFXType, SFXData>();
         foreach (var sfx in sfxList)
         {
@@ -42,7 +42,7 @@ public class SFXManager : MonoBehaviour
             }
         }
 
-        sfxSources = new AudioSource[10]; // 스피커 개수를 조금 더 늘렸습니다.
+        sfxSources = new AudioSource[10];
         for (int i = 0; i < sfxSources.Length; i++)
         {
             sfxSources[i] = gameObject.AddComponent<AudioSource>();
@@ -54,15 +54,21 @@ public class SFXManager : MonoBehaviour
     {
         if (sfxDictionary.TryGetValue(type, out SFXData data))
         {
+            // ★ [디버그 로그] 콘솔창에 "총소리(타입명) : 발사음(파일네임)"이 찍힙니다.
+            Debug.Log($"<color=yellow>[SFX 재생]</color> 요청타입: {type}, 재생파일: {data.clip.name}");
+
             foreach (var source in sfxSources)
             {
                 if (!source.isPlaying)
                 {
-                    // ★ 재생 시 설정된 개별 볼륨(data.volume)을 적용합니다.
                     source.PlayOneShot(data.clip, data.volume);
                     return;
                 }
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[SFX 오류] {type}에 해당하는 설정이 딕셔너리에 없습니다!");
         }
     }
 }
