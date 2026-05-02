@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// [추가] 장비에 붙을 4가지 옵션 종류
+//장비에 붙을 4가지 옵션 종류
 public enum OptionType { Attack, AttackSpeed, Defense, MoveSpeed }
-
+public enum WeaponType { None, Sword, Axe, Handgun }
 [System.Serializable]
 public class ItemOption
 {
@@ -29,13 +29,19 @@ public class Item : ScriptableObject
     public string itemName;
     [TextArea] public string itemDesc;
     public Sprite icon;
+
+    [Header("분류")]
     public ItemType itemType;
+    public WeaponType weaponType;
     public ItemTier tier;
 
     [Header("기본 장비 스탯")]
     public int bonusAttack;
     public int bonusDefense;
+
     public int bonusHealth;
+    [Header("무기 전용 애니메이션 (무기일 때만 넣으세요)")]
+    public AnimatorOverrideController weaponAnim;
 
     [Header("부여된 랜덤 옵션 (복제 시 자동 생성)")]
     public List<ItemOption> currentOptions = new List<ItemOption>();

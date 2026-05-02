@@ -53,6 +53,10 @@ public class PlayerStats : MonoBehaviour
     public TextMeshProUGUI defenseText;
     public TextMeshProUGUI healthText;
 
+    [Header("애니메이션 설정")]
+    public Animator playerAnimator; 
+    public RuntimeAnimatorController defaultAnimController;
+
     private void Awake()
     {
         instance = this;
@@ -109,7 +113,14 @@ public class PlayerStats : MonoBehaviour
                 case OptionType.MoveSpeed: itemBonusMoveSpeed += option.value; break;
             }
         }
-
+        if (item.itemType == Item.ItemType.Weapon && item.weaponAnim != null)
+        {
+            if (playerAnimator != null)
+            {
+                playerAnimator.runtimeAnimatorController = item.weaponAnim;
+                Debug.Log("무기 애니메이션 교체 완료!"); 
+            }
+        }
         UpdateStatUI();
     }
 
@@ -132,6 +143,13 @@ public class PlayerStats : MonoBehaviour
                 case OptionType.Defense: bonusDefense -= (int)option.value; break;
                 case OptionType.AttackSpeed: itemBonusAttackSpeed -= option.value; break;
                 case OptionType.MoveSpeed: itemBonusMoveSpeed -= option.value; break;
+            }
+        }
+        if (item.itemType == Item.ItemType.Weapon)
+        {
+            if (playerAnimator != null && defaultAnimController != null)
+            {
+                playerAnimator.runtimeAnimatorController = defaultAnimController;
             }
         }
 

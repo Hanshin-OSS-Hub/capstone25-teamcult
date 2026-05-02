@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
+  m_Name: T1_HG
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemName: t1_handgun
+  itemDesc: "\uAD8C\uCD1D"
+  icon: {fileID: -7313289285828474265, guid: 4d7cbd55bd9a55f438f0779ab957b010, type: 3}
+  itemType: 1
+  weaponType: 3
+  tier: 0
+  bonusAttack: 0
+  bonusDefense: 0
+  bonusHealth: 0
+  weaponAnim: {fileID: 22100000, guid: 6127bf5eb0478eb4b8c32db31f34a995, type: 2}
+  currentOptions: []

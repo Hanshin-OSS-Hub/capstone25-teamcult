@@ -3524,97 +3524,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577851182}
   m_CullTransparentMesh: 1
---- !u!1 &597329869
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 597329871}
-  - component: {fileID: 597329870}
-  m_Layer: 0
-  m_Name: Helmet_T1_0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!212 &597329870
-SpriteRenderer:
-  serializedVersion: 2
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 597329869}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 3313459183835541247, guid: a520b284d04d34c47a3fe8da9dd60887, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1.89, y: 2.5}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
---- !u!4 &597329871
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 597329869}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &605203695
 GameObject:
   m_ObjectHideFlags: 0
@@ -23621,7 +23530,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1166335252}
   m_HandleRect: {fileID: 1166335250}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -26984,6 +26893,14 @@ PrefabInstance:
       propertyPath: m_Mass
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 5712608533161553687, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: playerAnimator
+      value: 
+      objectReference: {fileID: 2064022390}
+    - target: {fileID: 5712608533161553687, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+      propertyPath: defaultAnimController
+      value: 
+      objectReference: {fileID: 9100000, guid: feb4ae5e74b2f2d469c82b609836421b, type: 2}
     - target: {fileID: 6349534013542928686, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
       propertyPath: m_Name
       value: Player
@@ -27005,6 +26922,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+--- !u!95 &2064022390 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1951512366881437925, guid: 992936348f3686c40acdd69b1944ff36, type: 3}
+  m_PrefabInstance: {fileID: 2064022389}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &382500818895201242
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28009,7 +27931,6 @@ SceneRoots:
   - {fileID: 1512225407}
   - {fileID: 1085376939}
   - {fileID: 1584311096}
-  - {fileID: 597329871}
   - {fileID: 1604219993}
   - {fileID: 1412946755}
   - {fileID: 1465608600}
