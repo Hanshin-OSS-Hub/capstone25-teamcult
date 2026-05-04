@@ -27,22 +27,26 @@ public class PlayerSlash : MonoBehaviour
     public float lightningChainDamageRatio = 0.5f;
     public float lightningDuration = 1.5f;
 
-    // ★ 3번 무기(총) 발사 횟수를 세는 변수
-    private int gunShotCount = 0; 
+    //총 발사 횟수를 세는 변수
+    private int gunShotCount = 0;
+
+    private Animator anim;
 
     void Start()
     {
         stats = GetComponent<PlayerStats>();
         elementalManager = GetComponent<ElementalManager>();
+
+        anim = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // ★ 무기를 바꿀 때 총알 카운트도 0으로 초기화해줍니다.
+        // 무기를 바꿀 때 총알 카운트도 0으로 초기화
         if (Input.GetKeyDown(KeyCode.Alpha1)) { currentIndex = 0; gunShotCount = 0; }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { currentIndex = 1; gunShotCount = 0; }
         if (Input.GetKeyDown(KeyCode.Alpha3)) { currentIndex = 2; gunShotCount = 0; }
-        
+
         if (Input.GetMouseButton(0) && Time.time >= nextAttackTime)
         {
             Attack();
@@ -51,6 +55,12 @@ public class PlayerSlash : MonoBehaviour
 
     void Attack()
     {
+        // 👇 [추가 1] 공격을 시작하자마자 "Attack" 애니메이션 실행!
+        if (anim != null)
+        {
+            anim.SetTrigger("Attack");
+        }
+
         // ★ 무기 종류(currentIndex)에 따라 각기 다른 효과음 재생 및 재장전 시스템 적용
         if (SFXManager.Instance != null)
         {
@@ -65,13 +75,13 @@ public class PlayerSlash : MonoBehaviour
             else if (currentIndex == 2) // 3번 무기 (총)
             {
                 SFXManager.Instance.PlaySFX(SFXType.PlayerAttack_3);
-                
+
                 gunShotCount++; // 총알 쏜 횟수 1 증가
                 if (gunShotCount >= 10)
                 {
                     // 10발을 쏘면 재장전 소리 재생 후 카운트 초기화
                     SFXManager.Instance.PlaySFX(SFXType.PlayerReload_3);
-                    gunShotCount = 0; 
+                    gunShotCount = 0;
                 }
             }
         }

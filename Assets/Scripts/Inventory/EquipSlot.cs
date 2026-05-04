@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-// Enter(툴팁 켜기), Exit(툴팁 끄기), Click(클릭 해제) 3가지 필수 상속
 public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Item currentItem;
@@ -33,7 +32,7 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    // 마우스 클릭 시 (장착 해제)
+    // 장착 해제
     public void OnPointerClick(PointerEventData eventData)
     {
         if (currentItem == null) return;
@@ -43,13 +42,13 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             Item itemToUnequip = currentItem;
 
-            SetItem(null); // 1. 나 자신(장비 슬롯)의 아이템과 이미지를 비운다.
-            TabController.instance.UnequipItem(itemToUnequip); // 2. 인벤토리로 돌려보낸다.
-            TooltipController.instance.HideTooltip(); // 3. 툴팁 끄기
+            SetItem(null); 
+            TabController.instance.UnequipItem(itemToUnequip);
+            TooltipController.instance.HideTooltip();
         }
     }
 
-    // 마우스 올렸을 때 (툴팁 켜기)
+    // 툴팁 켜기
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (currentItem != null)
@@ -58,7 +57,7 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    // 마우스 나갔을 때 (툴팁 끄기)
+    // 툴팁 끄기
     public void OnPointerExit(PointerEventData eventData)
     {
         TooltipController.instance.HideTooltip();

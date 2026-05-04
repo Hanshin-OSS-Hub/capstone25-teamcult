@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 2f0e7daf7ecad2440b68e58baf053007
+guid: 89465e25159ff734c9f637f0bc1b6e10
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8607508910295032909
-    second: Idle_gun_left_0
+      213: 7605185153233967512
+    second: Attack_gun_right_0
+  - first:
+      213: -5821645457378566686
+    second: Attack_gun_right_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +103,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Idle_gun_left_0
+      name: Attack_gun_right_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +118,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d442527dfb3047770800000000000000
-      internalID: 8607508910295032909
+      spriteID: 899d5955a9b0b8960800000000000000
+      internalID: 7605185153233967512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Attack_gun_right_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ed1fa80d4c553fa0800000000000000
+      internalID: -5821645457378566686
       vertices: []
       indices: 
       edges: []
@@ -125,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: fc0b833a2ca198a4aa8366c52b24785d
+    spriteID: e70993b582c80e7459ca7a0fa55fdc75
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +162,8 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Idle_gun_left_0: 8607508910295032909
+      Attack_gun_right_0: 7605185153233967512
+      Attack_gun_right_1: -5821645457378566686
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
