@@ -27,7 +27,6 @@ public class TooltipController : MonoBehaviour
 
     void Update()
     {
-        // 툴팁 마우스 따라다니기 로직
         if (mainTooltipPanel.activeSelf)
         {
             mainTooltipPanel.transform.position = Input.mousePosition + new Vector3(20, -20, 0);
@@ -41,7 +40,6 @@ public class TooltipController : MonoBehaviour
         }
     }
 
-    //툴팁 표시 메인 로직
     public void ShowTooltip(Item item, bool isFromInventory)
     {
         mainNameText.text = item.itemName;
@@ -52,26 +50,22 @@ public class TooltipController : MonoBehaviour
             equippedItem = TabController.instance.GetEquippedItem(item.itemType);
         }
 
-        // 메인 툴팁 텍스트 만들기
         string mainStatText = "";
 
-        if (equippedItem != null) 
+        if (equippedItem != null)
         {
             mainStatText += GetStatComparisonString("공격력", item.bonusAttack, equippedItem.bonusAttack);
             mainStatText += GetStatComparisonString("방어력", item.bonusDefense, equippedItem.bonusDefense);
             mainStatText += GetStatComparisonString("체력", item.bonusHealth, equippedItem.bonusHealth);
         }
-        else 
+        else
         {
             mainStatText += GetRawStatString("공격력", item.bonusAttack);
             mainStatText += GetRawStatString("방어력", item.bonusDefense);
             mainStatText += GetRawStatString("체력", item.bonusHealth);
         }
 
-     
         string mainOptionText = GetOptionsText(item);
-
-        // 스탯, 옵션, 설명을 모두 합쳐서 출력
         mainDescText.text = mainStatText + mainOptionText + "\n" + item.itemDesc;
         mainTooltipPanel.SetActive(true);
 
@@ -85,7 +79,6 @@ public class TooltipController : MonoBehaviour
             compareStatText += GetRawStatString("체력", equippedItem.bonusHealth);
 
             string compareOptionText = GetOptionsText(equippedItem);
-
             compareDescText.text = compareStatText + compareOptionText + "\n" + equippedItem.itemDesc;
             compareTooltipPanel.SetActive(true);
         }
@@ -95,12 +88,36 @@ public class TooltipController : MonoBehaviour
         }
     }
 
+    public void ShowHeartTooltip(string elementType)
+    {
+        switch (elementType)
+        {
+            case "Fire":
+                mainNameText.text = "화염 하트";
+                mainDescText.text = "공격에 <color=#FF4500>화염</color> 효과 부여\n" +
+                                    "적에게 일정 시간 동안\n<color=#FF4500>화상 데미지</color>를 입힙니다.";
+                break;
+            case "Ice":
+                mainNameText.text = "빙결 하트";
+                mainDescText.text = "공격에 <color=#00BFFF>빙결</color> 효과 부여\n" +
+                                    "적의 이동속도를\n<color=#00BFFF>80%</color> 감소시킵니다.";
+                break;
+            case "Lightning":
+                mainNameText.text = "번개 하트";
+                mainDescText.text = "공격에 <color=#FFD700>번개</color> 효과 부여\n" +
+                                    "번개 체인을 만들어 처음 맞은 적의\n<color=#FFD700>50% 데미지</color>가 주변 적에게 전달됩니다.";
+                break;
+        }
+
+        mainTooltipPanel.SetActive(true);
+        compareTooltipPanel.SetActive(false);
+    }
+
     public void HideTooltip()
     {
         mainTooltipPanel.SetActive(false);
         compareTooltipPanel.SetActive(false);
     }
-
 
     private string GetStatComparisonString(string statName, int itemStat, int equippedStat)
     {
@@ -124,13 +141,10 @@ public class TooltipController : MonoBehaviour
 
     private string GetOptionsText(Item item)
     {
-        // 옵션이 하나도 없다면 빈 칸 반환
         if (item.currentOptions == null || item.currentOptions.Count == 0) return "";
 
-        // 노란색으로 타이틀 달기 (보기 좋게 위아래로 줄바꿈 추가)
         string result = "\n<color=#FFD700>[랜덤 옵션]</color>\n";
 
-        // 하늘색으로 각 옵션 설명 한 줄씩 추가
         foreach (ItemOption option in item.currentOptions)
         {
             result += $"<color=#00FFFF> - {option.description}</color>\n";

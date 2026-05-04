@@ -125,6 +125,11 @@ public class TabController : MonoBehaviour
     {
         if (item == null) return;
 
+        if (item.itemType == Item.ItemType.Weapon)
+        {
+            PlayerSlash.instance.SetWeapon(item);
+        }
+
         switch (item.itemType)
         {
             case Item.ItemType.Helmet: UpdateSlot(ref equippedHead, item, headSlotImage); break;
@@ -187,8 +192,17 @@ public class TabController : MonoBehaviour
         AddItem(item); // 인벤토리의 빈 칸으로 돌아감
     }
 
-    // --- 탭 전환 및 윈도우 토글 ---
-    public void ToggleWindow() { if (mainPanel != null) mainPanel.SetActive(!mainPanel.activeSelf); }
+    public void ToggleWindow()
+    {
+        if (mainPanel != null)
+        {
+            mainPanel.SetActive(!mainPanel.activeSelf);
+            GameManager.instance.isUIOpen = mainPanel.activeSelf;
+
+            if (!mainPanel.activeSelf)
+                TooltipController.instance.HideTooltip();
+        }
+    }
     public void ShowWeaponTab() { SetTabActive(true, false, false); }
     public void ShowConsumableTab() { SetTabActive(false, true, false); }
     public void ShowOopartsTab() { SetTabActive(false, false, true); }

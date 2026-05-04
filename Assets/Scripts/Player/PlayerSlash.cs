@@ -1,51 +1,45 @@
 using UnityEngine;
 
-[System.Serializable]
-public class WeaponData
-{
-    public string weaponName;
-    public GameObject prefab;
-    public float damage;
-    public float speed;
-    public float lifeTime;
-    public float cooldown;
-}
-
 public class PlayerSlash : MonoBehaviour
 {
-    [Header("무기 설정")]
-    public WeaponData[] weapons;
+    [Header("장착된 무기")]
+    public Item equippedWeapon;
+    public static PlayerSlash instance;
+
     [Header("설정")]
-    public int currentIndex = 0;
     public float distance = 1.0f;
     private float nextAttackTime = 0f;
     private PlayerStats stats;
     private ElementalManager elementalManager;
+    private PlayerMovement playerMovement;
+
+    [Header("발사 위치")]
+    public Transform firePoint;
 
     [Header("번개 체인 설정")]
     public float lightningChainRadius = 4f;
     public float lightningChainDamageRatio = 0.5f;
     public float lightningDuration = 1.5f;
 
-    //총 발사 횟수를 세는 변수
     private int gunShotCount = 0;
-
     private Animator anim;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Start()
     {
         stats = GetComponent<PlayerStats>();
         elementalManager = GetComponent<ElementalManager>();
-
         anim = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     void Update()
     {
-        // 무기를 바꿀 때 총알 카운트도 0으로 초기화
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { currentIndex = 0; gunShotCount = 0; }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { currentIndex = 1; gunShotCount = 0; }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { currentIndex = 2; gunShotCount = 0; }
+        if (GameManager.instance.isUIOpen) return;
 
         if (Input.GetMouseButton(0) && Time.time >= nextAttackTime)
         {
@@ -53,60 +47,78 @@ public class PlayerSlash : MonoBehaviour
         }
     }
 
-    void Attack()
+    public void SetWeapon(Item newWeapon)
     {
-        // 👇 [추가 1] 공격을 시작하자마자 "Attack" 애니메이션 실행!
-        if (anim != null)
+        equippedWeapon = newWeapon;
+
+        if (anim != null && newWeapon.weaponAnim != null)
         {
-            anim.SetTrigger("Attack");
+            anim.runtimeAnimatorController = newWeapon.weaponAnim;
         }
 
-        // ★ 무기 종류(currentIndex)에 따라 각기 다른 효과음 재생 및 재장전 시스템 적용
+        gunShotCount = 0;
+        Debug.Log($"[무기 장착] {newWeapon.itemName}");
+    }
+
+    void Attack()
+    {
+        if (equippedWeapon == null || stats == null) return;
+
+        // 공격할 때 마우스 방향으로 바라보기
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 lookDir = ((Vector2)mousePos - (Vector2)transform.position).normalized;
+        anim.SetFloat("DirX", lookDir.x);
+        anim.SetFloat("DirY", lookDir.y);
+
+        if (anim != null) anim.SetTrigger("Attack");
+
         if (SFXManager.Instance != null)
         {
-            if (currentIndex == 0) // 1번 무기
-            {
+            if (equippedWeapon.weaponType == WeaponType.Sword)
                 SFXManager.Instance.PlaySFX(SFXType.PlayerAttack_1);
-            }
-            else if (currentIndex == 1) // 2번 무기
-            {
+            else if (equippedWeapon.weaponType == WeaponType.Axe)
                 SFXManager.Instance.PlaySFX(SFXType.PlayerAttack_2);
-            }
-            else if (currentIndex == 2) // 3번 무기 (총)
+            else if (equippedWeapon.weaponType == WeaponType.Handgun)
             {
                 SFXManager.Instance.PlaySFX(SFXType.PlayerAttack_3);
-
-                gunShotCount++; // 총알 쏜 횟수 1 증가
+                gunShotCount++;
                 if (gunShotCount >= 10)
                 {
-                    // 10발을 쏘면 재장전 소리 재생 후 카운트 초기화
                     SFXManager.Instance.PlaySFX(SFXType.PlayerReload_3);
                     gunShotCount = 0;
                 }
             }
         }
 
-        if (weapons.Length == 0 || stats == null) return;
-        WeaponData currentWeapon = weapons[currentIndex];
-
         float speedMultiplier = stats.GetTotalAttackSpeed();
-        float adjustedCooldown = currentWeapon.cooldown / speedMultiplier;
+        float adjustedCooldown = equippedWeapon.cooldown / speedMultiplier;
         nextAttackTime = Time.time + adjustedCooldown;
 
-        Vector3 mousePos = Input.mousePosition;
-        Vector3 viewportPos = new Vector3(mousePos.x / Screen.width, mousePos.y / Screen.height, 0);
+        Vector3 mousePos2 = Input.mousePosition;
+        Vector3 viewportPos = new Vector3(mousePos2.x / Screen.width, mousePos2.y / Screen.height, 0);
         Vector3 targetWorldPos = Camera.main.ViewportToWorldPoint(viewportPos);
         targetWorldPos.z = 0;
 
-        Vector2 direction = ((Vector2)targetWorldPos - (Vector2)transform.position).normalized;
+        Vector2 direction = ((Vector2)targetWorldPos - (Vector2)firePoint.position).normalized;
 
-        float finalDistance = distance + stats.bonusAttackRange;
-        Vector3 spawnPos = transform.position + (Vector3)(direction * finalDistance);
+        Vector3 spawnPos;
+        if (firePoint != null)
+        {
+            float offsetX = targetWorldPos.x < transform.position.x ? -Mathf.Abs(firePoint.localPosition.x) : Mathf.Abs(firePoint.localPosition.x);
+            firePoint.localPosition = new Vector3(offsetX, firePoint.localPosition.y, 0);
+            spawnPos = firePoint.position;
+        }
+        else
+        {
+            float finalDistance = distance + stats.bonusAttackRange;
+            spawnPos = transform.position + (Vector3)(direction * finalDistance);
+        }
+
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
-        GameObject obj = Instantiate(currentWeapon.prefab, spawnPos, rotation);
+        GameObject obj = Instantiate(equippedWeapon.prefab, spawnPos, rotation);
 
-        float finalDamage = (currentWeapon.damage * stats.attackMultiplier) + stats.bonusDamage;
+        float finalDamage = (equippedWeapon.damage * stats.attackMultiplier) + stats.bonusDamage;
         finalDamage *= (1f + stats.bonusAttackPercent / 100f);
 
         if (stats.critChance > 0)
@@ -134,15 +146,15 @@ public class PlayerSlash : MonoBehaviour
         if (melee != null)
         {
             melee.damage = (int)finalDamage;
-            melee.lifeTime = currentWeapon.lifeTime;
+            melee.lifeTime = equippedWeapon.lifeTime;
         }
 
         PlayerBullet bullet = obj.GetComponent<PlayerBullet>();
         if (bullet != null)
         {
             bullet.damage = finalDamage;
-            bullet.speed = currentWeapon.speed;
-            Destroy(obj, currentWeapon.lifeTime);
+            bullet.speed = equippedWeapon.speed;
+            Destroy(obj, equippedWeapon.lifeTime);
         }
 
         if (elementalManager != null)

@@ -20,9 +20,10 @@ public class ElementalItem : MonoBehaviour
             if (manager != null)
             {
                 manager.ActivateAbility(elementType);
+                HeartSlotController.instance.SetHeart(elementType); 
             }
 
-            // ���� �� ��ƼŬ
+           
             if (elementType == "Fire")
             {
                 GameObject pfxObj = new GameObject("AshPFX");
