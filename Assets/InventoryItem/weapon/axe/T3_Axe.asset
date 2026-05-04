@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
   m_Name: T3_Axe
   m_EditorClassIdentifier: Assembly-CSharp::Item
-  itemName: 
-  itemDesc: 
-  icon: {fileID: 0}
-  itemType: 0
-  tier: 0
+  itemName: t3_axe
+  itemDesc: "\uB3C4\uB07C"
+  icon: {fileID: 2517555498100580673, guid: cee91c9522666164ea00931f362aad44, type: 3}
+  itemType: 1
+  weaponType: 2
+  tier: 2
   bonusAttack: 0
   bonusDefense: 0
   bonusHealth: 0
-  weaponAnim: {fileID: 0}
+  weaponAnim: {fileID: 22100000, guid: 66ae8be50fbf02948a140220b464a7e7, type: 2}
   currentOptions: []
