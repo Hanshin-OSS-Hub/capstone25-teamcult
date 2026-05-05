@@ -17071,17 +17071,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15811d0e0653d4bf4beeeca1e312eb7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTracks:
-  - {fileID: 8300000, guid: 39af4154b07ca4b6791dcb437c6f9378, type: 3}
-  tensionTracks: []
-  combatTracks:
-  - {fileID: 8300000, guid: ed6a763cf0ce24b7bafc19f8d8853e2d, type: 3}
-  - {fileID: 8300000, guid: a1f39c917a1814f15905c120102ac38e, type: 3}
-  bossTracks:
-  - {fileID: 8300000, guid: 274fc1d206c2340d58b52597e8c5000e, type: 3}
-  heartMonitorSound: {fileID: 8300000, guid: 3017cf478d8da498982b14dc2d1ae09b, type: 3}
-  currentState: 0
-  currentElement: 
+  currentLevel: 0
+  normalBGM: {fileID: 8300000, guid: 5da7789938989467485ea9855bda673c, type: 3}
+  tensionBGM: {fileID: 8300000, guid: 518f683b2b5124edd9007093ec8ac4ea, type: 3}
+  combatBGM: {fileID: 8300000, guid: 6d06a4304d7fb4780808c7e970fbcc1a, type: 3}
+  bossBGM: {fileID: 8300000, guid: 4f5cd15a2cb32426a987497ec4855958, type: 3}
+  crossfadeDuration: 2
+  maxVolume: 1
+  heartMonitorSound: {fileID: 0}
 --- !u!114 &1412946754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22678,10 +22675,10 @@ MonoBehaviour:
     volume: 0.5
   - type: 8
     clip: {fileID: 8300000, guid: 9501153658bbc43e4934c64f1c1c5456, type: 3}
-    volume: 0.5
+    volume: 0.1
   - type: 9
     clip: {fileID: 8300000, guid: e35384a825f11483fab06969fb08e9d0, type: 3}
-    volume: 0.5
+    volume: 0.1
   - type: 10
     clip: {fileID: 8300000, guid: 571f3410c94ac47b890de3158793f32d, type: 3}
     volume: 0.5
@@ -22699,7 +22696,7 @@ MonoBehaviour:
     volume: 0.5
   - type: 15
     clip: {fileID: 8300000, guid: 661976f7be70242ac8ba10491fb78e63, type: 3}
-    volume: 0.5
+    volume: 0.1
   - type: 17
     clip: {fileID: 8300000, guid: a0bfcf816208d46548d2ad882d9f6185, type: 3}
     volume: 0.5
@@ -23750,7 +23747,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1166335252}
   m_HandleRect: {fileID: 1166335250}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

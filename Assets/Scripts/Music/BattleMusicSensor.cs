@@ -1,19 +1,11 @@
 using UnityEngine;
+using System.Collections.Generic; // ★ 이 줄이 추가되었습니다! (HashSet을 쓰기 위한 필수 선언)
 
 public class BattleMusicSensor : MonoBehaviour
 {
-    [Header("Detection Settings")]
+    [Header("탐지 설정 (범위)")]
     public Transform player;
-    public float detectionRadius = 15.0f; 
-
-    private Collider2D[] hitBuffer = new Collider2D[20];
-    private ContactFilter2D contactFilter;
-
-    void Start()
-    {
-        contactFilter = new ContactFilter2D();
-        contactFilter.NoFilter();
-    }
+    public float detectionRadius = 25.0f; 
 
     void Update()
     {
@@ -24,16 +16,23 @@ public class BattleMusicSensor : MonoBehaviour
             else return; 
         }
 
-        int count = Physics2D.OverlapCircle(player.position, detectionRadius, contactFilter, hitBuffer);
+        // 범위 내의 모든 콜라이더 스캔
+        Collider2D[] hits = Physics2D.OverlapCircleAll(player.position, detectionRadius);
         
         bool foundBoss = false;
-        int enemyCount = 0; // ★ 적 마릿수 카운트
+        
+        // ★ [핵심 수정] 콜라이더가 아니라 '고유한 적 오브젝트' 자체를 담는 주머니 생성
+        HashSet<GameObject> uniqueEnemies = new HashSet<GameObject>();
 
-        for (int i = 0; i < count; i++)
+        foreach (Collider2D hit in hits)
         {
-            if (hitBuffer[i] != null && hitBuffer[i].CompareTag("Enemy"))
+            if (hit != null && hit.CompareTag("Enemy"))
             {
-                string objName = hitBuffer[i].gameObject.name;
+                // (선택 사항) 만약 적 체력 스크립트가 있다면, 죽은 시체는 세지 않도록 방어
+                // EnemyHealth hp = hit.GetComponentInParent<EnemyHealth>();
+                // if (hp != null && hp.currentHealth <= 0) continue; 
+
+                string objName = hit.gameObject.name;
 
                 if (objName.Contains("Boss") || objName.Contains("Devil 2"))
                 {
@@ -42,20 +41,25 @@ public class BattleMusicSensor : MonoBehaviour
                 }
                 else if (objName.Contains("EnemyAI") || objName.Contains("RangedEnemy") || objName.Contains("Devil"))
                 {
-                    enemyCount++; // 발견된 일반 적 마릿수 누적
+                    // 오브젝트 자체를 넣으므로, 한 놈의 콜라이더가 5개가 걸려도 주머니엔 1개만 들어감
+                    uniqueEnemies.Add(hit.gameObject); 
                 }
             }
         }
 
+        // 주머니에 들어있는 진짜 적의 마릿수
+        int trueEnemyCount = uniqueEnemies.Count;
+
+        // 위협도 판정 및 브금 변경
         if (BattleStateBGM.Instance != null)
         {
-            RoomState targetState = RoomState.Normal;
+            BattleStateBGM.ThreatLevel targetState = BattleStateBGM.ThreatLevel.Normal;
             
-            if (foundBoss) targetState = RoomState.Boss;
-            else if (enemyCount >= 3) targetState = RoomState.Combat;  // 3마리 이상: Combat (전투)
-            else if (enemyCount > 0) targetState = RoomState.Tension; // 1~2마리: Tension (긴장)
+            if (foundBoss) targetState = BattleStateBGM.ThreatLevel.Boss;
+            else if (trueEnemyCount >= 3) targetState = BattleStateBGM.ThreatLevel.Combat;  
+            else if (trueEnemyCount > 0) targetState = BattleStateBGM.ThreatLevel.Tension; 
 
-            if (BattleStateBGM.Instance.currentState != targetState)
+            if (BattleStateBGM.Instance.currentLevel != targetState)
             {
                 BattleStateBGM.Instance.SetBattleState(targetState);
             }
