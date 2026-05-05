@@ -230,35 +230,30 @@ MonoBehaviour:
   gameSceneName: createMap
   titleText: BLIND ECHO
   subTitleText: 
-  initialDelay: 0.2
+  initialDelay: 0
   charAnimDuration: 0.3
   subTextDelay: 0.3
   subTextFadeDuration: 0.8
-  btnStartDelay: 0.2
-  btnStartFadeDuration: 0.6
-  btnQuitDelay: 0.15
-  btnQuitFadeDuration: 0.5
-  titleFontSize: 60
-  charSpacing: 48
-  titleYPos: 120
-  charRiseOffset: 30
+  pressKeyDelay: 0.5
+  titleFontSize: 110
+  charSpacing: 72
+  titleYPos: 380
+  charRiseOffset: 60
   titleFinalColor: {r: 0.91, g: 0.88, b: 0.82, a: 1}
   subFontSize: 18
   subTextColor: {r: 0.47, g: 0.43, b: 0.38, a: 1}
   subTextYPos: 50
   subCharacterSpacing: 8
-  btnStartLabel: START GAME
-  btnStartColor: {r: 0.78, g: 0.66, b: 0.43, a: 1}
-  btnStartPosition: {x: 0, y: -40}
-  btnStartSize: {x: 280, y: 56}
-  btnQuitLabel: QUIT
-  btnQuitColor: {r: 0.35, g: 0.35, b: 0.35, a: 1}
-  btnQuitPosition: {x: 0, y: -110}
-  btnQuitSize: {x: 280, y: 46}
+  pressKeyFontSize: 36
+  pressKeyColor: {r: 0.8, g: 0.7, b: 0.5, a: 1}
+  pressKeyYPos: 250
+  blinkSpeed: 0.2
   dustParticleCount: 40
-  dustSpreadX: 600
-  dustSpreadY: 400
+  dustSpreadX: 1920
+  dustSpreadY: 1080
   dustColor: {r: 0.6, g: 0.5, b: 0.35, a: 0.18}
+  dustMinSize: 3
+  dustMaxSize: 11
 --- !u!4 &580811013
 Transform:
   m_ObjectHideFlags: 0

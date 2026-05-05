@@ -13,12 +13,10 @@ public class TabController : MonoBehaviour
     public GameObject equipPanel;
 
     [Header("재화 UI 연결")]
-    public TextMeshProUGUI goldText; 
+    public TextMeshProUGUI goldText;
 
     [Header("탭별 컨텐츠(Scroll View의 Content) 연결")]
     public GameObject weaponContent;
-   // public GameObject consumableContent;
-   // public GameObject oopartsContent;
 
     [Header("장착 슬롯 이미지 (UI)")]
     public Image headSlotImage;
@@ -28,9 +26,8 @@ public class TabController : MonoBehaviour
 
     [Header("인벤토리 설정")]
     public int maxSlots = 100;
-    public List<Item> inventoryItems = new List<Item>(); // 데이터 관리용
+    public List<Item> inventoryItems = new List<Item>();
 
-    // UI 슬롯 객체들을 미리 보관할 리스트
     private List<ItemSlot> weaponSlotUI = new List<ItemSlot>();
     private List<ItemSlot> consumableSlotUI = new List<ItemSlot>();
     private List<ItemSlot> oopartsSlotUI = new List<ItemSlot>();
@@ -41,34 +38,21 @@ public class TabController : MonoBehaviour
 
     void Start()
     {
-        // 1. 시작 시 기존 자식들 제거 및 100개 슬롯 미리 생성
         InitInventory();
-
         if (mainPanel != null) mainPanel.SetActive(false);
         ShowWeaponTab();
     }
 
-
     public void UpdateGoldUI(int currentGold)
     {
         if (goldText != null)
-        {
-            // {0:N0} 은 1000단위마다 쉼표(,)를 찍어주는 예쁜 포맷입니다. (예: 1,500 G)
             goldText.text = $"{currentGold:N0} G";
-        }
     }
 
     private void InitInventory()
     {
-        // 기존 슬롯 청소
         foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
-        //foreach (Transform child in consumableContent.transform) Destroy(child.gameObject);
-        //foreach (Transform child in oopartsContent.transform) Destroy(child.gameObject);
-
-        // 100개씩 미리 생성
         CreateEmptySlots(weaponContent.transform, weaponSlotUI);
-        //CreateEmptySlots(consumableContent.transform, consumableSlotUI);
-        //CreateEmptySlots(oopartsContent.transform, oopartsSlotUI);
     }
 
     private void CreateEmptySlots(Transform parent, List<ItemSlot> list)
@@ -77,19 +61,18 @@ public class TabController : MonoBehaviour
         {
             GameObject go = Instantiate(slotPrefab, parent);
             ItemSlot slot = go.GetComponent<ItemSlot>();
-            slot.ClearSlot(); // 빈 상태로 초기화
+            slot.ClearSlot();
             list.Add(slot);
         }
     }
 
-    // --- 아이템 획득 로직 (빈 슬롯 찾아 채우기) ---
     public bool AddItem(Item item)
     {
         List<ItemSlot> targetList = GetTargetUIList(item.itemType);
 
         foreach (ItemSlot slot in targetList)
         {
-            if (slot.GetItem() == null) // 비어있는 UI 슬롯 발견 시
+            if (slot.GetItem() == null)
             {
                 slot.AddItem(item);
                 inventoryItems.Add(item);
@@ -109,6 +92,7 @@ public class TabController : MonoBehaviour
             default: return weaponSlotUI;
         }
     }
+
     public Item GetEquippedItem(Item.ItemType type)
     {
         switch (type)
@@ -117,18 +101,16 @@ public class TabController : MonoBehaviour
             case Item.ItemType.Weapon: return equippedWeapon;
             case Item.ItemType.Upper: return equippedUpper;
             case Item.ItemType.Bottom: return equippedBottom;
-            default: return null; // 장비가 아니면 null 반환
+            default: return null;
         }
     }
-    // --- 장착 로직 (인벤토리 클릭 시 호출) ---
+
     public void EquipItem(Item item, ItemSlot fromSlot)
     {
         if (item == null) return;
 
         if (item.itemType == Item.ItemType.Weapon)
-        {
             PlayerSlash.instance.SetWeapon(item);
-        }
 
         switch (item.itemType)
         {
@@ -136,32 +118,26 @@ public class TabController : MonoBehaviour
             case Item.ItemType.Weapon: UpdateSlot(ref equippedWeapon, item, weaponSlotImage); break;
             case Item.ItemType.Upper: UpdateSlot(ref equippedUpper, item, armorSlotImage); break;
             case Item.ItemType.Bottom: UpdateSlot(ref equippedBottom, item, shoesSlotImage); break;
-            default: return; // 소비템 등은 장착 불가
+            default: return;
         }
 
         inventoryItems.Remove(item);
-        fromSlot.ClearSlot(); // 인벤토리 슬롯만 비움 (파괴X)
+        fromSlot.ClearSlot();
     }
 
     private void UpdateSlot(ref Item equippedItem, Item newItem, Image slotImage)
     {
-        // 1. 이미 장착 중인 장비가 있다면? -> 기존 장비 스탯 빼기 & 인벤토리로 되돌리기
         if (equippedItem != null)
         {
-            PlayerStats.instance.UnequipStat(equippedItem); // [추가] 스탯 감소
+            PlayerStats.instance.UnequipStat(equippedItem);
             AddItem(equippedItem);
         }
 
-        // 2. 새 장비 장착 데이터 저장
         equippedItem = newItem;
 
-        // 3. 새 장비 장착 -> 스탯 더하기
         if (newItem != null)
-        {
-            PlayerStats.instance.EquipStat(newItem); // [추가] 스탯 증가
-        }
+            PlayerStats.instance.EquipStat(newItem);
 
-        // ... (아래 UI 이미지 변경 관련 코드는 기존 그대로 유지) ...
         if (slotImage != null)
         {
             slotImage.sprite = newItem.icon;
@@ -173,13 +149,11 @@ public class TabController : MonoBehaviour
         }
     }
 
-    // --- 해제 로직 (장착창 클릭 시 호출) ---
     public void UnequipItem(Item item)
     {
         if (item == null) return;
 
-        // 1. 장비를 벗었으니 스탯부터 뺍니다.
-        PlayerStats.instance.UnequipStat(item); // [추가] 스탯 감소
+        PlayerStats.instance.UnequipStat(item);
 
         switch (item.itemType)
         {
@@ -189,7 +163,7 @@ public class TabController : MonoBehaviour
             case Item.ItemType.Bottom: equippedBottom = null; shoesSlotImage.enabled = false; break;
         }
 
-        AddItem(item); // 인벤토리의 빈 칸으로 돌아감
+        AddItem(item);
     }
 
     public void ToggleWindow()
@@ -203,6 +177,7 @@ public class TabController : MonoBehaviour
                 TooltipController.instance.HideTooltip();
         }
     }
+
     public void ShowWeaponTab() { SetTabActive(true, false, false); }
     public void ShowConsumableTab() { SetTabActive(false, true, false); }
     public void ShowOopartsTab() { SetTabActive(false, false, true); }
@@ -210,11 +185,13 @@ public class TabController : MonoBehaviour
     private void SetTabActive(bool weapon, bool consumable, bool ooparts)
     {
         if (equipPanel != null) equipPanel.SetActive(weapon);
-        // ScrollView가 있다면 해당 ScrollView를 끄고 켜도록 구조 설계 권장
         weaponContent.SetActive(weapon);
-        //consumableContent.SetActive(consumable);
-        //oopartsContent.SetActive(ooparts);
     }
 
-    void Update() { if (Input.GetKeyDown(KeyCode.E)) ToggleWindow(); }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.E)) ToggleWindow();
+
+       
+    }
 }

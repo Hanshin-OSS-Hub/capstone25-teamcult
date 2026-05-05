@@ -56,11 +56,23 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        // ESC 키 입력 감지 (통합된 로직)
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Tab으로 설정창 열기
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!isSettingsOpen) OpenSettingsPanel();
             else CloseSettingsPanel();
+        }
+
+        // ESC로 닫기 (인벤토리 우선)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (TabController.instance.mainPanel.activeSelf)
+            {
+                TabController.instance.ToggleWindow();
+                return;
+            }
+
+            if (isSettingsOpen) CloseSettingsPanel();
         }
     }
 
