@@ -11,6 +11,7 @@ public class EnemyStats : MonoBehaviour
     public int damage = 5;      // 공격력
     public float moveSpeed = 2f;// 이동 속도
     public int defense = 0;     // 방어력 (제산식 적용)
+    public int danger = 5;     // 위험도 
 
     [Header("Rewards")]
     public int expReward = 10;  // 처치 시 주는 경험치

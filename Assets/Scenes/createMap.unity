@@ -23469,6 +23469,9 @@ MonoBehaviour:
   emptySkull: {fileID: 0}
   dangerThresholdPerSkull: 10
   emptyAlpha: 0.2
+  redColor: {r: 1, g: 0, b: 0, a: 1}
+  punchScale: 1.3
+  animationDuration: 0.5
 --- !u!114 &1518817567
 MonoBehaviour:
   m_ObjectHideFlags: 0

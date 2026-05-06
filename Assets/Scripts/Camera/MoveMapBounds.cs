@@ -202,14 +202,21 @@ public class MoveMapBounds : MonoBehaviour
     [SerializeField] private DangerUIHandler dangerUIHandler;
 
     private void CheckEnemiesStatus() {
+        int sum_danger = 0;
         for (int i = currentRoomEnemies.Count - 1; i >= 0; i--) {
             if (currentRoomEnemies[i] == null) {
                 currentRoomEnemies.RemoveAt(i);
             }
+            else {
+                EnemyStats stats = currentRoomEnemies[i].GetComponent<EnemyStats>();
+                if (stats != null) {
+                    sum_danger += stats.danger;
+                }
+            }
         }
 
         if (dangerUIHandler != null) {
-            dangerUIHandler.UpdateDangerUI(currentRoomEnemies.Count * 10);
+            dangerUIHandler.UpdateDangerUI(sum_danger);
         }
     }
 
