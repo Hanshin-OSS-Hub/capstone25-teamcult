@@ -24,7 +24,7 @@ MonoBehaviour:
   prefab: {fileID: 2549813541317918585, guid: 726255a43e374a24c8b154b97f3b519f, type: 3}
   damage: 60
   speed: 0
-  lifeTime: 0
+  lifeTime: 0.3
   cooldown: 0.3
   weaponAnim: {fileID: 22100000, guid: 66ae8be50fbf02948a140220b464a7e7, type: 2}
   currentOptions: []
