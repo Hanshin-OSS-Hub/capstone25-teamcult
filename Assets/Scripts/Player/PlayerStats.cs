@@ -17,7 +17,21 @@ public class PlayerStats : MonoBehaviour
     public int maxHealth = 100;
 
     [Header("재화 정보")]
-    public int currentGold = 0;
+    private int _currentGold = 0;
+    public int currentGold {
+        get {
+            return _currentGold;
+        }
+        private set {
+            if (_currentGold != value) { // 값이 변경될때만
+                _currentGold = value;
+                if (TabController.instance != null) {
+                    TabController.instance.UpdateGoldUI(_currentGold);
+                }
+            }
+            
+        }
+    }
 
     [Header("스탯 UI 창 전체 패널")]
     public GameObject statPanel;
@@ -71,12 +85,50 @@ public class PlayerStats : MonoBehaviour
             statPanel.SetActive(false);
     }
 
-    public void AddGold(int amount)
-    {
+    public void AddGold(int amount) {
+        if (amount <= 0) {
+            Debug.Log($"AddGold : amount : {amount}, 1 이상의 정수를 매개변수로 넣어야 합니다");
+            return; 
+        }
         currentGold += amount;
-        Debug.Log($"골드 획득! +{amount} (현재: {currentGold})");
-        if (TabController.instance != null)
-            TabController.instance.UpdateGoldUI(currentGold);
+        LogManager.Instance.AddLog($"골드를 {amount} 획득했습니다");
+
+    }
+    // 골드를 특정 값으로 강제 설정하는 함수 (관리자 기능 등)
+    public void SetGold(int value) {
+        // 음수로 설정되지 않도록 방지
+        int finalValue = Mathf.Max(0, value);
+        currentGold = finalValue;
+
+        Debug.Log($"골드가 {finalValue}(으)로 설정되었습니다.");
+    }
+
+    // 골드를 강제로 소모하는 함수 (음수 방지)
+    public void ForceConsumeGold(int amount) {
+        if (amount <= 0) return;
+
+        // 현재 골드에서 차감하되, 0 밑으로 내려가지 않도록 처리
+        currentGold = Mathf.Max(0, currentGold - amount);
+
+        LogManager.Instance.AddLog($"골드가 {amount}만큼 강제 차감되었습니다.");
+    }
+
+    // 골드가 충분할 때만 소모(구매)하는 함수
+    public bool TryPurchase(int cost) {
+        if (cost < 0) {
+            Debug.Log("구매 비용은 0 이상이여야 합니다.");
+            return false;
+        }
+
+        if (currentGold >= cost) {
+            currentGold -= cost; // 차감 (UI는 프로퍼티 set에서 자동 갱신)
+            LogManager.Instance.AddLog($"{cost} 골드를 사용하여 구매에 성공했습니다.");
+            return true;
+        }
+        else {
+            LogManager.Instance.AddLog("골드가 부족하여 구매할 수 없습니다.");
+            return false;
+        }
     }
 
     public int GetTotalAttack()

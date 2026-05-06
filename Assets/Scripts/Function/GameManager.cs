@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
         }
         if (PlayerStats.instance != null)
         {
-            PlayerStats.instance.currentGold = 0;
+            PlayerStats.instance.SetGold(0);
             if (TabController.instance != null)
                 TabController.instance.UpdateGoldUI(0);
         }

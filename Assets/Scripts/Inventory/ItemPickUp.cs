@@ -51,30 +51,33 @@ public class ItemPickUp : MonoBehaviour {
 
     void PurchaseItem() {
         // PlayerStats의 instance를 통해 currentGold에 접근
-        if (PlayerStats.instance != null && PlayerStats.instance.currentGold >= price) {
-            PlayerStats.instance.currentGold -= price; // 돈 차감
-            Debug.Log($"{price}G를 지불했습니다. 남은 골드: {PlayerStats.instance.currentGold}G");
+        if (PlayerStats.instance.TryPurchase(price)) {
+            //Debug.Log($"{price}G를 지불했습니다. 남은 골드: {PlayerStats.instance.currentGold}G");
             Pickup();
         }
-        else {
-            Debug.Log("골드가 부족하여 구매할 수 없습니다.");
-        }
+        //else {
+        //    Debug.Log("골드가 부족하여 구매할 수 없습니다.");
+        //}
     }
 
     void Pickup() {
-        hasBeenPickedUp = true;
-
         // 옵션 생성 및 인벤토리 추가 로직
         Item newItemWithOption = OptionGenerator.GenerateDroppedItem(item);
 
         if (TabController.instance.AddItem(newItemWithOption)) {
             Debug.Log($"{newItemWithOption.itemName} 획득 완료!");
+            LogManager.Instance.AddLog($"{newItemWithOption.itemName}을(를) 획득했습니다.");
             Destroy(gameObject);
         }
         else {
-            // 인벤토리 풀 등 획득 실패 시 (상점 아이템이었다면 돈을 다시 돌려주는 로직을 넣을 수도 있습니다)
-            if (isShopItem) PlayerStats.instance.currentGold += price;
-            hasBeenPickedUp = false;
+            // 인벤토리 가득 참 등 획득 실패 시 처리
+            LogManager.Instance.AddLog("인벤토리가 가득 차서 아이템을 획득할 수 없습니다.");
+
+            if (isShopItem) {
+                // 직접 += price 대신, 만들어둔 AddGold 함수를 사용하여 UI 갱신 및 로그 출력
+                PlayerStats.instance.AddGold(price);
+                LogManager.Instance.AddLog($"구매 실패로 인해 {price} 골드가 환불되었습니다.");
+            }
         }
     }
 
