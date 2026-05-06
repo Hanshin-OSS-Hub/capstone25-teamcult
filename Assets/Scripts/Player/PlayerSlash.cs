@@ -8,13 +8,11 @@ public class PlayerSlash : MonoBehaviour
 
     [Header("설정")]
     public float distance = 1.0f;
+    public float heightOffset = 0.5f;
     private float nextAttackTime = 0f;
     private PlayerStats stats;
     private ElementalManager elementalManager;
     private PlayerMovement playerMovement;
-
-    [Header("발사 위치")]
-    public Transform firePoint;
 
     [Header("번개 체인 설정")]
     public float lightningChainRadius = 4f;
@@ -64,12 +62,24 @@ public class PlayerSlash : MonoBehaviour
     {
         if (equippedWeapon == null || stats == null) return;
 
-        // 공격할 때 마우스 방향으로 바라보기
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 lookDir = ((Vector2)mousePos - (Vector2)transform.position).normalized;
-        anim.SetFloat("DirX", lookDir.x);
-        anim.SetFloat("DirY", lookDir.y);
+        Vector3 mousePos = Input.mousePosition;
+        Vector3 viewportPos = new Vector3(mousePos.x / Screen.width, mousePos.y / Screen.height, 0);
+        Vector3 targetWorldPos = Camera.main.ViewportToWorldPoint(viewportPos);
+        targetWorldPos.z = 0;
 
+        Vector2 direction = ((Vector2)targetWorldPos - ((Vector2)transform.position + new Vector2(0, heightOffset))).normalized;
+
+        // 대각선일 때 X 방향 우선
+        if (Mathf.Abs(direction.x) >= Mathf.Abs(direction.y))
+        {
+            anim.SetFloat("DirX", direction.x > 0 ? 1 : -1);
+            anim.SetFloat("DirY", 0);
+        }
+        else
+        {
+            anim.SetFloat("DirX", 0);
+            anim.SetFloat("DirY", direction.y > 0 ? 1 : -1);
+        }
         if (anim != null) anim.SetTrigger("Attack");
 
         if (SFXManager.Instance != null)
@@ -94,25 +104,9 @@ public class PlayerSlash : MonoBehaviour
         float adjustedCooldown = equippedWeapon.cooldown / speedMultiplier;
         nextAttackTime = Time.time + adjustedCooldown;
 
-        Vector3 mousePos2 = Input.mousePosition;
-        Vector3 viewportPos = new Vector3(mousePos2.x / Screen.width, mousePos2.y / Screen.height, 0);
-        Vector3 targetWorldPos = Camera.main.ViewportToWorldPoint(viewportPos);
-        targetWorldPos.z = 0;
-
-        Vector2 direction = ((Vector2)targetWorldPos - (Vector2)firePoint.position).normalized;
-
-        Vector3 spawnPos;
-        if (firePoint != null)
-        {
-            float offsetX = targetWorldPos.x < transform.position.x ? -Mathf.Abs(firePoint.localPosition.x) : Mathf.Abs(firePoint.localPosition.x);
-            firePoint.localPosition = new Vector3(offsetX, firePoint.localPosition.y, 0);
-            spawnPos = firePoint.position;
-        }
-        else
-        {
-            float finalDistance = distance + stats.bonusAttackRange;
-            spawnPos = transform.position + (Vector3)(direction * finalDistance);
-        }
+        float finalDistance = distance + stats.bonusAttackRange;
+        Vector3 spawnPos = transform.position + (Vector3)(direction * finalDistance);
+        spawnPos.y += heightOffset; // Y축 오프셋 추가
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
