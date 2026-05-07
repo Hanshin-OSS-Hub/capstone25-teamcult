@@ -563,6 +563,7 @@ MonoBehaviour:
   damage: 5
   moveSpeed: 2
   defense: 0
+  danger: 10
   expReward: 10
 --- !u!1 &8159280484519314814
 GameObject:
