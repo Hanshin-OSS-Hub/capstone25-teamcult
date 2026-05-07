@@ -17613,7 +17613,7 @@ MonoBehaviour:
   bossBGM: {fileID: 8300000, guid: 4f5cd15a2cb32426a987497ec4855958, type: 3}
   crossfadeDuration: 2
   maxVolume: 1
-  heartMonitorSound: {fileID: 0}
+  heartMonitorSound: {fileID: 8300000, guid: cbbd6f54313f446a6b910564b3c5fbe3, type: 3}
 --- !u!114 &1412946754
 MonoBehaviour:
   m_ObjectHideFlags: 0
