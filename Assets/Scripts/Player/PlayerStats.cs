@@ -64,8 +64,9 @@ public class PlayerStats : MonoBehaviour
 
     [Header("스탯 UI 텍스트 연결")]
     public TextMeshProUGUI attackText;
+    public TextMeshProUGUI attackSpeedText;
     public TextMeshProUGUI defenseText;
-    public TextMeshProUGUI healthText;
+    public TextMeshProUGUI moveSpeedText;
 
     [Header("애니메이션 설정")]
     public Animator playerAnimator; 
@@ -138,7 +139,6 @@ public class PlayerStats : MonoBehaviour
     }
 
     public int GetTotalDefense() => baseDefense + bonusDefense;
-    public int GetTotalHealth() => maxHealth + bonusHealth;
 
     public float GetTotalAttackSpeed() => (attackSpeed + itemBonusAttackSpeed) * (1f + bonusAttackSpeed / 100f);
 
@@ -211,8 +211,9 @@ public class PlayerStats : MonoBehaviour
     public void UpdateStatUI()
     {
         if (attackText != null) attackText.text = $"공격력: {GetTotalAttack()}";
+        if (attackSpeedText != null) attackSpeedText.text = $"공격 속도: {GetTotalAttackSpeed()}";
         if (defenseText != null) defenseText.text = $"방어력: {GetTotalDefense()}";
-        if (healthText != null) healthText.text = $"최대 체력: {GetTotalHealth()}";
+        if (moveSpeedText != null) moveSpeedText.text = $"이동 속도: {GetTotalMoveSpeed()}";
     }
 
     private void Update()
