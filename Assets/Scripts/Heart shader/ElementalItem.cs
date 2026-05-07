@@ -10,9 +10,18 @@ public class ElementalItem : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (elementType == "Fire") SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Fire);
-            else if (elementType == "Ice") SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Ice);
-            else if (elementType == "Lightning") SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Lightning);
+            if (elementType == "Fire") { 
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Fire);
+                LogManager.Instance.AddLog($"È­¿° ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+            }
+            else if (elementType == "Ice") { 
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Ice);
+                LogManager.Instance.AddLog($"ºù°á ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+            }
+            else if (elementType == "Lightning") { 
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Lightning);
+                LogManager.Instance.AddLog($"¹ø°³ ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+            }
 
             ElementalManager manager = FindFirstObjectByType<ElementalManager>();
 
