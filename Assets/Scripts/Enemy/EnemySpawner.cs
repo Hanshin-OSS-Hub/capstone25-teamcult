@@ -19,6 +19,12 @@ public class EnemySpawner : MonoBehaviour {
         StartCoroutine(SpawnRoutine());
     }
 
+    //private void Update() {
+    //    if (Input.GetKeyDown(KeyCode.X)) {
+    //        SpawnEnemy(1);
+    //    }
+    //}
+
     IEnumerator SpawnRoutine() {
         if (spawnInterval <= 0) { yield break; }
         while (player != null && player.gameObject.activeSelf) {

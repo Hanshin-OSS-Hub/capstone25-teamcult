@@ -58,10 +58,19 @@ public class SoundWaveController : MonoBehaviour {
 
         if (_glitchFeature != null) _glitchFeature.SetActive(false);
         _mainCam = Camera.main;
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObj != null) {
+            playerTransform = playerObj.transform;
+        }
+        else {
+            Debug.LogWarning("Player 태그를 가진 오브젝트를 찾을 수 없습니다!");
+        }
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.X)) CreateWave();
+        //if (Input.GetKeyDown(KeyCode.X)) CreateWave();
 
         UpdateAndUploadWaves();
         UpdateGlitchIntensity();
@@ -124,7 +133,7 @@ public class SoundWaveController : MonoBehaviour {
         }
     }
 
-    private void CreateWave() {
+    public void CreateWave() {
         if (_activeWaves.Count >= 30 || enemyTransform == null) return;
 
         _activeWaves.Add(new Wave {

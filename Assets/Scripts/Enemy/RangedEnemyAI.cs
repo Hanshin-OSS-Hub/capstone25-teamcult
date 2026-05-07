@@ -9,14 +9,14 @@ public class RangedEnemy : MonoBehaviour
 
     public GameObject bulletPrefab;  // �� �� �Ѿ� ������ �� ��������!
     public float attackCooldown = 2f; // 2�ʸ��� �߻�
-    private float lastAttackTime;
+    protected float lastAttackTime;
 
-    private Transform player;
+    protected Transform player;
 
-    private bool hasSpotted = false;
+    protected bool hasSpotted = false;
 
 
-    void Start()
+    protected virtual void Start()
     {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
@@ -55,7 +55,7 @@ public class RangedEnemy : MonoBehaviour
         }
     }
 
-    void Shoot()
+    protected virtual void Shoot()
     {
         if (bulletPrefab == null) return;
 
