@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: e7776dc72b1d94641bc8fb4cdb14404e
+guid: 6eae850f6ef8cf64893d80618d26676d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 568136991537908955
-    second: Attack_sword_right_0
+      213: -7994219259330743300
+    second: Attack_axe_right_0
   - first:
-      213: -5840124102406187872
-    second: Attack_sword_right_1
+      213: 1757357860087837574
+    second: Attack_axe_right_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,7 +103,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Attack_sword_right_0
+      name: Attack_axe_right_0
       rect:
         serializedVersion: 2
         x: 0
@@ -118,14 +118,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bdc406c659d62e700800000000000000
-      internalID: 568136991537908955
+      spriteID: cf3310750f3de0190800000000000000
+      internalID: -7994219259330743300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack_sword_right_1
+      name: Attack_axe_right_1
       rect:
         serializedVersion: 2
         x: 64
@@ -140,8 +140,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0a4d1e73216b3fea0800000000000000
-      internalID: -5840124102406187872
+      spriteID: 683b6c1b9a3636810800000000000000
+      internalID: 1757357860087837574
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1618806e524145b4885d31137079e33a
+    spriteID: 96d95f69f16c1124ebd90813c7de0dcc
     internalID: 0
     vertices: []
     indices: 
@@ -162,8 +162,8 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Attack_sword_right_0: 568136991537908955
-      Attack_sword_right_1: -5840124102406187872
+      Attack_axe_right_0: -7994219259330743300
+      Attack_axe_right_1: 1757357860087837574
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
