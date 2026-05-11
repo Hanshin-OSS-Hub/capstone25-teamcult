@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
+  m_Name: ice_heart
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemName: 
+  itemDesc: 
+  icon: {fileID: -2182896496336433635, guid: bc36ac77f1881444a9317ad2b88fe4b2, type: 3}
+  itemType: 6
+  weaponType: 0
+  tier: 0
+  bonusAttack: 0
+  bonusDefense: 0
+  bonusHealth: 0
+  prefab: {fileID: 0}
+  damage: 0
+  speed: 0
+  lifeTime: 0
+  cooldown: 0
+  weaponAnim: {fileID: 0}
+  elementType: Ice
+  currentOptions: []

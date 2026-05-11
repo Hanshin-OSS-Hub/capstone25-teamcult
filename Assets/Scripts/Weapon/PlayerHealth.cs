@@ -43,10 +43,10 @@ public class PlayerHealth : MonoBehaviour
             if (container != null) hearts = container.GetComponentsInChildren<Image>();
         }
 
-        if (hearts != null && hearts.Length > 0) maxHealth = hearts.Length * 2;
-        else maxHealth = 6;
+        if (hearts != null && hearts.Length > 0) maxHealth = hearts.Length * 8;
+        else maxHealth = 24;
 
-        currentHealth = maxHealth;
+        currentHealth = 24f;
         UpdateUI();
     }
 
@@ -84,16 +84,19 @@ public class PlayerHealth : MonoBehaviour
             if (Random.Range(0f, 100f) < stats.damageNullifyChance) return;
         }
 
+        // 방어력 계산: max(공격력 - 방어력, 1)
+        int defenseVal = (stats != null) ? stats.GetTotalDefense() : 0;
+        int finalDamage = Mathf.Max(damage - defenseVal, 1);
+
         if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.TriggerGlitch();
 
-        currentHealth -= damage;
+        currentHealth -= finalDamage;
         if (currentHealth < 0) currentHealth = 0;
 
         UpdateUI();
 
-        // ★ [추가] 데미지 입은 후 체력 체크 강제 업데이트
-        if (BattleStateBGM.Instance != null) 
-            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
+        if (BattleStateBGM.Instance != null)
+            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 8f && currentHealth > 0);
 
         if (playerSprite != null && currentHealth > 0)
         {
@@ -168,9 +171,9 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Max(1f, maxHealth * 0.5f);
         isDead = false;
         UpdateUI();
-        
-        if (BattleStateBGM.Instance != null) 
-            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
+
+        if (BattleStateBGM.Instance != null)
+            BattleStateBGM.Instance.SetLowHealth(currentHealth <= 8f && currentHealth > 0);
 
         if (playerSprite != null) { playerSprite.enabled = true; Color c = playerSprite.color; c.a = 1f; playerSprite.color = c; }
 
@@ -187,7 +190,7 @@ public class PlayerHealth : MonoBehaviour
     public void UpdateUI()
     {
         if (hearts == null) return;
-        float healthPerHeart = 2f;
+        float healthPerHeart = 8f;
         for (int i = 0; i < hearts.Length; i++)
         {
             if (hearts[i] == null) continue;
@@ -201,7 +204,7 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateUI();
-        if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.SetLowHealth(currentHealth <= 2f && currentHealth > 0);
+        if (BattleStateBGM.Instance != null) BattleStateBGM.Instance.SetLowHealth(currentHealth <= 8f && currentHealth > 0);
     }
 
     public void GetFlameHeart(int amount = 1) { ElementalManager manager = GetComponent<ElementalManager>(); if (manager != null) manager.ActivateAbility("Fire"); }

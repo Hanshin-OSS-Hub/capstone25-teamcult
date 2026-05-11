@@ -520,10 +520,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502ab6748711c9444ac742fb2c269837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRange: 25
-  attackRange: 1.2
-  moveSpeed: 2
+  detectRange: 20
+  attackRange: 2
   attackCooldown: 1
+  moveSpeed: 2
   damage: 1
 --- !u!114 &1632963202285371723
 MonoBehaviour:
@@ -560,9 +560,9 @@ MonoBehaviour:
   enemyName: Devil
   level: 1
   maxHealth: 30
-  damage: 5
+  damage: 8
   moveSpeed: 2
-  defense: 0
+  defense: 3
   danger: 10
   expReward: 10
 --- !u!1 &8159280484519314814

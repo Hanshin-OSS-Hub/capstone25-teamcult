@@ -112,8 +112,11 @@ public class PlayerSlash : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
         GameObject obj = Instantiate(equippedWeapon.prefab, spawnPos, rotation);
 
-        float finalDamage = (equippedWeapon.damage * stats.attackMultiplier) + stats.bonusDamage;
+        float finalDamage = ((equippedWeapon.damage + stats.GetTotalAttack()) * stats.attackMultiplier) + stats.bonusDamage;
         finalDamage *= (1f + stats.bonusAttackPercent / 100f);
+
+        // 여기!
+       
 
         if (stats.critChance > 0)
         {

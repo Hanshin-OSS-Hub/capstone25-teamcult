@@ -1,25 +1,19 @@
 using UnityEngine;
-
 public class LightningOnHit : MonoBehaviour
 {
     [Header("References")]
     public ElementalManager elementalManager;
-
     [Header("Chain Settings")]
     public float chainRadius = 4f;
     public float chainDamageRatio = 0.5f;
     public float duration = 1.5f;
-    public int triggerEveryNHits = 3;
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Enemy")) return;
         if (elementalManager == null || !elementalManager.hasLightningHeart) return;
 
-        elementalManager.lightningHitCounter++;
-        if (elementalManager.lightningHitCounter < triggerEveryNHits) return;
-        elementalManager.lightningHitCounter = 0;
-
+        // 매번 발동!
         TriggerLightningChain(other.gameObject);
     }
 
@@ -33,7 +27,6 @@ public class LightningOnHit : MonoBehaviour
     void SpawnChainEffect(Vector3 origin)
     {
         int damage = GetOriginalDamage();
-
         LightningEffect effect = new GameObject("LightningChainRunner").AddComponent<LightningEffect>();
         effect.elementalManager = elementalManager;
         effect.chainRadius = chainRadius;
@@ -47,10 +40,8 @@ public class LightningOnHit : MonoBehaviour
     {
         SlashDamage slash = GetComponent<SlashDamage>();
         if (slash != null) return slash.damage;
-
         PlayerBullet bullet = GetComponent<PlayerBullet>();
         if (bullet != null) return (int)bullet.damage;
-
         return 10;
     }
 }

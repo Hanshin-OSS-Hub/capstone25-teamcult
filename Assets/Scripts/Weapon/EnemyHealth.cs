@@ -50,38 +50,64 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         int defenseVal = (stats != null) ? stats.defense : 0;
-        float reduction = 100f / (100f + defenseVal);
-        int finalDamage = Mathf.RoundToInt(damage * reduction);
-        if (finalDamage < 1) finalDamage = 1;
+
+        // 새 방식: max(공격력 - 방어력, 1)
+        int finalDamage = Mathf.Max(damage - defenseVal, 1);
 
         currentHealth -= finalDamage;
+        if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
         if (damageTextPrefab != null)
         {
-            Vector3 spawnPos;
-            if (hpSlider != null)
-                spawnPos = hpSlider.transform.position + new Vector3(0, 0.5f, 0);
-            else
-                spawnPos = transform.position + new Vector3(0, 1.5f, 0);
+            Vector3 spawnPos = hpSlider != null
+                ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
+                : transform.position + new Vector3(0, 1.5f, 0);
 
             GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
             DamageText dmgTextScript = textObj.GetComponent<DamageText>();
-            if (dmgTextScript != null)
-                dmgTextScript.Setup(finalDamage);
+            if (dmgTextScript != null) dmgTextScript.Setup(finalDamage);
         }
 
         if (currentHealth <= 0)
         {
-            if (SFXManager.Instance != null)
-                SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
-
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
             Die();
         }
         else
         {
-            if (SFXManager.Instance != null)
-                SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+        }
+    }
+
+    // 화염 도트딜 - 방어력 무시
+    public void TakeDamageIgnoreDefense(int damage)
+    {
+        if (damage < 1) damage = 1;
+
+        currentHealth -= damage;
+        if (currentHealth < 0) currentHealth = 0;
+        UpdateUI();
+
+        if (damageTextPrefab != null)
+        {
+            Vector3 spawnPos = hpSlider != null
+                ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
+                : transform.position + new Vector3(0, 1.5f, 0);
+
+            GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
+            DamageText dmgTextScript = textObj.GetComponent<DamageText>();
+            if (dmgTextScript != null) dmgTextScript.Setup(damage);
+        }
+
+        if (currentHealth <= 0)
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            Die();
+        }
+        else
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
         }
     }
 
@@ -97,11 +123,9 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        // 1. 킬 카운트
         if (GameManager.instance != null)
             GameManager.instance.killCount++;
 
-        // 2. 마석 드롭 (5% 확률)
         if (maSeokPrefab != null)
         {
             float roll = Random.Range(0f, 100f);
@@ -109,14 +133,12 @@ public class EnemyHealth : MonoBehaviour
                 Instantiate(maSeokPrefab, transform.position, Quaternion.identity);
         }
 
-        // 3. 플레이어 찾기
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
             PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
 
-            // 4. 경험치 획득
             if (expScript != null)
             {
                 float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
@@ -126,20 +148,16 @@ public class EnemyHealth : MonoBehaviour
 
             if (playerStats != null)
             {
-                // 5. 킬 처치 후 이동속도 증가 처리
                 if (playerStats.killMoveSpeedStack > 0)
                 {
                     playerStats.moveSpeed += playerStats.killMoveSpeedStack;
-                    Debug.Log($"[이동속도 증가] +{playerStats.killMoveSpeedStack} (합계: {playerStats.moveSpeed})");
                 }
-                // 6. 킬 처치 후 골드 확률 획득
                 if (playerStats.killGoldChance > 0)
                 {
                     float roll = Random.Range(0f, 100f);
                     if (roll < playerStats.killGoldChance)
                     {
                         playerStats.AddGold(playerStats.killGoldAmount);
-                        Debug.Log($"[골드 획득] +{playerStats.killGoldAmount}");
                     }
                 }
             }

@@ -28,6 +28,9 @@ public class ElementalManager : MonoBehaviour
     public bool hasIceHeart = false;
     public bool hasLightningHeart = false;
 
+    [Header("타이머 설정")]
+    public float abilityDuration = 120f; // 2분
+
     [Header("Lightning Chain")]
     public int lightningHitCounter = 0;
 
@@ -35,13 +38,12 @@ public class ElementalManager : MonoBehaviour
     public Texture2D noiseTex;
 
     private Tilemap[] allMaps;
-    private float savedHealth;
     private bool isAbilityActive = false;
     private Material screenMat;
     private string currentType = "";
     private bool isChainFlashing = false;
+    private float abilityTimer = 0f;
 
-    // ── 속성별 설정 ────────────────────────────────────────────
     private struct ElementalConfig
     {
         public float effectType;
@@ -63,11 +65,20 @@ public class ElementalManager : MonoBehaviour
 
     void Update()
     {
-        CheckAbilityDeactivation();
         UpdatePlayerPosToShader();
+
+        if (isAbilityActive)
+        {
+            abilityTimer -= Time.deltaTime;
+            if (abilityTimer <= 0f)
+            {
+                DeactivateAbility();
+                if (HeartSlotController.instance != null)
+                    HeartSlotController.instance.ClearHeart();
+            }
+        }
     }
 
-    // ── 초기화 ─────────────────────────────────────────────────
     void InitScreenEffect()
     {
         if (screenEffectImage == null) return;
@@ -88,13 +99,6 @@ public class ElementalManager : MonoBehaviour
             defaultHeartSprite = playerHealth.hearts[0].sprite;
     }
 
-    // ── 업데이트 ────────────────────────────────────────────────
-    void CheckAbilityDeactivation()
-    {
-        if (isAbilityActive && playerHealth.currentHealth <= savedHealth - 2.0f)
-            DeactivateAbility();
-    }
-
     void UpdatePlayerPosToShader()
     {
         if (screenMat == null || playerTransform == null || mainCamera == null) return;
@@ -102,7 +106,6 @@ public class ElementalManager : MonoBehaviour
         screenMat.SetVector("_PlayerPos", new Vector4(vp.x, vp.y, 0, 0));
     }
 
-    // ── 능력 활성화 / 비활성화 ──────────────────────────────────
     public void ActivateAbility(string type)
     {
         if (isAbilityActive && currentType == type) return;
@@ -116,7 +119,7 @@ public class ElementalManager : MonoBehaviour
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
         isAbilityActive = true;
         currentType = type;
-        savedHealth = playerHealth.currentHealth;
+        abilityTimer = abilityDuration;
 
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(true);
         StopAllCoroutines();
@@ -165,7 +168,6 @@ public class ElementalManager : MonoBehaviour
             if (map != null) map.color = Color.white;
     }
 
-    // ── 번개 번쩍임 ─────────────────────────────────────────────
     public void TriggerLightningFlash()
     {
         if (isChainFlashing) return;
@@ -217,7 +219,6 @@ public class ElementalManager : MonoBehaviour
         screenMat.SetFloat("_BoomFlash", boom);
     }
 
-    // ── 능력 루프 ───────────────────────────────────────────────
     IEnumerator AbilityLoop(string type)
     {
         ElementalConfig cfg = GetConfig(type);
@@ -265,7 +266,6 @@ public class ElementalManager : MonoBehaviour
             if (img != null) img.sprite = heartSprites[frame];
     }
 
-    // ── 유틸 ────────────────────────────────────────────────────
     void SetTilemapColor(Color color)
     {
         if (allMaps == null) return;

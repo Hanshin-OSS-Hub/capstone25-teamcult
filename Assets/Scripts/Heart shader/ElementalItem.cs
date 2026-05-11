@@ -3,45 +3,71 @@ using UnityEngine;
 public class ElementalItem : MonoBehaviour
 {
     [Header("Item Settings")]
-    [Tooltip("Type exactly: Fire, Ice, or Poison")]
     public string elementType = "Fire";
+    public Item heartItem;
+
+    private bool isPlayerInRange = false;
+    private bool hasBeenPickedUp = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+            isPlayerInRange = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            isPlayerInRange = false;
+    }
+
+    void Update()
+    {
+        if (!hasBeenPickedUp && isPlayerInRange && Input.GetKeyDown(KeyCode.Z))
         {
-            if (elementType == "Fire") { 
-                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Fire);
-                LogManager.Instance.AddLog($"È­¿° ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
-            }
-            else if (elementType == "Ice") { 
-                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Ice);
-                LogManager.Instance.AddLog($"ºù°á ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
-            }
-            else if (elementType == "Lightning") { 
-                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Lightning);
-                LogManager.Instance.AddLog($"¹ø°³ ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
-            }
+            Pickup();
+        }
+    }
 
-            ElementalManager manager = FindFirstObjectByType<ElementalManager>();
+    void Pickup()
+    {
+        if (heartItem == null)
+        {
+            Debug.LogError("heartItemÀÌ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            return;
+        }
 
-            if (manager != null)
-            {
-                manager.ActivateAbility(elementType);
-                HeartSlotController.instance.SetHeart(elementType); 
-            }
+        if (TabController.instance.AddItem(heartItem.Clone()))
+        {
+            hasBeenPickedUp = true;
 
-           
             if (elementType == "Fire")
             {
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Fire);
+                LogManager.Instance.AddLog("È­¿° ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+
                 GameObject pfxObj = new GameObject("AshPFX");
                 pfxObj.transform.position = transform.position;
                 HeartPickupParticle pfx = pfxObj.AddComponent<HeartPickupParticle>();
                 pfx.Play(transform.position);
                 Destroy(pfxObj, 3f);
             }
+            else if (elementType == "Ice")
+            {
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Ice);
+                LogManager.Instance.AddLog("ºù°á ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+            }
+            else if (elementType == "Lightning")
+            {
+                SFXManager.Instance.PlaySFX(SFXType.HeartObtain_Lightning);
+                LogManager.Instance.AddLog("¹ø°³ ÇÏÆ®¸¦ È¹µæÇß½À´Ï´Ù.");
+            }
 
             Destroy(gameObject);
+        }
+        else
+        {
+            Debug.Log("ÀÎº¥Åä¸®°¡ °¡µæ Ã¡½À´Ï´Ù!");
         }
     }
 }

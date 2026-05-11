@@ -22,9 +22,10 @@ MonoBehaviour:
   bonusDefense: 0
   bonusHealth: 0
   prefab: {fileID: 2549813541317918585, guid: 726255a43e374a24c8b154b97f3b519f, type: 3}
-  damage: 60
+  damage: 40
   speed: 0
-  lifeTime: 0.3
-  cooldown: 0.3
+  lifeTime: 0
+  cooldown: 0.8
   weaponAnim: {fileID: 22100000, guid: 66ae8be50fbf02948a140220b464a7e7, type: 2}
+  elementType: 
   currentOptions: []

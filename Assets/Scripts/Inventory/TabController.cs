@@ -89,6 +89,7 @@ public class TabController : MonoBehaviour
         {
             case Item.ItemType.Consumable: return consumableSlotUI;
             case Item.ItemType.Ooparts: return oopartsSlotUI;
+            case Item.ItemType.Heart: return weaponSlotUI; // 하트도 인벤토리에
             default: return weaponSlotUI;
         }
     }
@@ -109,6 +110,28 @@ public class TabController : MonoBehaviour
     {
         if (item == null) return;
 
+        // 하트면 바로 발동
+        if (item.itemType == Item.ItemType.Heart)
+        {
+            ElementalManager manager = FindFirstObjectByType<ElementalManager>();
+            if (manager != null)
+            {
+                manager.ActivateAbility(item.elementType);
+                HeartSlotController.instance.SetHeart(item.elementType);
+            }
+
+            // 체력 반칸 회복
+            PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
+            if (playerHealth != null)
+                playerHealth.Heal(4f);
+
+            // 인벤토리에서 제거
+            inventoryItems.Remove(item);
+            fromSlot.ClearSlot();
+            return;
+        }
+
+        // 무기면 PlayerSlash에 전달
         if (item.itemType == Item.ItemType.Weapon)
             PlayerSlash.instance.SetWeapon(item);
 
@@ -192,6 +215,7 @@ public class TabController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E)) ToggleWindow();
 
-       
+        if (Input.GetKeyDown(KeyCode.Escape) && mainPanel.activeSelf)
+            ToggleWindow();
     }
 }
