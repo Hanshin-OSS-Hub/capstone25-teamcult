@@ -9,13 +9,23 @@ public class LogManager : MonoBehaviour {
 
     [Header("UI References")]
     [SerializeField] private GameObject logEntryPrefab;
+    [SerializeField] private GameObject floatingLogEntryPrefab;
     [SerializeField] private Transform contentParent;
+    [SerializeField] private Transform floatingContentParent;
     [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private CanvasGroup logWindowGroup;
 
-    [Header("Settings")]
+    [Header("Log Settings")]
     [SerializeField] private int maxLogLines = 100;
 
-    private Queue<GameObject> logQueue = new Queue<GameObject>();
+    [Header("Floating Log Settings")]
+    [SerializeField] private float floatingVisibleTime = 1f;
+    [SerializeField] private float floatingFadeTime = 1f;
+
+    private readonly Queue<GameObject> logQueue = new Queue<GameObject>();
+
+    private bool isLogWindowVisible = false;
+    private Coroutine scrollCoroutine;
 
     void Awake() {
         if (Instance == null) {
@@ -24,6 +34,7 @@ public class LogManager : MonoBehaviour {
             DontDestroyOnLoad(gameObject);
 
             ClearLog();
+            ApplyLogWindowVisibility();
         }
         else {
             Destroy(gameObject);
@@ -35,65 +46,161 @@ public class LogManager : MonoBehaviour {
         AddLog("시작");
     }
 
-    /// <summary>
-    /// 로그를 모두 비우고, 지정된 횟수만큼 공백 로그를 추가합니다.
-    /// </summary>
-    public void ClearLog() { // int cnt = 10
-        // 1. 기존 큐에 있는 오브젝트 모두 파괴 및 큐 비우기
-        while (logQueue.Count > 0) {
-            GameObject oldLog = logQueue.Dequeue();
-            Destroy(oldLog);
+    private int testLogIndex = 1;
+    private void Update() {
+        // Enter로 로그 창 토글
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) {
+            ToggleLogWindow();
         }
 
-        // 잘 안되서 유기
-        //// 2. 매개변수(cnt)만큼 공백 로그 추가
-        //for (int i = 0; i < cnt; i++) {
-        //    AddLog(" "); // 공백 문자열 추가
-        //}
+        // K로 테스트 로그 추가
+        if (Input.GetKeyDown(KeyCode.K)) {
+            AddLog($"{testLogIndex++}. 로그 테스트중");
+        }
+    }
+
+    public void ClearLog() {
+        while (logQueue.Count > 0) {
+            GameObject oldLog = logQueue.Dequeue();
+
+            if (oldLog != null) {
+                Destroy(oldLog);
+            }
+        }
     }
 
     public void AddLog(string message) {
-        // 1. 새로운 로그 생성 및 큐에 삽입
-        GameObject newLog = Instantiate(logEntryPrefab, contentParent);
-        newLog.GetComponent<TextMeshProUGUI>().text = message;
-        logQueue.Enqueue(newLog);
+        AddPermanentLog(message);
+        AddFloatingLog(message);
 
-        // 2. 큐의 개수 제한 (while로 방어적 코드 작성)
-        while (logQueue.Count > maxLogLines) {
-            GameObject oldLog = logQueue.Dequeue();
-            Destroy(oldLog);
-        }
-
-        // 3. 자동 스크롤
-        if (gameObject.activeInHierarchy) { // 활성화 상태일 때만 코루틴 실행
-            StopAllCoroutines();
-            StartCoroutine(ScrollToBottom());
+        if (isLogWindowVisible) {
+            StartScrollToBottom();
         }
     }
 
-    IEnumerator ScrollToBottom() {
+    private void AddPermanentLog(string message) {
+        if (logEntryPrefab == null || contentParent == null) {
+            Debug.LogWarning("LogManager: logEntryPrefab 또는 contentParent가 비어 있습니다.");
+            return;
+        }
+
+        GameObject newLog = Instantiate(logEntryPrefab, contentParent);
+        SetLogText(newLog, message);
+
+        logQueue.Enqueue(newLog);
+
+        while (logQueue.Count > maxLogLines) {
+            GameObject oldLog = logQueue.Dequeue();
+
+            if (oldLog != null) {
+                Destroy(oldLog);
+            }
+        }
+    }
+
+    private void AddFloatingLog(string message) {
+        if (floatingLogEntryPrefab == null || floatingContentParent == null) {
+            return;
+        }
+
+        GameObject floatingLog = Instantiate(floatingLogEntryPrefab, floatingContentParent);
+
+        SetLogText(floatingLog, message);
+
+        CanvasGroup canvasGroup = floatingLog.GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null) {
+            canvasGroup = floatingLog.AddComponent<CanvasGroup>();
+        }
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        StartCoroutine(FloatingLogRoutine(floatingLog, canvasGroup));
+    }
+
+    private void SetLogText(GameObject logObject, string message) {
+        TextMeshProUGUI text = logObject.GetComponent<TextMeshProUGUI>();
+
+        if (text == null) {
+            text = logObject.GetComponentInChildren<TextMeshProUGUI>(true);
+        }
+
+        if (text != null) {
+            text.text = message;
+        }
+        else {
+            Debug.LogWarning("LogManager: logEntryPrefab에서 TextMeshProUGUI를 찾지 못했습니다.");
+        }
+    }
+
+    private IEnumerator FloatingLogRoutine(GameObject floatingLog, CanvasGroup canvasGroup) {
+        yield return new WaitForSeconds(floatingVisibleTime);
+
+        float elapsed = 0f;
+
+        while (elapsed < floatingFadeTime) {
+            elapsed += Time.deltaTime;
+
+            float t = elapsed / floatingFadeTime;
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+
+            yield return null;
+        }
+
+        if (floatingLog != null) {
+            Destroy(floatingLog);
+        }
+    }
+
+    private void ToggleLogWindow() {
+        isLogWindowVisible = !isLogWindowVisible;
+
+        ApplyLogWindowVisibility();
+
+        if (isLogWindowVisible) {
+            StartScrollToBottom();
+        }
+    }
+
+    private void ApplyLogWindowVisibility() {
+        if (logWindowGroup != null) {
+            logWindowGroup.alpha = isLogWindowVisible ? 1f : 0f;
+            logWindowGroup.interactable = isLogWindowVisible;
+            logWindowGroup.blocksRaycasts = isLogWindowVisible;
+        }
+
+        if (floatingContentParent != null) {
+            CanvasGroup floatingAreaGroup = floatingContentParent.GetComponent<CanvasGroup>();
+
+            if (floatingAreaGroup == null) {
+                floatingAreaGroup = floatingContentParent.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            floatingAreaGroup.alpha = isLogWindowVisible ? 0f : 1f;
+            floatingAreaGroup.interactable = false;
+            floatingAreaGroup.blocksRaycasts = false;
+        }
+    }
+
+    private void StartScrollToBottom() {
+        if (scrollCoroutine != null) {
+            StopCoroutine(scrollCoroutine);
+        }
+
+        scrollCoroutine = StartCoroutine(ScrollToBottom());
+    }
+
+    private IEnumerator ScrollToBottom() {
         yield return new WaitForEndOfFrame();
+
+        Canvas.ForceUpdateCanvases();
+
         if (scrollRect != null) {
             scrollRect.verticalNormalizedPosition = 0f;
         }
+
+        scrollCoroutine = null;
     }
-
-    ////// 급조한 테스트용 코드, 테스트할때 주석 풀고 사용할것
-    //private int k = 1; // 점의 개수 및 카운트 변수
-
-    //void Update() {
-    //    // Q 키를 눌렀을 때 실행
-    //    if (Input.GetKeyDown(KeyCode.Q)) {
-    //        string dots = new string('.', k); // k개의 점 생성
-    //        string testMessage = $"{k}번째 테스트 로그입니다{dots}";
-    //        AddLog(testMessage);
-    //        k++; // 다음 로그를 위해 k 증가
-
-    //    }
-    //    // 리셋
-    //    if (Input.GetKeyDown(KeyCode.R)) {
-    //        ClearLog();
-    //        k = 1; // 카운트 초기화
-    //    }
-    //}
 }

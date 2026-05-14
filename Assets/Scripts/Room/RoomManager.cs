@@ -15,7 +15,7 @@ public class RoomTypeGroup
 public class RewardWeight
 {
     public GameObject rewardPrefab;
-    public float weight;
+    public double weight;
 }
 
 [System.Serializable]
@@ -193,9 +193,9 @@ public class RoomManager : MonoBehaviour
             Debug.Log(sb.ToString());
         }
 
-        
 
-        PreparePrefixWeights();
+
+        PrepareRewardWeightTree();
         for (int x = 0; x < mapSize; x++)
         {
             for (int y = 0; y < mapSize; y++)
@@ -335,18 +335,17 @@ public class RoomManager : MonoBehaviour
         return mapPlan[x, y];
     }
 
-    private List<float> prefixWeights = new List<float>();
-    private float totalWeightSum = 0;
+    private SumSegmentTree rewardWeightTree = new SumSegmentTree();
+    private readonly System.Random rewardRandom = new System.Random();
 
-    void PreparePrefixWeights()
-    {
-        prefixWeights.Clear();
-        totalWeightSum = 0;
-        foreach (var rw in allRewards)
-        {
-            totalWeightSum += rw.weight;
-            prefixWeights.Add(totalWeightSum);
+    void PrepareRewardWeightTree() {
+        double[] weights = new double[allRewards.Count];
+
+        for (int i = 0; i < allRewards.Count; i++) {
+            weights[i] = allRewards[i].weight;
         }
+
+        rewardWeightTree.Build(weights);
     }
 
     // 방의 위치와 리스트를 바탕으로 타입을 결정하는 메서드
@@ -380,30 +379,28 @@ public class RoomManager : MonoBehaviour
     }
 
     void AssignRandomRewards(RoomData room) {
+        // 보상 대상 방이 아니거나 보상 데이터가 없으면 종료
         if (allRewards == null || allRewards.Count == 0) return;
-        if (room.type != RoomType.Normal && room.type != RoomType.Boss) { return; }
+        if (room.type != RoomType.Normal && room.type != RoomType.Boss) return;
 
-        // ? 항상 정확히 1개만 나오게
-        float randomValue = Random.Range(0, totalWeightSum);
+        // 세그먼트 트리의 전체 가중치 합이 0이면 선택 불가
+        if (rewardWeightTree.TotalSum <= 0.0) return;
 
-        int low = 0;
-        int high = prefixWeights.Count - 1;
-        int selectedIndex = high;
+        // [0, 전체합) 범위에서 랜덤 누적합 값 생성
+        double randomValue = rewardRandom.NextDouble() * rewardWeightTree.TotalSum;
 
-        while (low <= high)
-        {
-            int mid = (low + high) / 2;
-            if (prefixWeights[mid] >= randomValue)
-            {
-                selectedIndex = mid;
-                high = mid - 1;
-            }
-            else
-            {
-                low = mid + 1;
-            }
-        }
+        // 세그먼트 트리에서 누적합 기준으로 선택될 보상 index 탐색
+        int selectedIndex = rewardWeightTree.LowerBoundByPrefixSum(randomValue);
+        if (selectedIndex < 0) return;
 
+        // 원본 보상 리스트에서 선택된 프리팹을 방에 추가
         room.rewardPrefabs.Add(allRewards[selectedIndex].rewardPrefab);
+
+        // 원본 보상 가중치를 절반으로 감소
+        double newWeight = allRewards[selectedIndex].weight * 0.5;
+        allRewards[selectedIndex].weight = newWeight;
+
+        // 변경된 원본 가중치를 세그먼트 트리에 반영
+        rewardWeightTree.SetValue(selectedIndex, newWeight);
     }
 }
