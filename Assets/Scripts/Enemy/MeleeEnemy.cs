@@ -61,10 +61,16 @@ public class MeleeEnemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
             // 방향 반전
-            if (player.position.x < transform.position.x)
-                transform.localScale = new Vector3(-1, 1, 1);
-            else
-                transform.localScale = new Vector3(1, 1, 1);
+            Vector3 scale = transform.localScale;
+
+            if (player.position.x < transform.position.x) {
+                scale.x = -Mathf.Abs(scale.x);
+            }
+            else {
+                scale.x = Mathf.Abs(scale.x);
+            }
+
+            transform.localScale = scale;
         }
     }
 

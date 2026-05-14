@@ -393,4 +393,16 @@ public class MoveMapBounds : MonoBehaviour
         int nextState = ActiveWalls & ~mask;
         SetWalls(nextState);
     }
+
+    public void RegisterRoomEnemy(GameObject enemy) {
+        if (enemy == null) {
+            return;
+        }
+
+        if (currentRoomEnemies == null) {
+            currentRoomEnemies = new List<GameObject>();
+        }
+
+        currentRoomEnemies.Add(enemy);
+    }
 }
