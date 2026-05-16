@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 public class LightningOnHit : MonoBehaviour
 {
     [Header("References")]
@@ -13,7 +15,6 @@ public class LightningOnHit : MonoBehaviour
         if (!other.CompareTag("Enemy")) return;
         if (elementalManager == null || !elementalManager.hasLightningHeart) return;
 
-        // 매번 발동!
         TriggerLightningChain(other.gameObject);
     }
 
@@ -21,10 +22,10 @@ public class LightningOnHit : MonoBehaviour
     {
         Vector3 hitPos = hitEnemy.transform.position;
         LightningVisual.Spawn(transform.position, hitPos);
-        SpawnChainEffect(hitPos);
+        SpawnChainEffect(hitPos, hitEnemy);
     }
 
-    void SpawnChainEffect(Vector3 origin)
+    void SpawnChainEffect(Vector3 origin, GameObject hitEnemy)
     {
         int damage = GetOriginalDamage();
         LightningEffect effect = new GameObject("LightningChainRunner").AddComponent<LightningEffect>();
@@ -34,6 +35,8 @@ public class LightningOnHit : MonoBehaviour
         effect.originalDamage = damage;
         effect.duration = duration;
         effect.chainOrigin = origin;
+        effect.originEnemy = hitEnemy;
+        effect.visitedEnemies = new List<GameObject> { hitEnemy }; // 처음 맞은 적도 방문 목록에 추가
     }
 
     int GetOriginalDamage()

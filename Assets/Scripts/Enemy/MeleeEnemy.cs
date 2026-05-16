@@ -8,18 +8,18 @@ public class MeleeEnemy : MonoBehaviour
 
     public float moveSpeed;
     public int damage;
-
     private Transform player;
     private float lastAttackTime;
     private PlayerHealth playerHealth;
     private EnemyStats stats;
+    private EnemyHealth enemyHealth;
     private bool hasSpotted = false;
 
     void Start()
     {
         stats = GetComponent<EnemyStats>();
+        enemyHealth = GetComponent<EnemyHealth>();
 
-        // EnemyStats에서 스탯 가져오기
         if (stats != null)
         {
             moveSpeed = stats.moveSpeed;
@@ -49,7 +49,6 @@ public class MeleeEnemy : MonoBehaviour
                     SFXManager.Instance.PlaySFX(SFXType.EnemyEncounter);
             }
 
-            // 공격 범위 안에서는 멈추고 공격
             if (Time.time > lastAttackTime + attackCooldown)
             {
                 Attack();
@@ -60,17 +59,19 @@ public class MeleeEnemy : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
-            // 방향 반전
-            Vector3 scale = transform.localScale;
-
-            if (player.position.x < transform.position.x) {
-                scale.x = -Mathf.Abs(scale.x);
+            // 방향 반전 + 체력바 보정
+            if (player.position.x < transform.position.x)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                if (enemyHealth?.hpSlider != null)
+                    enemyHealth.hpSlider.transform.localScale = new Vector3(-1, 1, 1);
             }
-            else {
-                scale.x = Mathf.Abs(scale.x);
+            else
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                if (enemyHealth?.hpSlider != null)
+                    enemyHealth.hpSlider.transform.localScale = new Vector3(1, 1, 1);
             }
-
-            transform.localScale = scale;
         }
     }
 

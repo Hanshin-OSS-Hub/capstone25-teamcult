@@ -12,7 +12,8 @@ public class LightningEffect : MonoBehaviour
     public int maxChainCount = 3;
     public int originalDamage = 10;
     public Vector3 chainOrigin;
-
+    public GameObject originEnemy;
+    public List<GameObject> visitedEnemies = new List<GameObject>(); // 방문한 적 목록
     private bool hasChained = false;
 
     void Start()
@@ -25,13 +26,11 @@ public class LightningEffect : MonoBehaviour
     IEnumerator DoLightningEffect()
     {
         yield return new WaitForSeconds(0.1f);
-
         if (!hasChained)
         {
             hasChained = true;
             ChainToNearbyEnemies(chainOrigin, maxChainCount);
         }
-
         yield return new WaitForSeconds(duration);
         if (this != null) Destroy(this);
     }
@@ -39,30 +38,40 @@ public class LightningEffect : MonoBehaviour
     void ChainToNearbyEnemies(Vector3 origin, int remainingChains)
     {
         if (remainingChains <= 0) return;
-
         Collider2D[] hits = Physics2D.OverlapCircleAll(origin, chainRadius);
         List<GameObject> chainTargets = new List<GameObject>();
 
         foreach (Collider2D hit in hits)
         {
             if (!hit.CompareTag("Enemy")) continue;
-            // gameObject 비교 대신 위치로 제외 (죽어서 사라진 경우 대비)
             if (Vector3.Distance(hit.transform.position, origin) < 0.1f) continue;
+
+            // 처음 맞은 적 제외
+            if (originEnemy != null && hit.gameObject == originEnemy) continue;
+
+            // 이미 방문한 적 제외 (중복 방지)
+            if (visitedEnemies.Contains(hit.gameObject)) continue;
+
+            // 무적인 적 제외 (분열 직후)
+            EnemyHealth eh = hit.GetComponent<EnemyHealth>();
+            if (eh != null && eh.IsInvincible()) continue;
+
             chainTargets.Add(hit.gameObject);
         }
 
         if (chainTargets.Count == 0) return;
 
-        // 1. 비주얼 먼저
+        // 방문 목록에 추가
+        foreach (GameObject target in chainTargets)
+            visitedEnemies.Add(target);
+
         foreach (GameObject target in chainTargets)
             LightningVisual.Spawn(origin, target.transform.position);
 
-        // 2. 체인 컴포넌트 붙이기 (데미지 전에)
         foreach (GameObject target in chainTargets)
         {
             LightningEffect existing = target.GetComponent<LightningEffect>();
             if (existing != null) Destroy(existing);
-
             LightningEffect chainEffect = target.AddComponent<LightningEffect>();
             chainEffect.elementalManager = elementalManager;
             chainEffect.chainRadius = chainRadius;
@@ -71,9 +80,10 @@ public class LightningEffect : MonoBehaviour
             chainEffect.chainOrigin = target.transform.position;
             chainEffect.duration = duration * 0.5f;
             chainEffect.maxChainCount = remainingChains - 1;
+            chainEffect.originEnemy = originEnemy;
+            chainEffect.visitedEnemies = new List<GameObject>(visitedEnemies); // 방문 목록 전달
         }
 
-        // 3. 데미지 맨 나중에 (죽어도 체인은 이미 걸림)
         foreach (GameObject target in chainTargets)
         {
             EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();

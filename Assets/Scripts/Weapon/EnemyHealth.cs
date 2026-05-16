@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class EnemyHealth : MonoBehaviour {
+public class EnemyHealth : MonoBehaviour
+{
     [Header("체력 설정")]
     public int currentHealth;
     protected EnemyStats stats;
@@ -24,26 +25,24 @@ public class EnemyHealth : MonoBehaviour {
     public float maSeokDropChance = 50f;
 
     protected bool isDead = false;
-    protected bool isInvincible = false; // 무적
+    private bool isInvincible = false;
 
-    protected virtual void Start() {
+    protected virtual void Start()
+    {
         stats = GetComponent<EnemyStats>();
-        if (stats != null) {
+        if (stats != null)
+        {
             currentHealth = stats.maxHealth;
-
-            if (nameText != null) {
-                nameText.text = stats.enemyName;
-            }
+            if (nameText != null) nameText.text = stats.enemyName;
         }
-        else {
+        else
+        {
             currentHealth = 30;
-
-            if (nameText != null) {
-                nameText.text = "Unknown";
-            }
+            if (nameText != null) nameText.text = "Unknown";
         }
 
-        if (hpSlider != null) {
+        if (hpSlider != null)
+        {
             hpSlider.maxValue = currentHealth;
             hpSlider.value = currentHealth;
         }
@@ -51,164 +50,132 @@ public class EnemyHealth : MonoBehaviour {
         UpdateUI();
     }
 
-    public void TakeDamage(int damage) {
-        if (isDead || isInvincible) { // 무적일때도 리턴
-            return;
-        }
+    public void SetInvincible(bool value)
+    {
+        isInvincible = value;
+    }
+
+    public bool IsInvincible() => isInvincible;
+
+    public void TakeDamage(int damage)
+    {
+        if (isInvincible) return;
+        if (isDead) return;
 
         int defenseVal = (stats != null) ? stats.defense : 0;
-
-        // 새 방식: max(공격력 - 방어력, 1)
         int finalDamage = Mathf.Max(damage - defenseVal, 1);
 
         currentHealth -= finalDamage;
-
-        if (currentHealth < 0) {
-            currentHealth = 0;
-        }
-
+        if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
-        if (damageTextPrefab != null) {
+        if (damageTextPrefab != null)
+        {
             Vector3 spawnPos = hpSlider != null
                 ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
                 : transform.position + new Vector3(0, 1.5f, 0);
 
             GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
             DamageText dmgTextScript = textObj.GetComponent<DamageText>();
-
-            if (dmgTextScript != null) {
-                dmgTextScript.Setup(finalDamage);
-            }
+            if (dmgTextScript != null) dmgTextScript.Setup(finalDamage);
         }
 
-        if (currentHealth <= 0) {
-            if (SFXManager.Instance != null) {
-                SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
-            }
-
+        if (currentHealth <= 0)
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
             Die();
         }
-        else {
-            if (SFXManager.Instance != null) {
-                SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
-            }
+        else
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
         }
     }
 
-    // 화염 도트딜 - 방어력 무시
-    public void TakeDamageIgnoreDefense(int damage) {
-        if (isDead || isInvincible) {
-            return;
-        }
+    public void TakeDamageIgnoreDefense(int damage)
+    {
+        if (isInvincible) return;
+        if (isDead) return;
 
-        if (damage < 1) {
-            damage = 1;
-        }
+        if (damage < 1) damage = 1;
 
         currentHealth -= damage;
-
-        if (currentHealth < 0) {
-            currentHealth = 0;
-        }
-
+        if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
-        if (damageTextPrefab != null) {
+        if (damageTextPrefab != null)
+        {
             Vector3 spawnPos = hpSlider != null
                 ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
                 : transform.position + new Vector3(0, 1.5f, 0);
 
             GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
             DamageText dmgTextScript = textObj.GetComponent<DamageText>();
-
-            if (dmgTextScript != null) {
-                dmgTextScript.Setup(damage);
-            }
+            if (dmgTextScript != null) dmgTextScript.Setup(damage);
         }
 
-        if (currentHealth <= 0) {
-            if (SFXManager.Instance != null) {
-                SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
-            }
-
+        if (currentHealth <= 0)
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
             Die();
         }
-        else {
-            if (SFXManager.Instance != null) {
-                SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
-            }
+        else
+        {
+            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
         }
     }
 
-    protected void UpdateUI() {
-        if (hpSlider != null) {
-            hpSlider.value = currentHealth;
-        }
-
-        if (hpText != null) {
-            int max = currentHealth;
-
-            if (stats != null) {
-                max = stats.maxHealth;
-            }
-            else if (hpSlider != null) {
-                max = Mathf.RoundToInt(hpSlider.maxValue);
-            }
-
+    public void UpdateUI()
+    {
+        if (hpSlider != null) hpSlider.value = currentHealth;
+        if (hpText != null)
+        {
+            int max = (stats != null) ? stats.maxHealth : (int)hpSlider.maxValue;
             hpText.text = $"{currentHealth} / {max}";
         }
     }
 
-    protected virtual void Die() {
-        if (isDead) {
-            return;
-        }
-
+    protected virtual void Die()
+    {
+        if (isDead) return;
         isDead = true;
 
-        if (GameManager.instance != null) {
+        if (GameManager.instance != null)
             GameManager.instance.killCount++;
-        }
 
-        if (maSeokPrefab != null) {
+        if (maSeokPrefab != null)
+        {
             float roll = Random.Range(0f, 100f);
-
-            if (roll < maSeokDropChance) {
+            if (roll < maSeokDropChance)
                 Instantiate(maSeokPrefab, transform.position, Quaternion.identity);
-            }
         }
 
         GameObject player = GameObject.Find("Player");
-        if (player != null) {
+        if (player != null)
+        {
             PlayerStats playerStats = player.GetComponent<PlayerStats>();
             PlayerExp expScript = player.GetComponent<PlayerExp>();
 
-            if (expScript != null) {
+            if (expScript != null)
+            {
                 float multiplier = (playerStats != null) ? playerStats.expMultiplier : 1f;
                 int finalExp = Mathf.RoundToInt(expReward * multiplier);
                 expScript.GetExp(finalExp);
             }
 
-            if (playerStats != null) {
-                if (playerStats.killMoveSpeedStack > 0) {
+            if (playerStats != null)
+            {
+                if (playerStats.killMoveSpeedStack > 0)
                     playerStats.moveSpeed += playerStats.killMoveSpeedStack;
-                }
 
-                if (playerStats.killGoldChance > 0) {
+                if (playerStats.killGoldChance > 0)
+                {
                     float roll = Random.Range(0f, 100f);
-
-                    if (roll < playerStats.killGoldChance) {
+                    if (roll < playerStats.killGoldChance)
                         playerStats.AddGold(playerStats.killGoldAmount);
-                    }
                 }
             }
         }
 
         Destroy(gameObject);
-    }
-
-    public void SetInvincible(bool value) {
-        isInvincible = value;
     }
 }
