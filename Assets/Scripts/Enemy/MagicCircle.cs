@@ -5,15 +5,14 @@ public class MagicCircle : MonoBehaviour
 {
     public float warningTime = 1.5f;
     public int damage = 20;
+    public float maxScale = 5f;
 
-    private Material mat;
     private ParticleSystem explosion;
 
     void Awake()
     {
-        mat = GetComponent<SpriteRenderer>().material;
-        mat.SetFloat("_Progress", 0f);
         explosion = CreateExplosionParticle();
+        transform.localScale = Vector3.zero;
     }
 
     void Start()
@@ -29,16 +28,28 @@ public class MagicCircle : MonoBehaviour
         while (t < 1f)
         {
             t += Time.unscaledDeltaTime / warningTime;
-            mat.SetFloat("_Progress", t);
+            transform.localScale = Vector3.one * maxScale * t;
+            transform.Rotate(0f, 0f, 180f * Time.unscaledDeltaTime);
             yield return null;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            GetComponent<SpriteRenderer>().enabled = false;
+            yield return new WaitForSecondsRealtime(0.1f);
+            GetComponent<SpriteRenderer>().enabled = true;
+            yield return new WaitForSecondsRealtime(0.1f);
         }
 
         explosion.Play();
 
         float worldRadius = transform.localScale.x * 0.5f;
-        Collider2D hit = Physics2D.OverlapCircle(transform.position, worldRadius, LayerMask.GetMask("Player"));
-        if (hit != null)
+        Debug.Log("worldRadius: " + worldRadius + " / scale: " + transform.localScale.x);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, worldRadius, LayerMask.GetMask("Player"));
+        foreach (Collider2D hit in hits)
+        {
             hit.GetComponent<PlayerHealth>()?.TakeDamage(damage);
+        }
 
         GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSecondsRealtime(explosion.main.duration);

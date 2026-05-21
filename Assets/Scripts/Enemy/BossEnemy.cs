@@ -103,7 +103,7 @@ public class BossEnemy : MonoBehaviour
     void SpawnMagicCircle(Vector3 pos)
     {
         GameObject circle = Instantiate(magicCirclePrefab, pos, Quaternion.identity);
-        circle.transform.localScale = Vector3.one * 3f;
+        
         MagicCircle magicScript = circle.GetComponent<MagicCircle>();
         if (magicScript != null)
         {

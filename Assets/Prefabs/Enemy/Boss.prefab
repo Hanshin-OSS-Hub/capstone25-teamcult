@@ -672,8 +672,8 @@ MonoBehaviour:
   magicCirclePrefab: {fileID: 3690183335811230425, guid: cfd4b4da51c75aa4ebeceb147729da5d, type: 3}
   magicCooldown: 6
   magicWarningTime: 1.5
-  magicDamage: 20
-  magicRadius: 1.5
+  magicDamage: 5
+  predictTime: 0.8
   maxHealth: 100
 --- !u!1 &7922831894381807307
 GameObject:
