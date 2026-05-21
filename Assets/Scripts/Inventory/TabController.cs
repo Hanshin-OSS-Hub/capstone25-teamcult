@@ -189,15 +189,15 @@ public class TabController : MonoBehaviour
         AddItem(item);
     }
 
+   
     public void ToggleWindow()
     {
         if (mainPanel != null)
         {
             mainPanel.SetActive(!mainPanel.activeSelf);
-            GameManager.instance.isUIOpen = mainPanel.activeSelf;
-
-            if (!mainPanel.activeSelf)
-                TooltipController.instance.HideTooltip();
+            bool isOpen = mainPanel.activeSelf;
+            GameManager.instance.isUIOpen = isOpen;
+            Time.timeScale = isOpen ? 0f : 1f;
         }
     }
 

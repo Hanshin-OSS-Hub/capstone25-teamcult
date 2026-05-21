@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BossEnemy : MonoBehaviour
@@ -7,26 +8,38 @@ public class BossEnemy : MonoBehaviour
     public float stopDistance = 4f;
     public float moveSpeed = 1f;
 
-    [Header("공격")]
+    [Header("일반 공격")]
     public GameObject bulletPrefab;
     public float attackCooldown = 2.5f;
     public float spreadAngle = 25f;
 
-    [Header("체력 세팅 (기존 체력 스크립트가 있다면 무시하세요)")]
+    [Header("마법진 패턴")]
+    public GameObject magicCirclePrefab;
+    public float magicCooldown = 6f;
+    public float magicWarningTime = 1.5f;
+    public int magicDamage = 20;
+    public float predictTime = 0.8f;
+
+    [Header("체력")]
     public int maxHealth = 100;
     private int currentHealth;
 
     private float lastAttackTime;
+    private float lastMagicTime;
     private Transform player;
-    
-    // ★ 인사말을 한 번만 하도록 체크하는 변수
-    private bool hasGreeted = false; 
+    private Rigidbody2D playerRb;
+    private bool hasGreeted = false;
+    private bool isMagicAttacking = false;
 
     void Start()
     {
         currentHealth = maxHealth;
         GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null) player = p.transform;
+        if (p != null)
+        {
+            player = p.transform;
+            playerRb = p.GetComponent<Rigidbody2D>();
+        }
     }
 
     void Update()
@@ -37,14 +50,17 @@ public class BossEnemy : MonoBehaviour
 
         if (distance <= detectRange)
         {
-            // ★ 1. 처음 발견했을 때 인사말(포효) 재생
             if (!hasGreeted)
             {
                 hasGreeted = true;
-                if (SFXManager.Instance != null) 
+                if (SFXManager.Instance != null)
                     SFXManager.Instance.PlaySFX(SFXType.BossGreeting);
-                
-                Debug.Log("보스 조우! 인사말 재생");
+            }
+
+            if (!isMagicAttacking && Time.time > lastMagicTime + magicCooldown)
+            {
+                StartCoroutine(MagicCirclePattern());
+                lastMagicTime = Time.time;
             }
 
             if (Time.time > lastAttackTime + attackCooldown)
@@ -64,24 +80,53 @@ public class BossEnemy : MonoBehaviour
         }
     }
 
+    IEnumerator MagicCirclePattern()
+    {
+        isMagicAttacking = true;
+
+        // 현재 위치
+        SpawnMagicCircle(player.position);
+
+        // 예측 위치
+        if (playerRb != null)
+        {
+            Vector3 predictedPos = player.position + (Vector3)(playerRb.linearVelocity * predictTime);
+            SpawnMagicCircle(predictedPos);
+        }
+
+        yield return new WaitForSecondsRealtime(magicWarningTime + 0.5f);
+
+        isMagicAttacking = false;
+        lastAttackTime = Time.time;
+    }
+
+    void SpawnMagicCircle(Vector3 pos)
+    {
+        GameObject circle = Instantiate(magicCirclePrefab, pos, Quaternion.identity);
+        circle.transform.localScale = Vector3.one * 3f;
+        MagicCircle magicScript = circle.GetComponent<MagicCircle>();
+        if (magicScript != null)
+        {
+            magicScript.damage = magicDamage;
+            magicScript.warningTime = magicWarningTime;
+        }
+    }
+
     void ShootTriple()
     {
         if (bulletPrefab == null || player == null) return;
 
-        // ★ 2. 보스 공격 효과음 재생
-        if (SFXManager.Instance != null) 
+        if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);
 
         Vector3 dir = (player.position - transform.position).normalized;
         float baseAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
         float[] angles = { baseAngle - spreadAngle, baseAngle, baseAngle + spreadAngle };
 
         foreach (float angle in angles)
         {
             float rad = angle * Mathf.Deg2Rad;
             Vector3 shootDir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             EnemyBullet bulletScript = bullet.GetComponent<EnemyBullet>();
             if (bulletScript != null)
@@ -89,24 +134,18 @@ public class BossEnemy : MonoBehaviour
         }
     }
 
-    // ★ 3 & 4. 피격 및 사망 로직 (플레이어 공격 스크립트 등에서 호출)
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
         if (currentHealth <= 0)
         {
-            // 사망 효과음
-            if (SFXManager.Instance != null) 
+            if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySFX(SFXType.BossDeath);
-            
-            Debug.Log("보스 처치!");
             Destroy(gameObject);
         }
         else
         {
-            // 피격 효과음
-            if (SFXManager.Instance != null) 
+            if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySFX(SFXType.BossHit);
         }
     }

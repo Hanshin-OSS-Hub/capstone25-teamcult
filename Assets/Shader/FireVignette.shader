@@ -14,7 +14,7 @@ Shader "Custom/FireVignette"
         _ScrollSpeed ("Scroll Speed (X, Y)", Vector) = (0.1, 1.2, 0, 0)
         _DistortPower ("Distortion Power", Range(0.0, 2.0)) = 0.1
         _Progress ("Fill Progress", Range(0.0, 1.0)) = 1.0
-        _EffectType ("Effect Type (0~5)", Float) = 0
+        _EffectType ("Effect Type (0=Fire 1=Ice 2=Lightning)", Float) = 0
 
         // Fire
         _FireCenterY ("Fire Center Y", Float) = 1.05
@@ -26,10 +26,6 @@ Shader "Custom/FireVignette"
         _BoomFlash ("Boom Flash", Range(0.0, 1.0)) = 0.0
         _EdgeCurrent ("Edge Current", Range(0.0, 2.0)) = 1.0
 
-        // Holy
-        _HolyBreath ("Holy Breath", Range(0.0, 1.0)) = 1.0
-        _HolyFlash  ("Holy Flash",  Range(0.0, 1.0)) = 0.0
-
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
         _StencilOp ("Stencil Operation", Float) = 0
@@ -37,7 +33,6 @@ Shader "Custom/FireVignette"
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
-        // 캐릭터 위치 (UV 공간 0~1)
         _PlayerPos ("Player Position", Vector) = (0.5, 0.5, 0, 0)
     }
 
@@ -64,7 +59,6 @@ Shader "Custom/FireVignette"
 
             float _FireCenterY, _FireSpread;
             float _LightningFlash, _LightningStrike, _BoomFlash, _EdgeCurrent;
-            float _HolyBreath, _HolyFlash;
             float2 _PlayerPos;
 
             v2f vert(appdata_t IN)
@@ -93,26 +87,6 @@ Shader "Custom/FireVignette"
                     totalMask += smoothstep(0.04, 0.01, abs(sn1 - sn2)) * step(0.35, sn1) * smoothstep(0.15, 0.0, fromRight) * 3.0;
                 }
                 return saturate(totalMask);
-            }
-
-            float SingleBolt(float2 uv, float t, float strike, float bx)
-            {
-                float seed = floor(t * 0.5);
-                bx += sin(uv.y * 15.0 + seed * 3.1) * 0.04;
-                bx += sin(uv.y * 40.0 + seed * 7.3) * 0.02;
-                float stepS = floor(uv.y * 20.0);
-                bx += (frac(sin(stepS + seed * 127.1) * 43758.5) - 0.5) * 0.05;
-                float reveal = smoothstep(1.0 - strike - 0.10, 1.0 - strike + 0.10, uv.y);
-                float d = abs(uv.x - bx);
-                return saturate(smoothstep(0.002, 0.0, d) + smoothstep(0.02, 0.0, d) * 0.8) * reveal;
-            }
-
-            float GodRay(float2 uv, float centerX, float width, float t)
-            {
-                float wander = sin(t * 0.15 + centerX * 6.28) * 0.015;
-                float rayMask = smoothstep(width, 0.0, abs(uv.x - centerX - wander));
-                float fadeY = smoothstep(0.0, 0.25, uv.y) * smoothstep(1.0, 0.35, uv.y);
-                return rayMask * fadeY * 0.2;
             }
 
             fixed4 frag(v2f IN) : SV_Target
@@ -152,19 +126,13 @@ Shader "Custom/FireVignette"
                                   + cos(t * 0.17 + uv.y * 3.14) * 0.010;
 
                     float frostDepth = _Radius * 0.26;
-
                     float progress = 1.0 - pow(1.0 - _Progress, 2.5);
 
-                    // 노이즈 기반 불규칙 번짐 — 위치마다 다른 속도로 자라남
-                    float localSpeed = frostNoise * 0.4 + n3 * 0.3; // 0~0.7 불규칙 오프셋
-                    float localProgress = saturate((progress - (1.0 - edgeDist) * 0.0 ) * 1.0);
-                    // 각 픽셀이 가장자리에서 고유한 타이밍에 나타남
+                    float localSpeed = frostNoise * 0.4 + n3 * 0.3;
                     float appear = saturate((progress + localSpeed * progress) * 2.0 - edgeDist * 3.5);
 
-                    // 크랙 번지는 앞부분 번쩍임
                     float crackEdge = abs(appear - 0.5);
-                    float crackFront = smoothstep(0.25, 0.0, crackEdge)
-                                     * (1.0 - progress) * 1.5;
+                    float crackFront = smoothstep(0.25, 0.0, crackEdge) * (1.0 - progress) * 1.5;
 
                     float frostBoundary = edgeDist
                                         - frostNoise * frostDepth * 2.35
@@ -188,44 +156,10 @@ Shader "Custom/FireVignette"
                     mask    = saturate(frostMask + crystalDetail * 0.4 * appear + shimmer * appear + crackFront * 0.5);
                     pattern = saturate(frostMask * 0.7 + crystalDetail + innerFrost + shimmer * 0.5 + crackFront);
                 }
-                else if (_EffectType < 2.5) // Poison
+                else // Lightning
                 {
-                    float st = t * 0.08;
-                    float pn1 = tex2D(_NoiseTex, uv * 3.0 + float2(st * 0.4, st * 0.3)).r;
-                    float pn2 = tex2D(_NoiseTex, uv * 1.8 - float2(st * 0.3, st * 0.2)).r;
-                    float poisonNoise = (pn1 + pn2) * 0.5;
-
-                    float dist   = max(abs(uv.x - 0.5), abs(uv.y - 0.5)) * 2.0;
-                    float sludge = dist + (poisonNoise - 0.5) * _DistortPower * 1.2;
-                    float slimeMask = smoothstep(0.78, 0.78 + _Softness, sludge) * 1.1;
-
-                    float2 crystalUV    = uv * float2(6.0, 5.0) + float2(st * 0.1, st * 0.05);
-                    float poisonCrystal = smoothstep(0.82, 1.0, tex2D(_NoiseTex, crystalUV).r)
-                                       * smoothstep(0.12, 0.0, min(min(uv.x, 1.0-uv.x), min(uv.y, 1.0-uv.y)))
-                                       * 0.8;
-
-                    float2 bubbleUV = float2(uv.x * 7.0, frac(uv.y * 6.0 - t * 0.35 + poisonNoise * 0.4));
-                    float bubble    = smoothstep(0.92, 1.0, tex2D(_NoiseTex, bubbleUV).r)
-                                    * smoothstep(0.4, 0.0, uv.y)
-                                    * (0.5 + 0.5 * sin(t * 2.5 + uv.x * 10.0)) * 0.7;
-
-                    float2 dripUV = float2(uv.x * 5.0, frac(uv.y * 2.5 + t * 0.25 + pn1 * 0.3));
-                    float drip    = smoothstep(0.87, 1.0, tex2D(_NoiseTex, dripUV).r)
-                                  * smoothstep(0.12, 0.0, min(uv.x, 1.0 - uv.x))
-                                  * 0.6;
-
-                    mask    = saturate((slimeMask + poisonCrystal + bubble * 0.5 + drip) * _Progress);
-                    pattern = smoothstep(_Radius - 0.04, _Radius + _Softness + 0.04, sludge)
-                            + poisonCrystal * 0.5 + bubble * 0.3;
-                }
-                else if (_EffectType < 3.5) // Lightning
-                {
-                    float glitch = step(0.4, Hash11(t * 15.0));
-
-                    float flashCycle = frac(t * 0.9 + 0.1);
-                    float flashOn    = step(0.85, flashCycle)
-                                    + step(0.60, flashCycle) * step(flashCycle, 0.63)
-                                    + _LightningFlash;
+                    float flashCycle = frac(t * 0.6 + 0.1);
+                    float flashOn    = step(0.92, flashCycle) + _LightningFlash * 0.5;
                     flashOn = saturate(flashOn);
 
                     float frame = floor(t * 12.0);
@@ -257,8 +191,8 @@ Shader "Custom/FireVignette"
                         float  proj = dot(dFromStart, inDir);
                         float  perp = dFromStart.x * inDir.y - dFromStart.y * inDir.x;
 
-                        float seg    = floor(proj * 20.0);
-                        float zigzag = (frac(sin(seg + bSeed * 3.1) * 43758.5) - 0.5) * 0.018;
+                        float seg      = floor(proj * 20.0);
+                        float zigzag   = (frac(sin(seg + bSeed * 3.1) * 43758.5) - 0.5) * 0.018;
                         float perpDist = abs(perp - zigzag);
 
                         float bLen   = 0.09 + frac(sin(bSeed * 1.7) * 43758.5) * 0.02;
@@ -278,60 +212,23 @@ Shader "Custom/FireVignette"
                                       * step(0.0, bProj2) * smoothstep(0.08, 0.0, bProj2)
                                       * branchProb * 0.5 * reveal;
 
-                        float blink = 0.6 + 0.4 * sin(t * 15.0 + float(bi) * 2.3);
+                        float blink = 0.75 + 0.15 * sin(t * 6.0 + float(bi) * 2.3);
                         crossBolt += (core + glow + aura + branch) * blink * flashOn;
                     }
 
                     float edge = LightningFlame(uv, t) * _EdgeCurrent * 0.4;
                     float boom = _BoomFlash;
                     float heightMask = smoothstep(0.05, 0.2, abs(uv.y - 0.5));
-                    mask    = saturate(crossBolt * 1.3 + edge * heightMask * 0.6 + boom * 0.8);
-                    pattern = saturate(crossBolt * 1.8 + edge * heightMask + boom);
-                }
-                else if (_EffectType < 4.5) // Holy
-                {
-                    float holyPulse = _HolyBreath * (0.5 + 0.2 * sin(t * 0.6));
-                    float vignette = smoothstep(0.40, 0.70, distance(uv, float2(0.5, 0.5))) * 0.2 * holyPulse;
-                    float rays = (GodRay(uv, 0.08, 0.05, t) + GodRay(uv, 0.92, 0.05, t + 1.5)) * holyPulse * 1.5;
-                    float particles = smoothstep(0.85, 0.98, tex2D(_NoiseTex, float2(uv.x * 4.0, uv.y * 2.0 - t * 0.1)).r) * 0.15;
-                    mask = saturate(vignette + rays + particles) * _Progress;
-                    pattern = saturate(rays + vignette * 0.3 + particles);
-                }
-                else // Grass
-                {
-                    float ex = min(uv.x, 1.0 - uv.x);
-                    float ey = uv.y;
-                    float cornerMask = smoothstep(0.32, 0.0, ex) * smoothstep(0.35, 0.0, ey);
-                    float vn1 = tex2D(_NoiseTex, uv * 4.0 + t * 0.04).r;
-                    float vn2 = tex2D(_NoiseTex, uv * 2.5 - t * 0.03).r;
-                    float vineNoise = (vn1 + vn2) * 0.5;
-                    float vine     = cornerMask * (0.7 + vineNoise * 0.5);
-                    float vineEdge = smoothstep(0.30, 0.10, ex) * smoothstep(0.0, 0.12, ex)
-                                   * smoothstep(0.30, 0.05, ey) * smoothstep(0.0, 0.08, ey)
-                                   * vineNoise * 0.9;
 
-                    float firefly = 0.0;
-                    for (int gi = 0; gi < 6; gi++) {
-                        float seed = float(gi) * 127.1;
-                        float2 pos = frac(float2(frac(sin(seed) * 43758.5), frac(cos(seed * 1.3) * 31415.9))
-                                   + float2(sin(t * 0.35 + seed) * 0.10, -frac(t * 0.06 + seed * 0.17)));
-                        float d = distance(uv, pos);
-                        float blink = 0.5 + 0.5 * sin(t * 2.2 + seed * 4.0);
-                        firefly += smoothstep(0.018, 0.0, d) * blink * 2.0;
-                        firefly += smoothstep(0.05,  0.0, d) * blink * 0.4;
-                    }
-
-                    float spores = smoothstep(0.91, 0.98, tex2D(_NoiseTex,
-                        float2(uv.x * 7.0, uv.y * 5.0 - t * 0.20)).r) * 0.55;
-                    mask    = saturate((vine * 0.5 + vineEdge * 0.6 + firefly + spores * 0.35) * _Progress);
-                    pattern = saturate(vineEdge * 1.0 + firefly * 0.6 + vine * 0.4 + spores * 0.3);
+                    mask    = saturate(crossBolt * 0.7 + edge * heightMask * 0.3 + boom * 0.5);
+                    pattern = saturate(crossBolt * 1.0 + edge * heightMask * 0.6 + boom * 0.6);
                 }
 
-                float introMask = (_EffectType >= 1.5 && _EffectType < 2.5) ? 1.0 : smoothstep(0.0, 1.0, _Progress);
+                float introMask = (_EffectType >= 1.0 && _EffectType < 1.5) ? 1.0 : smoothstep(0.0, 1.0, _Progress);
 
-                fixed4 lightningEdge = fixed4(1.0, 0.6, 0.0, 1.0);  // 주황
-fixed4 lightningCore = fixed4(1.0, 0.95, 0.7, 1.0); // 흰/노랑
-                fixed4 fc = (_EffectType >= 2.5 && _EffectType < 3.5)
+                fixed4 lightningEdge = fixed4(1.0, 0.6, 0.0, 1.0);
+                fixed4 lightningCore = fixed4(1.0, 0.95, 0.7, 1.0);
+                fixed4 fc = (_EffectType >= 1.5)
                            ? lerp(lightningEdge, lightningCore, pattern)
                            : lerp(_EdgeColor, _CoreColor, pattern);
 

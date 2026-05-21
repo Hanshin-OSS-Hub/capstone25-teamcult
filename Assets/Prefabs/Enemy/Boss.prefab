@@ -669,6 +669,11 @@ MonoBehaviour:
   bulletPrefab: {fileID: 7413192166536640196, guid: fde2b9091d2bc6449a1735bae72324ee, type: 3}
   attackCooldown: 1.5
   spreadAngle: 25
+  magicCirclePrefab: {fileID: 3690183335811230425, guid: cfd4b4da51c75aa4ebeceb147729da5d, type: 3}
+  magicCooldown: 6
+  magicWarningTime: 1.5
+  magicDamage: 20
+  magicRadius: 1.5
   maxHealth: 100
 --- !u!1 &7922831894381807307
 GameObject:
