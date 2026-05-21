@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 5026637328627402883}
   - component: {fileID: 4522591691724212781}
   m_Layer: 0
-  m_Name: SlimeEnemy
+  m_Name: SlimeEnemy_2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Slime
   level: 1
-  maxHealth: 100
+  maxHealth: 50
   damage: 8
   moveSpeed: 2
   defense: 3
@@ -558,15 +558,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeHealth
   currentHealth: 50
-  expReward: 100
+  expReward: 0
   nameText: {fileID: 0}
   hpSlider: {fileID: 5426590261145882454}
   hpText: {fileID: 7723665171618840921}
   damageTextPrefab: {fileID: 4564337897028911482, guid: 5df6cde4faae9b348a15afd20c517f33, type: 3}
   maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
-  maSeokDropChance: 5
-  splitCount: 2
-  childHealthMultiplier: 0.5
+  maSeokDropChance: 0
+  nextSlimePrefab: {fileID: 7575059051696297546, guid: 9e232d6db8e4f9f4683fe8e2968f3739, type: 3}
+  splitSpawnCount: 2
   splitOffset: 0.4
   spawnProtectionDuration: 0.5
 --- !u!1 &8159280484519314814
