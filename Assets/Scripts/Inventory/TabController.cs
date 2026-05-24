@@ -11,12 +11,18 @@ public class TabController : MonoBehaviour
     [Header("UI 패널 연결")]
     public GameObject mainPanel;
     public GameObject equipPanel;
+    public GameObject consumableEquipPanel;
 
     [Header("재화 UI 연결")]
     public TextMeshProUGUI goldText;
 
-    [Header("탭별 컨텐츠(Scroll View의 Content) 연결")]
+    [Header("스크롤 뷰 (화면 전환용) 연결")]
+    public GameObject weaponScrollView;
+    public GameObject consumableScrollView;
+
+    [Header("탭별 컨텐츠(슬롯 생성 위치) 연결")]
     public GameObject weaponContent;
+    public GameObject consumableContent;
 
     [Header("장착 슬롯 이미지 (UI)")]
     public Image headSlotImage;
@@ -51,8 +57,17 @@ public class TabController : MonoBehaviour
 
     private void InitInventory()
     {
-        foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
-        CreateEmptySlots(weaponContent.transform, weaponSlotUI);
+        if (weaponContent != null)
+        {
+            foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
+            CreateEmptySlots(weaponContent.transform, weaponSlotUI);
+        }
+
+        if (consumableContent != null)
+        {
+            foreach (Transform child in consumableContent.transform) Destroy(child.gameObject);
+            CreateEmptySlots(consumableContent.transform, consumableSlotUI);
+        }
     }
 
     private void CreateEmptySlots(Transform parent, List<ItemSlot> list)
@@ -89,7 +104,7 @@ public class TabController : MonoBehaviour
         {
             case Item.ItemType.Consumable: return consumableSlotUI;
             case Item.ItemType.Ooparts: return oopartsSlotUI;
-            case Item.ItemType.Heart: return weaponSlotUI; // 하트도 인벤토리에
+            case Item.ItemType.Heart: return weaponSlotUI;
             default: return weaponSlotUI;
         }
     }
@@ -110,7 +125,6 @@ public class TabController : MonoBehaviour
     {
         if (item == null) return;
 
-        // 하트면 바로 발동
         if (item.itemType == Item.ItemType.Heart)
         {
             ElementalManager manager = FindFirstObjectByType<ElementalManager>();
@@ -120,18 +134,15 @@ public class TabController : MonoBehaviour
                 HeartSlotController.instance.SetHeart(item.elementType);
             }
 
-            // 체력 반칸 회복
             PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
             if (playerHealth != null)
                 playerHealth.Heal(4f);
 
-            // 인벤토리에서 제거
             inventoryItems.Remove(item);
             fromSlot.ClearSlot();
             return;
         }
 
-        // 무기면 PlayerSlash에 전달
         if (item.itemType == Item.ItemType.Weapon)
             PlayerSlash.instance.SetWeapon(item);
 
@@ -189,7 +200,6 @@ public class TabController : MonoBehaviour
         AddItem(item);
     }
 
-   
     public void ToggleWindow()
     {
         if (mainPanel != null)
@@ -205,10 +215,11 @@ public class TabController : MonoBehaviour
     public void ShowConsumableTab() { SetTabActive(false, true, false); }
     public void ShowOopartsTab() { SetTabActive(false, false, true); }
 
-    private void SetTabActive(bool weapon, bool consumable, bool ooparts)
+    private void SetTabActive(bool isWeapon, bool isConsumable, bool isOoparts)
     {
-        if (equipPanel != null) equipPanel.SetActive(weapon);
-        weaponContent.SetActive(weapon);
+        if (equipPanel != null) equipPanel.SetActive(isWeapon);
+        if (weaponScrollView != null) weaponScrollView.SetActive(isWeapon);
+        if (consumableScrollView != null) consumableScrollView.SetActive(isConsumable);
     }
 
     void Update()

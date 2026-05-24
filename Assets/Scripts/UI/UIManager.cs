@@ -44,7 +44,17 @@ public class UIManager : MonoBehaviour
         settingsButton.onClick.AddListener(OpenSettingsPanel); // Open 함수로 변경
         closeSettingsButton.onClick.AddListener(CloseSettingsPanel); // Close 함수로 변경
         quitGameButton.onClick.AddListener(QuitGame);
-
+        if (PlayerPrefs.HasKey(BRIGHTNESS_KEY))
+        {
+            float savedBrightness = PlayerPrefs.GetFloat(BRIGHTNESS_KEY);
+            brightnessSlider.value = savedBrightness; 
+            SetBrightness(savedBrightness); 
+        }
+        else
+        {
+            // 처음 켜서 저장된 값이 없을 경우 슬라이더의 현재 값으로 초기화
+            SetBrightness(brightnessSlider.value);
+        }
 
         // 초기 상태 설정: 패널은 꺼두고 상태변수 초기화
         if (settingsPanel != null)
@@ -121,6 +131,7 @@ public class UIManager : MonoBehaviour
 
     public void SetBrightness(float brightness)
     {
+        float normalizedBrightness = brightness / brightnessSlider.maxValue;
         float alpha = 1.0f - brightness;
         if (brightnessOverlay != null) brightnessOverlay.color = new Color(0, 0, 0, alpha);
         PlayerPrefs.SetFloat(BRIGHTNESS_KEY, brightness);
