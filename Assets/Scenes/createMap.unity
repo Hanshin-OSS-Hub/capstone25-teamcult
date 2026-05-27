@@ -16088,6 +16088,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1017587456}
   m_CullTransparentMesh: 1
+--- !u!1001 &1030325104
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 15.119765
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.814946
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224675123813839278, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_Name
+      value: SlimeEnemy_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8514516333010168615, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8514516333010168615, guid: 62531976e341d574a8579300c463cb64, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 62531976e341d574a8579300c463cb64, type: 3}
 --- !u!1001 &1048513577
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28187,6 +28256,10 @@ PrefabInstance:
       propertyPath: m_Tiles.Array.data[5].second.m_TileObjectToInstantiateIndex
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2385342877613816320, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2801205621972006874, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: roomTypeColors.Array.size
       value: 4
@@ -28522,7 +28595,11 @@ PrefabInstance:
     - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[3]'
       value: 
-      objectReference: {fileID: 7575059051696297546, guid: 9e232d6db8e4f9f4683fe8e2968f3739, type: 3}
+      objectReference: {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
+    - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: Lens.OrthographicSize
+      value: 5.624
+      objectReference: {fileID: 0}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
@@ -28530,6 +28607,14 @@ PrefabInstance:
     - target: {fileID: 6633758496737343937, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7464120130602480550, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7464120130602480550, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
+      propertyPath: orthographic size
+      value: 5.624
       objectReference: {fileID: 0}
     - target: {fileID: 8185029207527558294, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -31291,3 +31376,4 @@ SceneRoots:
   - {fileID: 1644156752}
   - {fileID: 1814580644}
   - {fileID: 18226134}
+  - {fileID: 1030325104}
