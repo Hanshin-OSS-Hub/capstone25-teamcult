@@ -23,22 +23,20 @@ public class OopartsTreeManager : MonoBehaviour
         UpdatePointUI();
     }
 
-    // ── 포인트 ───────────────────────────────────────────────
-
     public void AddPoint(int amount = 1)
     {
         availablePoints += amount;
         UpdatePointUI();
+        // 마석 획득 시 자동 저장
+        if (OopartsSaveManager.instance != null) OopartsSaveManager.instance.SaveOoparts();
         Debug.Log($"[Ooparts] Point +{amount} (Total: {availablePoints})");
     }
 
-    void UpdatePointUI()
+    public void UpdatePointUI()
     {
         if (pointText != null)
             pointText.text = $"Point: {availablePoints}";
     }
-
-    // ── 찍기 ─────────────────────────────────────────────────
 
     public void TryPick(OopartsSlot target)
     {
@@ -51,7 +49,6 @@ public class OopartsTreeManager : MonoBehaviour
         int tree = target.GetTree();
         int row = target.GetRow();
 
-        // 같은 트리, 같은 행에 이미 찍힌 슬롯이 있으면 교체 불가!
         foreach (var slot in allSlots)
         {
             if (slot == null) continue;
@@ -62,16 +59,16 @@ public class OopartsTreeManager : MonoBehaviour
             }
         }
 
-        // 새 슬롯 찍기
         availablePoints--;
         target.ForcePick();
         UpdatePointUI();
         RefreshAllTrees();
 
+        // 능력 선택 시 자동 저장
+        if (OopartsSaveManager.instance != null) OopartsSaveManager.instance.SaveOoparts();
+
         Debug.Log($"[Ooparts] {target.oopartsData.oopartsName} picked! (Points left: {availablePoints})");
     }
-
-    // ── 트리 해금 갱신 ────────────────────────────────────────
 
     public void RefreshAllTrees()
     {

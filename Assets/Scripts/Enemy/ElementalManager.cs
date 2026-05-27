@@ -38,11 +38,12 @@ public class ElementalManager : MonoBehaviour
     public Texture2D noiseTex;
 
     private Tilemap[] allMaps;
-    private bool isAbilityActive = false;
     private Material screenMat;
-    private string currentType = "";
     private bool isChainFlashing = false;
-    private float abilityTimer = 0f;
+    public bool isAbilityActive = false;
+    public string currentType = "";
+    public float abilityTimer = 0f;
+
 
     private struct ElementalConfig
     {

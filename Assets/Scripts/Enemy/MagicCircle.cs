@@ -43,8 +43,7 @@ public class MagicCircle : MonoBehaviour
 
         explosion.Play();
 
-        float worldRadius = transform.localScale.x * 0.5f;
-        Debug.Log("worldRadius: " + worldRadius + " / scale: " + transform.localScale.x);
+        float worldRadius = transform.localScale.x * 0.1f;
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, worldRadius, LayerMask.GetMask("Player"));
         foreach (Collider2D hit in hits)
         {
@@ -55,6 +54,13 @@ public class MagicCircle : MonoBehaviour
         yield return new WaitForSecondsRealtime(explosion.main.duration);
 
         Destroy(gameObject);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        float worldRadius = transform.localScale.x * 0.1f;
+        Gizmos.DrawWireSphere(transform.position, worldRadius);
     }
 
     ParticleSystem CreateExplosionParticle()

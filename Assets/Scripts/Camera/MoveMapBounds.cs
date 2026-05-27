@@ -11,15 +11,15 @@ public class MoveMapBounds : MonoBehaviour
     public Vector2Int CurrentRoomIndex => currentRoomIndex;
 
     private RoomManager roomManager;
-    private BoxCollider2D areaCollider; 
-    private GameObject wallObject; 
-    private GameObject[] wallParts = new GameObject[4]; 
+    private BoxCollider2D areaCollider;
+    private GameObject wallObject;
+    private GameObject[] wallParts = new GameObject[4];
     private int ActiveWalls = 0;
-    private List<GameObject> currentRoomEnemies = new List<GameObject>(); 
+    private List<GameObject> currentRoomEnemies = new List<GameObject>();
     private EnemySpawner enemySpawner;
 
-    private GameObject[] visualWalls = new GameObject[4]; 
-    private TilemapCollider2D[] realColliders = new TilemapCollider2D[4]; 
+    private GameObject[] visualWalls = new GameObject[4];
+    private TilemapCollider2D[] realColliders = new TilemapCollider2D[4];
 
     [Header("Wall Animation Settings")]
     [SerializeField] private float animationDuration = 0.5f;
@@ -38,17 +38,15 @@ public class MoveMapBounds : MonoBehaviour
             {
                 Transform child = wallObject.transform.Find(childNames[i].ToString());
                 if (child != null)
-                {
                     wallParts[i] = child.gameObject;
-                }
             }
         }
         SetupWallSeparation();
         roomManager = Object.FindAnyObjectByType<RoomManager>();
         enemySpawner = Object.FindAnyObjectByType<EnemySpawner>();
 
-        if (roomManager == null) { Debug.LogError("RoomManager를 찾을 수 없습니다!"); }
-        if (enemySpawner == null) { Debug.LogError("EnemySpawner를 찾을 수 없습니다!"); }
+        if (roomManager == null) Debug.LogError("RoomManager를 찾을 수 없습니다!");
+        if (enemySpawner == null) Debug.LogError("EnemySpawner를 찾을 수 없습니다!");
 
         int startIdx = roomManager.MapSize / 2;
         currentRoomIndex = new Vector2Int(startIdx, startIdx);
@@ -57,15 +55,9 @@ public class MoveMapBounds : MonoBehaviour
     void Update()
     {
         if (playerTarget == null || roomManager == null) return;
-
         UpdateCameraPosition();
         HandleWallLock();
         CheckEnemiesStatus();
-
-        if (false && Input.GetKeyDown(KeyCode.C))
-        {
-            ReduceMonsterCountTest();
-        }
     }
 
     private void ReduceMonsterCountTest()
@@ -85,36 +77,13 @@ public class MoveMapBounds : MonoBehaviour
         float halfSize = gridSize / 2f;
         bool hasMoved = false;
 
-        if (playerPos.x > currentPos.x + halfSize)
-        {
-            transform.position += new Vector3(gridSize, 0, 0);
-            currentRoomIndex.x += 1;
-            hasMoved = true;
-        }
-        else if (playerPos.x < currentPos.x - halfSize)
-        {
-            transform.position -= new Vector3(gridSize, 0, 0);
-            currentRoomIndex.x -= 1;
-            hasMoved = true;
-        }
+        if (playerPos.x > currentPos.x + halfSize) { transform.position += new Vector3(gridSize, 0, 0); currentRoomIndex.x += 1; hasMoved = true; }
+        else if (playerPos.x < currentPos.x - halfSize) { transform.position -= new Vector3(gridSize, 0, 0); currentRoomIndex.x -= 1; hasMoved = true; }
 
-        if (playerPos.y > currentPos.y + halfSize)
-        {
-            transform.position += new Vector3(0, gridSize, 0);
-            currentRoomIndex.y += 1;
-            hasMoved = true;
-        }
-        else if (playerPos.y < currentPos.y - halfSize)
-        {
-            transform.position -= new Vector3(0, gridSize, 0);
-            currentRoomIndex.y -= 1;
-            hasMoved = true;
-        }
+        if (playerPos.y > currentPos.y + halfSize) { transform.position += new Vector3(0, gridSize, 0); currentRoomIndex.y += 1; hasMoved = true; }
+        else if (playerPos.y < currentPos.y - halfSize) { transform.position -= new Vector3(0, gridSize, 0); currentRoomIndex.y -= 1; hasMoved = true; }
 
-        if (hasMoved)
-        {
-            PrintRoomInfo();
-        }
+        if (hasMoved) PrintRoomInfo();
     }
 
     private bool IsPlayerCompletelyInside()
@@ -122,11 +91,8 @@ public class MoveMapBounds : MonoBehaviour
         if (areaCollider == null) return false;
         Bounds areaBounds = areaCollider.bounds;
         Collider2D pCol = playerTarget.GetComponent<Collider2D>();
-
         if (pCol != null)
-        {
             return areaBounds.Contains(pCol.bounds.min) && areaBounds.Contains(pCol.bounds.max);
-        }
         return areaBounds.Contains(playerTarget.position);
     }
 
@@ -156,11 +122,8 @@ public class MoveMapBounds : MonoBehaviour
         {
             int doorMask = roomManager.GetDoorMask(x, y);
             SetWalls(doorMask);
-
             if (currentRoomEnemies.Count == 0)
-            {
                 UnlockAndReward(currentRoom);
-            }
         }
         else
         {
@@ -173,69 +136,52 @@ public class MoveMapBounds : MonoBehaviour
         if (room.type == RoomType.Normal)
         {
             if (room.monsterCount <= 0) return;
-
             Debug.Log($"<color=red>전투 시작!</color> {room.monsterCount}마리 소환 시도");
-
             if (enemySpawner != null)
-            {
                 currentRoomEnemies = enemySpawner.SpawnEnemy(room.monsterCount);
-            }
         }
         else if (room.type == RoomType.Boss)
         {
             Debug.Log("<color=purple>보스전 시작!</color>");
-
             if (enemySpawner != null)
             {
                 if (currentRoomEnemies == null) currentRoomEnemies = new List<GameObject>();
-
                 GameObject boss = enemySpawner.SpawnBoss(room.bossIndex);
-
-                if (boss != null)
-                {
-                    currentRoomEnemies.Add(boss);
-                }
+                if (boss != null) currentRoomEnemies.Add(boss);
             }
         }
     }
 
     [SerializeField] private DangerUIHandler dangerUIHandler;
 
-    private void CheckEnemiesStatus() {
+    private void CheckEnemiesStatus()
+    {
         int sum_danger = 0;
-        for (int i = currentRoomEnemies.Count - 1; i >= 0; i--) {
-            if (currentRoomEnemies[i] == null) {
+        for (int i = currentRoomEnemies.Count - 1; i >= 0; i--)
+        {
+            if (currentRoomEnemies[i] == null)
                 currentRoomEnemies.RemoveAt(i);
-            }
-            else {
+            else
+            {
                 EnemyStats stats = currentRoomEnemies[i].GetComponent<EnemyStats>();
-                if (stats != null) {
-                    sum_danger += stats.danger;
-                }
+                if (stats != null) sum_danger += stats.danger;
             }
         }
-
-        if (dangerUIHandler != null) {
-            dangerUIHandler.UpdateDangerUI(sum_danger);
-        }
+        if (dangerUIHandler != null) dangerUIHandler.UpdateDangerUI(sum_danger);
     }
 
     private void UnlockAndReward(RoomData room)
     {
         room.status = RoomData.RoomStatus.Cleared;
-        SetWalls(0); 
-
-        
+        SetWalls(0);
 
         if (room.rewardPrefabs != null && room.rewardPrefabs.Count > 0)
         {
             foreach (GameObject prefab in room.rewardPrefabs)
             {
                 if (prefab == null) continue;
-
                 Vector3 spawnOffset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0);
                 Instantiate(prefab, transform.position + spawnOffset, Quaternion.identity);
-
                 Debug.Log($"<color=cyan>보상 생성:</color> {prefab.name}");
             }
         }
@@ -243,7 +189,6 @@ public class MoveMapBounds : MonoBehaviour
         if (room.type == RoomType.Boss)
         {
             GameObject elevatorDoorClose = GameObject.Find("ElevatorDoorClose");
-
             if (elevatorDoorClose != null)
             {
                 elevatorDoorClose.SetActive(false);
@@ -266,19 +211,13 @@ public class MoveMapBounds : MonoBehaviour
     private void SetupWallSeparation()
     {
         if (wallObject == null) return;
-
         for (int i = 0; i < 4; i++)
         {
             if (wallParts[i] == null) continue;
-
             realColliders[i] = wallParts[i].GetComponent<TilemapCollider2D>();
             TilemapRenderer tr = wallParts[i].GetComponent<TilemapRenderer>();
             if (tr != null) tr.enabled = false;
-
-            if (realColliders[i] != null)
-            {
-                realColliders[i].enabled = false;
-            }
+            if (realColliders[i] != null) realColliders[i].enabled = false;
 
             visualWalls[i] = Instantiate(wallParts[i], wallParts[i].transform.position, wallParts[i].transform.rotation, wallParts[i].transform.parent);
             visualWalls[i].name = wallParts[i].name + "_Visual";
@@ -303,32 +242,26 @@ public class MoveMapBounds : MonoBehaviour
         }
     }
 
-    // ★ 수정된 SetWalls 함수: 문이 여러 개 움직여도 사운드는 한 번만 재생
     public void SetWalls(int mask)
     {
         if (wallObject == null) return;
-
-        bool anyWallClosed = false; // 문이 닫힘 (벽이 생성됨)
-        bool anyWallOpened = false; // 문이 열림 (벽이 사라짐)
+        bool anyWallClosed = false;
+        bool anyWallOpened = false;
 
         for (int i = 0; i < 4; i++)
         {
             if (visualWalls[i] == null) continue;
-
             bool shouldBeActive = (mask & (1 << i)) != 0;
             bool isCurrentlyActive = (ActiveWalls & (1 << i)) != 0;
-
             if (shouldBeActive != isCurrentlyActive)
             {
                 if (shouldBeActive) anyWallClosed = true;
                 else anyWallOpened = true;
-
                 if (wallCoroutines[i] != null) StopCoroutine(wallCoroutines[i]);
                 wallCoroutines[i] = StartCoroutine(AnimateWallSequence(i, shouldBeActive));
             }
         }
 
-        // ★ 사운드 재생 로직 (for문 바깥에서 한 번만 재생)
         if (SFXManager.Instance != null)
         {
             if (anyWallClosed) SFXManager.Instance.PlaySFX(SFXType.DoorClose);
@@ -344,14 +277,9 @@ public class MoveMapBounds : MonoBehaviour
         GameObject vWall = visualWalls[index];
         Tilemap vTilemap = vWall.GetComponent<Tilemap>();
         TilemapCollider2D rCol = realColliders[index];
-
         Vector3 baseLocalPos = wallParts[index].transform.localPosition;
 
-        if (show)
-        {
-            vWall.SetActive(true);
-            if (rCol != null) rCol.enabled = true;
-        }
+        if (show) { vWall.SetActive(true); if (rCol != null) rCol.enabled = true; }
 
         Vector3 startPos = show ? baseLocalPos + new Vector3(0, wallUpYOffset, 0) : baseLocalPos;
         Vector3 targetPos = show ? baseLocalPos : baseLocalPos + new Vector3(0, wallUpYOffset, 0);
@@ -362,7 +290,6 @@ public class MoveMapBounds : MonoBehaviour
             elapsed += Time.deltaTime;
             float percent = Mathf.Clamp01(elapsed / animationDuration);
             float curve = Mathf.SmoothStep(0, 1, percent);
-
             vWall.transform.localPosition = Vector3.Lerp(startPos, targetPos, curve);
             if (vTilemap != null)
             {
@@ -374,35 +301,17 @@ public class MoveMapBounds : MonoBehaviour
         }
 
         vWall.transform.localPosition = targetPos;
-        if (!show)
-        {
-            if (rCol != null) rCol.enabled = false;
-            vWall.SetActive(false);
-        }
+        if (!show) { if (rCol != null) rCol.enabled = false; vWall.SetActive(false); }
         wallCoroutines[index] = null;
     }
 
-    public void SetWallsActive(int mask = 15)
+    public void SetWallsActive(int mask = 15) { SetWalls(ActiveWalls | mask); }
+    public void SetWallsInactive(int mask = 15) { SetWalls(ActiveWalls & ~mask); }
+
+    public void RegisterRoomEnemy(GameObject enemy)
     {
-        int nextState = ActiveWalls | mask;
-        SetWalls(nextState);
-    }
-
-    public void SetWallsInactive(int mask = 15)
-    {
-        int nextState = ActiveWalls & ~mask;
-        SetWalls(nextState);
-    }
-
-    public void RegisterRoomEnemy(GameObject enemy) {
-        if (enemy == null) {
-            return;
-        }
-
-        if (currentRoomEnemies == null) {
-            currentRoomEnemies = new List<GameObject>();
-        }
-
+        if (enemy == null) return;
+        if (currentRoomEnemies == null) currentRoomEnemies = new List<GameObject>();
         currentRoomEnemies.Add(enemy);
     }
 }

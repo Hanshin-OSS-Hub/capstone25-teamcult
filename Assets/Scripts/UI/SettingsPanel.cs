@@ -1,9 +1,16 @@
 using UnityEngine;
+
 public class SettingsPanelManager : MonoBehaviour
 {
     public GameObject settingsPanel;
     private Animator animator;
     private bool isOpen = false;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+
     void Start()
     {
         if (settingsPanel != null)
@@ -12,6 +19,7 @@ public class SettingsPanelManager : MonoBehaviour
         }
         if (!isOpen && settingsPanel != null) settingsPanel.SetActive(false);
     }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -20,16 +28,14 @@ public class SettingsPanelManager : MonoBehaviour
             else CloseSettings();
         }
     }
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
+
     public void OpenSettings()
     {
         gameObject.SetActive(true);
         animator.SetTrigger("Open");
         isOpen = true;
     }
+
     public void CloseSettings()
     {
         if (isOpen)
@@ -42,8 +48,19 @@ public class SettingsPanelManager : MonoBehaviour
             Invoke("DisablePanel", 0.5f);
         }
     }
+
     private void DisablePanel()
     {
         if (!isOpen) gameObject.SetActive(false);
+    }
+
+    // 저장 버튼 OnClick에 연결
+    public void SaveGame()
+    {
+        if (SaveManager.instance != null)
+        {
+            SaveManager.instance.SaveRun();
+            Debug.Log("[Settings] 수동 저장 완료");
+        }
     }
 }
