@@ -16,7 +16,7 @@ public class DangerUIHandler : MonoBehaviour {
     [SerializeField] private int dangerThresholdPerSkull = 10;
     [Range(0f, 1f)]
     [SerializeField] private float emptyAlpha = 0.2f;
-    [SerializeField] private Color redColor = Color.red; // 10000 ÀÌ»óÀÏ ¶§ »ö»ó
+    [SerializeField] private Color redColor = Color.red; 
 
     [Header("Animation Settings")]
     [SerializeField] private float punchScale = 1.3f;
@@ -24,9 +24,9 @@ public class DangerUIHandler : MonoBehaviour {
 
     private int _currentDangerValue = 0;
     private int _currentActiveSkullCount = -1;
-    private bool _wasEmergency = false; // ÀÌÀü ÇÁ·¹ÀÓÀÇ 10000 µ¹ÆÄ ¿©ºÎ ÀúÀå
+    private bool _wasEmergency = false; 
 
-    private void Awake() {
+private void Awake() {
         Image[] children = GetComponentsInChildren<Image>();
         int index = 0;
         foreach (var child in children) {
@@ -35,12 +35,19 @@ public class DangerUIHandler : MonoBehaviour {
             skullImages[index] = child;
             index++;
         }
+        
+        // [ìˆ˜ì •ë¨] ì—¬ê¸°ì„œ UpdateDangerUI(0)ë¥¼ í˜¸ì¶œí•˜ë˜ ì½”ë“œë¥¼ ì§€ì› ìŠµë‹ˆë‹¤!
+    }
 
-        UpdateDangerUI(0);
+    // =========================================================
+    // â˜… ìƒˆë¡œ ì¶”ê°€: ëª¨ë“  ì‹±ê¸€í†¤ ë§¤ë‹ˆì €ê°€ ê¹¨ì–´ë‚œ í›„ ì•ˆì „í•˜ê²Œ ìµœì´ˆ BGM ëª…ë ¹
+    // =========================================================
+    private void Start() {
+        UpdateDangerUI(0); 
     }
 
     public void UpdateDangerUI(int currentDanger) {
-        // 1. »õ·Î¿î ÇØ°ñ °³¼ö ¹× ºñ»ó »óÅÂ Ã¼Å©
+        // 1. ìƒˆë¡œìš´ í•´ê³¨ ê°œìˆ˜ ë° ë¹„ìƒ ìƒíƒœ ì²´í¬
         int newCount = 0;
         if (currentDanger > 0) {
             newCount = ((currentDanger - 1) / dangerThresholdPerSkull) + 1;
@@ -49,28 +56,25 @@ public class DangerUIHandler : MonoBehaviour {
 
         bool isEmergency = currentDanger >= 10000;
 
-        // °³¼öµµ °°°í, ºñ»ó »óÅÂ ¿©ºÎµµ °°´Ù¸é °»½Å »ı·« (ÃÖÀûÈ­)
+        // ìƒíƒœê°€ ì´ì „ê³¼ ë˜‘ê°™ë‹¤ë©´ UIì™€ BGM ëª¨ë‘ ê°±ì‹ í•˜ì§€ ì•Šê³  ì¢…ë£Œ (ìµœì í™”)
         if (_currentActiveSkullCount == newCount && _wasEmergency == isEmergency) return;
 
-        // 2. UI °»½Å ·çÇÁ
+        // 2. UI ì‹œê°ì  ì—…ë°ì´íŠ¸ ë¡œì§
         for (int i = 0; i < MAX_SKULL_COUNT; i++) {
             if (skullImages[i] == null) continue;
 
             if (i < newCount) {
-                // »õ·Î È°¼ºÈ­µÇ´Â ÇØ°ñ¿¡ ¾Ö´Ï¸ŞÀÌ¼Ç Àû¿ë
                 if (i >= _currentActiveSkullCount) {
                     StartCoroutine(PunchAnimate(skullImages[i].transform));
                 }
 
                 skullImages[i].sprite = filledSkull;
 
-                // »ö»ó °áÁ¤: 10000 ÀÌ»óÀÌ¸é redColor, ¾Æ´Ï¸é Èò»ö(±âº»)
                 Color targetColor = isEmergency ? redColor : Color.white;
-                targetColor.a = 1.0f; // ¾ËÆÄ°ª °íÁ¤
+                targetColor.a = 1.0f; 
                 skullImages[i].color = targetColor;
             }
             else {
-                // ºñÈ°¼º(ºó) ÇØ°ñ Ã³¸®
                 if (emptySkull != null) {
                     skullImages[i].sprite = emptySkull;
                     skullImages[i].color = Color.white;
@@ -85,12 +89,29 @@ public class DangerUIHandler : MonoBehaviour {
             }
         }
 
-        // »óÅÂ ÀúÀå
+        // =========================================================
+        // â˜… 3. í•´ê³¨ UI ìƒíƒœì— ë§ì¶° BGM ìœ„í˜‘ë„ ë™ê¸°í™”
+        // =========================================================
+        if (BattleStateBGM.Instance != null)
+        {
+            BattleStateBGM.ThreatLevel targetState = BattleStateBGM.ThreatLevel.Normal;
+            
+            if (isEmergency) targetState = BattleStateBGM.ThreatLevel.Boss;
+            else if (newCount >= 3) targetState = BattleStateBGM.ThreatLevel.Combat;  
+            else if (newCount > 0) targetState = BattleStateBGM.ThreatLevel.Tension; 
+
+            if (BattleStateBGM.Instance.currentLevel != targetState)
+            {
+                BattleStateBGM.Instance.SetBattleState(targetState);
+            }
+        }
+
+        // 4. í˜„ì¬ ìƒíƒœ ì €ì¥
         _currentActiveSkullCount = newCount;
         _wasEmergency = isEmergency;
 
         if (LogManager.Instance != null) {
-            LogManager.Instance.AddLog($"À§Çèµµ °»½Å: {currentDanger} (ÇØ°ñ {newCount}°³)");
+            LogManager.Instance.AddLog($"ìœ„í—˜ë„ ê°±ì‹ : {currentDanger} (í•´ê³¨ {newCount}ê°œ)");
         }
     }
 
