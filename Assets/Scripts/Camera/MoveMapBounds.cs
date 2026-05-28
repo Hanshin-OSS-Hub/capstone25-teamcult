@@ -75,7 +75,22 @@ public class MoveMapBounds : MonoBehaviour {
         if (playerPos.y > currentPos.y + halfSize) { transform.position += new Vector3(0, gridSize, 0); currentRoomIndex.y += 1; hasMoved = true; }
         else if (playerPos.y < currentPos.y - halfSize) { transform.position -= new Vector3(0, gridSize, 0); currentRoomIndex.y -= 1; hasMoved = true; }
 
-        if (hasMoved) PrintRoomInfo();
+        if (hasMoved) {
+            int x = currentRoomIndex.x;
+            int y = currentRoomIndex.y;
+
+            if (roomManager != null && roomManager.rooms != null) {
+                if (x >= 0 && x < roomManager.MapSize && y >= 0 && y < roomManager.MapSize) {
+                    RoomData movedRoom = roomManager.rooms[x, y];
+
+                    if (movedRoom != null && !IsCombatRoom(movedRoom)) {
+                        ClearWallsImmediately();
+                    }
+                }
+            }
+
+            PrintRoomInfo();
+        }
     }
 
     private bool IsPlayerCompletelyInside() {
@@ -113,11 +128,17 @@ public class MoveMapBounds : MonoBehaviour {
 
                 if (IsCombatRoom(currentRoom)) {
                     currentRoom.status = RoomData.RoomStatus.Locked;
+
+                    AddSpecialRoomEnterLog(currentRoom);
+
                     SpawnMonsters(currentRoom);
                 }
                 else {
                     currentRoomEnemies.Clear();
-                    Debug.Log($"<color=cyan><b>[Room]</b></color> 비전투방 처리 / Type: {currentRoom.type}");
+                    ClearWallsImmediately();
+
+                    Debug.Log($"<color=cyan><b>[Room]</b></color> 비전투방 입장 / Type: {currentRoom.type}, 문 잠금 없음");
+
                     UnlockAndReward(currentRoom);
                 }
             }
@@ -127,12 +148,17 @@ public class MoveMapBounds : MonoBehaviour {
             int doorMask = roomManager.GetDoorMask(x, y);
             SetWalls(doorMask);
 
-            if (currentRoomEnemies == null || currentRoomEnemies.Count == 0) {
+            if (currentRoomEnemies.Count == 0) {
                 UnlockAndReward(currentRoom);
             }
         }
         else {
-            SetWalls(0);
+            if (IsCombatRoom(currentRoom)) {
+                SetWalls(0);
+            }
+            else {
+                ClearWallsImmediately();
+            }
         }
     }
 
@@ -143,6 +169,60 @@ public class MoveMapBounds : MonoBehaviour {
 
         return RoomTypeHelper.IsEnemyRoom(room.type) || room.type == RoomType.Boss;
     }
+
+    private void AddSpecialRoomEnterLog(RoomData room) {
+        if (room == null) {
+            return;
+        }
+
+        if (!RoomTypeHelper.IsSpecialEnemyRoom(room.type)) {
+            return;
+        }
+
+        if (LogManager.Instance == null) {
+            return;
+        }
+
+        string roomName = RoomTypeHelper.GetKoreanName(room.type);
+        LogManager.Instance.AddLog($"{roomName} 방에 진입했습니다.");
+    }
+
+    private void ClearWallsImmediately() {
+        if (wallObject == null) {
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (wallCoroutines[i] != null) {
+                StopCoroutine(wallCoroutines[i]);
+                wallCoroutines[i] = null;
+            }
+
+            if (realColliders[i] != null) {
+                realColliders[i].enabled = false;
+            }
+
+            if (visualWalls[i] != null) {
+                Tilemap visualTilemap = visualWalls[i].GetComponent<Tilemap>();
+
+                if (visualTilemap != null) {
+                    Color color = visualTilemap.color;
+                    color.a = 0f;
+                    visualTilemap.color = color;
+                }
+
+                if (wallParts[i] != null) {
+                    visualWalls[i].transform.localPosition = wallParts[i].transform.localPosition + new Vector3(0, wallUpYOffset, 0);
+                }
+
+                visualWalls[i].SetActive(false);
+            }
+        }
+
+        ActiveWalls = 0;
+        wallObject.SetActive(true);
+    }
+
 
     private void SpawnMonsters(RoomData room) {
         currentRoomEnemies = new List<GameObject>();
