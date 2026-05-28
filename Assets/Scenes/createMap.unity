@@ -644,6 +644,7 @@ MonoBehaviour:
   - {fileID: 8276868020270567652, guid: a7309dd60b5321a4cb5f88023a7d4c47, type: 3}
   - {fileID: 8276868020270567652, guid: d61db11d0185cae4381148dac22a5f5d, type: 3}
   mapSize: 11
+  currentFloor: 1
   roomGroups:
   - type: 0
     interiorPrefabs:
