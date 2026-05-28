@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1624256213919598299}
   - component: {fileID: 6417475295648650900}
   - component: {fileID: 8471541228550157675}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4122730530978495669}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 3594431476173748690}
   - component: {fileID: 1492389192194012746}
   - component: {fileID: 1951512366881437925}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -159,10 +159,12 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4569760180178175110}
+  - {fileID: 8716633145036647220}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &323192177233174994
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -181,6 +183,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -202,9 +206,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -2094805801
-  m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingLayer: 3
+  m_SortingOrder: 2
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -214,7 +220,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!50 &4458743635967673723
 Rigidbody2D:
@@ -228,7 +233,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 100
   m_LinearDamping: 1
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -255,9 +260,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35f2639a336040e3803298e7f30a60a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lastDirection: {x: 0, y: -1}
 --- !u!96 &308779961697666194
 TrailRenderer:
-  serializedVersion: 3
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -276,6 +282,8 @@ TrailRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -297,9 +305,11 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Time: 0.2
   m_PreviewTimeScale: 1
   m_Parameters:
@@ -358,7 +368,6 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_MaskInteraction: 0
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
@@ -410,7 +419,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 1}
+  m_Offset: {x: 0.036128998, y: 0.5603337}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -420,7 +429,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 0.7687721, y: 1.19909}
   m_EdgeRadius: 0
 --- !u!114 &4452166463597822629
 MonoBehaviour:
@@ -454,10 +463,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   redHeartSprite: {fileID: -3810893182730109844, guid: e2f37444586183840bb6a85db4361428, type: 3}
   playerSprite: {fileID: 0}
   flickerDuration: 1
   flickerInterval: 0.1
+  deathAnimDuration: 0
 --- !u!114 &207573765330185006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,27 +481,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4eae64bdea3b04ba207c8a5f48c6bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapons:
-  - weaponName: Sword
-    prefab: {fileID: 433804739507542260, guid: e61fd996637229d49820f345dead526c, type: 3}
-    damage: 15
-    speed: 0
-    lifeTime: 0.2
-    cooldown: 0.5
-  - weaponName: Axe
-    prefab: {fileID: 2549813541317918585, guid: 726255a43e374a24c8b154b97f3b519f, type: 3}
-    damage: 50
-    speed: 0
-    lifeTime: 0.4
-    cooldown: 1
-  - weaponName: Gun
-    prefab: {fileID: 7413192166536640196, guid: 4cd354726914ad1478ced46d164867b6, type: 3}
-    damage: 5
-    speed: 15
-    lifeTime: 2
-    cooldown: 0.2
-  currentIndex: 0
-  distance: 1
+  equippedWeapon: {fileID: 0}
+  distance: 1.6
+  heightOffset: 1.5
+  lightningChainRadius: 3
+  lightningChainDamageRatio: 0.5
+  lightningDuration: 1.5
 --- !u!114 &5712608533161553687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,17 +502,38 @@ MonoBehaviour:
   moveSpeed: 5
   bonusDamage: 0
   attackMultiplier: 1
+  attackSpeed: 1
   baseAttack: 10
-  baseDefense: 5
+  baseDefense: 3
   maxHealth: 6
-  currentGold: 0
   statPanel: {fileID: 0}
   bonusAttack: 0
   bonusDefense: 0
   bonusHealth: 0
+  itemBonusMoveSpeed: 0
+  itemBonusAttackSpeed: 0
+  bonusAttackPercent: 0
+  bonusAttackSpeed: 0
+  bonusAttackRange: 0
+  critChance: 0
+  critMultiplier: 2
+  expMultiplier: 1
+  invincibilityBonus: 0
+  damageNullifyChance: 0
+  missChance: 0
+  missChanceReduce: 0
+  killMoveSpeedStack: 0
+  killGoldChance: 0
+  killGoldAmount: 0
+  berserkerMode: 0
+  attackCounter: 0
+  everyFourthAttackBonus: 0
   attackText: {fileID: 0}
+  attackSpeedText: {fileID: 0}
   defenseText: {fileID: 0}
-  healthText: {fileID: 0}
+  moveSpeedText: {fileID: 0}
+  playerAnimator: {fileID: 1951512366881437925}
+  defaultAnimController: {fileID: 9100000, guid: feb4ae5e74b2f2d469c82b609836421b, type: 2}
 --- !u!114 &4504824823903256042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,10 +576,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerHealth: {fileID: 3797411090668824417}
   screenEffectImage: {fileID: 0}
+  mainCamera: {fileID: 0}
+  playerTransform: {fileID: 0}
   fireHeartSprites:
   - {fileID: 9113706974405658193, guid: 830f5a3e640a81d4db8f12e452e0bcfb, type: 3}
   iceHeartSprites:
-  - {fileID: -2182896496336433635, guid: bc36ac77f1881444a9317ad2b88fe4b2, type: 3}
+  - {fileID: -2759899688140578059, guid: e0ecab26b7443b5478c5db9c1d463270, type: 3}
   poisonHeartSprites:
   - {fileID: 8715928149708088612, guid: f9004b48a2f604843b75d74f9cf78f50, type: 3}
   lightningHeartSprites:
@@ -573,6 +592,15 @@ MonoBehaviour:
   - {fileID: -4619863767890207598, guid: e9fc3ba0be93dfa4997e5cb44950770d, type: 3}
   defaultHeartSprite: {fileID: 0}
   animSpeed: 8
+  hasFireHeart: 0
+  hasIceHeart: 0
+  hasLightningHeart: 0
+  abilityDuration: 120
+  lightningHitCounter: 0
+  noiseTex: {fileID: 0}
+  isAbilityActive: 0
+  currentType: 
+  abilityTimer: 0
 --- !u!95 &1951512366881437925
 Animator:
   serializedVersion: 7
@@ -595,3 +623,34 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &8992914195209011201
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8716633145036647220}
+  m_Layer: 6
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8716633145036647220
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8992914195209011201}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 334390516442921416}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
