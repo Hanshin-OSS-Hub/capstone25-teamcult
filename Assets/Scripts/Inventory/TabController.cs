@@ -102,7 +102,7 @@ public class TabController : MonoBehaviour
         switch (type)
         {
             case Item.ItemType.Consumable: return consumableSlotUI;
-            case Item.ItemType.Heart: return weaponSlotUI;
+            case Item.ItemType.Heart: return consumableSlotUI;
             default: return weaponSlotUI;
         }
     }
@@ -215,7 +215,7 @@ public class TabController : MonoBehaviour
     private void SetTabActive(bool isWeapon, bool isConsumable)
     {
         if (equipPanel != null) equipPanel.SetActive(isWeapon);
-        if (consumableEquipPanel != null) consumableEquipPanel.SetActive(isConsumable); 
+        if (consumableEquipPanel != null) consumableEquipPanel.SetActive(isConsumable);
 
         if (weaponScrollView != null) weaponScrollView.SetActive(isWeapon);
         if (consumableScrollView != null) consumableScrollView.SetActive(isConsumable);
