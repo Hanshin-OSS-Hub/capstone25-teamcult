@@ -544,7 +544,7 @@ MonoBehaviour:
   damage: 8
   moveSpeed: 2
   defense: 3
-  danger: 10
+  danger: 3
   expReward: 10
 --- !u!114 &4522591691724212781
 MonoBehaviour:
