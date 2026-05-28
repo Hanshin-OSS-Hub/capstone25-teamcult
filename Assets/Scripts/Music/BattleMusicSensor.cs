@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic; // ★ 이 줄이 추가되었습니다! (HashSet을 쓰기 위한 필수 선언)
+using System.Collections.Generic; 
 
 public class BattleMusicSensor : MonoBehaviour
 {
@@ -16,41 +16,33 @@ public class BattleMusicSensor : MonoBehaviour
             else return; 
         }
 
-        // 범위 내의 모든 콜라이더 스캔
         Collider2D[] hits = Physics2D.OverlapCircleAll(player.position, detectionRadius);
         
         bool foundBoss = false;
-        
-        // ★ [핵심 수정] 콜라이더가 아니라 '고유한 적 오브젝트' 자체를 담는 주머니 생성
         HashSet<GameObject> uniqueEnemies = new HashSet<GameObject>();
 
         foreach (Collider2D hit in hits)
         {
             if (hit != null && hit.CompareTag("Enemy"))
             {
-                // (선택 사항) 만약 적 체력 스크립트가 있다면, 죽은 시체는 세지 않도록 방어
-                // EnemyHealth hp = hit.GetComponentInParent<EnemyHealth>();
-                // if (hp != null && hp.currentHealth <= 0) continue; 
-
                 string objName = hit.gameObject.name;
 
+                // 1. 보스 판정 (이름으로 구분)
                 if (objName.Contains("Boss") || objName.Contains("Devil 2"))
                 {
                     foundBoss = true;
                     break; 
                 }
-                else if (objName.Contains("EnemyAI") || objName.Contains("RangedEnemy") || objName.Contains("Devil"))
+                // 2. 일반 몬스터 판정 (보스가 아니라면 슬라임이든 뭐든 전부 카운트!)
+                else 
                 {
-                    // 오브젝트 자체를 넣으므로, 한 놈의 콜라이더가 5개가 걸려도 주머니엔 1개만 들어감
                     uniqueEnemies.Add(hit.gameObject); 
                 }
             }
         }
 
-        // 주머니에 들어있는 진짜 적의 마릿수
         int trueEnemyCount = uniqueEnemies.Count;
 
-        // 위협도 판정 및 브금 변경
         if (BattleStateBGM.Instance != null)
         {
             BattleStateBGM.ThreatLevel targetState = BattleStateBGM.ThreatLevel.Normal;

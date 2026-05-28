@@ -14,8 +14,18 @@ public class SlimeHealth : EnemyHealth {
 
     protected override void Start() {
         base.Start();
-
         moveMapBounds = Object.FindAnyObjectByType<MoveMapBounds>();
+    }
+
+    // =========================================================
+    // ★ 부모의 기본 소리 대신 슬라임 전용 소리로 덮어쓰기 (Override)
+    // =========================================================
+    protected override void PlayHitSound() {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit_Slime);
+    }
+
+    protected override void PlayDeathSound() {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit_Slime);
     }
 
     protected override void Die() {
@@ -24,18 +34,12 @@ public class SlimeHealth : EnemyHealth {
         }
 
         Split();
-
         base.Die();
     }
 
     private void Split() {
-        if (nextSlimePrefab == null) {
-            return;
-        }
-
-        if (splitSpawnCount <= 0) {
-            return;
-        }
+        if (nextSlimePrefab == null) return;
+        if (splitSpawnCount <= 0) return;
 
         for (int i = 0; i < splitSpawnCount; i++) {
             Vector2 randomOffset = Random.insideUnitCircle.normalized * splitOffset;
@@ -72,18 +76,7 @@ public class SlimeHealth : EnemyHealth {
         MonoBehaviour[] behaviours = GetComponents<MonoBehaviour>();
 
         foreach (MonoBehaviour behaviour in behaviours) {
-            if (behaviour == null) {
-                continue;
-            }
-
-            if (behaviour == this) {
-                continue;
-            }
-
-            if (behaviour is EnemyHealth) {
-                continue;
-            }
-
+            if (behaviour == null || behaviour == this || behaviour is EnemyHealth) continue;
             behaviour.enabled = value;
         }
     }

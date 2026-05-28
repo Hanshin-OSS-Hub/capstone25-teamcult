@@ -59,7 +59,20 @@ public class EnemyHealth : MonoBehaviour
 
     public bool IsInvincible() => isInvincible;
 
-    public void TakeDamage(int damage)
+    // =========================================================
+    // ★ 소리 재생 전용 가상(virtual) 함수 
+    // =========================================================
+    protected virtual void PlayHitSound()
+    {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+    }
+
+    protected virtual void PlayDeathSound()
+    {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+    }
+
+    public virtual void TakeDamage(int damage)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -84,16 +97,16 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            PlayDeathSound(); 
             Die();
         }
         else
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+            PlayHitSound(); 
         }
     }
 
-    public void TakeDamageIgnoreDefense(int damage)
+    public virtual void TakeDamageIgnoreDefense(int damage)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -117,12 +130,12 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            PlayDeathSound(); 
             Die();
         }
         else
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+            PlayHitSound(); 
         }
     }
 
@@ -141,6 +154,7 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
+        // [팀원 작업 반영] 사망 이벤트 호출 (회피율 복구 등에 사용됨)
         OnDeath?.Invoke();
 
         if (GameManager.instance != null)

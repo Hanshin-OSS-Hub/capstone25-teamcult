@@ -303,4 +303,49 @@ public class BattleStateBGM : MonoBehaviour
         musicSources[1].Stop(); 
         heartMonitorSource.Stop(); 
     }
+
+    // =========================================================
+    // ★ 5. 마법사 음파 공격 시 BGM 울렁임 (Sonic Wobble) 효과
+    // =========================================================
+    private Coroutine wobbleCoroutine;
+
+    public void TriggerSonicWobble(float duration = 1.5f)
+    {
+        if (isGameOver) return;
+        
+        // 기존에 울렁이고 있었다면 초기화하고 다시 시작
+        if (wobbleCoroutine != null) StopCoroutine(wobbleCoroutine);
+        wobbleCoroutine = StartCoroutine(SonicWobbleRoutine(duration));
+    }
+
+    private IEnumerator SonicWobbleRoutine(float duration)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            // 게임 시간이 멈춰도 연출은 진행되도록 unscaledDeltaTime 사용
+            timer += Time.unscaledDeltaTime; 
+            
+            // ★ 핵심: 사인파(Sin)를 이용해 피치를 물결치듯 위아래로 흔듦 (속도 20, 진폭 0.15)
+            float wobblePitch = Mathf.Sin(timer * 20f) * 0.15f; 
+            
+            musicSources[0].pitch = targetPitch + wobblePitch;
+            musicSources[1].pitch = targetPitch + wobblePitch;
+
+            // ★ 추가 연출: 주파수 필터를 깎았다 풀었다 해서 "우웅-우웅-" 하는 먹먹함 생성
+            float wobbleFilter = Mathf.Abs(Mathf.Sin(timer * 20f)) * 10000f;
+            lowPassFilter.cutoffFrequency = 22000f - wobbleFilter;
+
+            yield return null;
+        }
+
+        // 효과가 끝나면 원래 상태로 정확히 복구
+        musicSources[0].pitch = targetPitch;
+        musicSources[1].pitch = targetPitch;
+        
+        // 체력이 낮을 때 먹먹했던 상태라면 그 상태로 복구, 아니면 완전히 맑은 소리로 복구
+        lowPassFilter.cutoffFrequency = isLowHealth ? 1200f : 22000f; 
+        wobbleCoroutine = null;
+    }
 }
