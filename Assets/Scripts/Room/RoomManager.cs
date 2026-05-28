@@ -40,6 +40,10 @@ public class RoomManager : MonoBehaviour {
 
     [SerializeField] int mapSize = 11;
 
+    [Header("Floor Settings")]
+    [SerializeField] private int currentFloor = 1; // 지하 1층이면 1, 지하 2층이면 2
+
+
     [Header("Room Interior Settings")]
     // 인스펙터에서 RoomType별로 프리팹 리스트를 설정할 수 있습니다.
     [SerializeField] List<RoomTypeGroup> roomGroups = new List<RoomTypeGroup>();
@@ -426,6 +430,9 @@ public class RoomManager : MonoBehaviour {
         if (main != null && main.Count > 0) {
             Vector2Int bossPos = main[main.Count - 1];
             rooms[bossPos.x, bossPos.y].type = RoomType.Boss;
+            rooms[bossPos.x, bossPos.y].bossIndex = GetBossIndexByFloor();
+
+            Debug.Log($"<color=red><b>[Boss]</b></color> 보스방 위치: {bossPos}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
         }
 
         // 4. 서브 가지(Sub Branch)의 마지막 방 -> 상점
@@ -478,5 +485,9 @@ public class RoomManager : MonoBehaviour {
 
         // 변경된 원본 가중치를 세그먼트 트리에 반영
         rewardWeightTree.SetValue(selectedIndex, newWeight);
+    }
+
+    int GetBossIndexByFloor() {
+        return currentFloor - 1;
     }
 }
