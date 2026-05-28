@@ -69,7 +69,6 @@ public class PlayerSlash : MonoBehaviour
 
         Vector2 direction = ((Vector2)targetWorldPos - ((Vector2)transform.position + new Vector2(0, heightOffset))).normalized;
 
-        // 대각선일 때 X 방향 우선
         if (Mathf.Abs(direction.x) >= Mathf.Abs(direction.y))
         {
             anim.SetFloat("DirX", direction.x > 0 ? 1 : -1);
@@ -106,7 +105,7 @@ public class PlayerSlash : MonoBehaviour
 
         float finalDistance = distance + stats.bonusAttackRange;
         Vector3 spawnPos = transform.position + (Vector3)(direction * finalDistance);
-        spawnPos.y += heightOffset; // Y축 오프셋 추가
+        spawnPos.y += heightOffset;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
@@ -114,9 +113,6 @@ public class PlayerSlash : MonoBehaviour
 
         float finalDamage = ((equippedWeapon.damage + stats.GetTotalAttack()) * stats.attackMultiplier) + stats.bonusDamage;
         finalDamage *= (1f + stats.bonusAttackPercent / 100f);
-
-        // 여기!
-       
 
         if (stats.critChance > 0)
         {

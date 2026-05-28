@@ -24,6 +24,8 @@ public class EnemyHealth : MonoBehaviour
     [Range(0f, 100f)]
     public float maSeokDropChance = 50f;
 
+    public event System.Action OnDeath;
+
     protected bool isDead = false;
     private bool isInvincible = false;
 
@@ -58,8 +60,7 @@ public class EnemyHealth : MonoBehaviour
     public bool IsInvincible() => isInvincible;
 
     // =========================================================
-    // ★ 소리 재생 전용 가상(virtual) 함수 생성
-    // (자식 스크립트에서 마음대로 덮어쓸 수 있습니다)
+    // ★ 소리 재생 전용 가상(virtual) 함수 
     // =========================================================
     protected virtual void PlayHitSound()
     {
@@ -96,12 +97,12 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            PlayDeathSound(); // ★ 변경됨
+            PlayDeathSound(); 
             Die();
         }
         else
         {
-            PlayHitSound(); // ★ 변경됨
+            PlayHitSound(); 
         }
     }
 
@@ -129,12 +130,12 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            PlayDeathSound(); // ★ 변경됨
+            PlayDeathSound(); 
             Die();
         }
         else
         {
-            PlayHitSound(); // ★ 변경됨
+            PlayHitSound(); 
         }
     }
 
@@ -153,7 +154,11 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (GameManager.instance != null) GameManager.instance.killCount++;
+        // [팀원 작업 반영] 사망 이벤트 호출 (회피율 복구 등에 사용됨)
+        OnDeath?.Invoke();
+
+        if (GameManager.instance != null)
+            GameManager.instance.killCount++;
 
         if (maSeokPrefab != null)
         {
