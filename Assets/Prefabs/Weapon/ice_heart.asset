@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   itemName: 
   itemDesc: 
-  icon: {fileID: -2456453394002864372, guid: 671faa3de2f68644d8fbbee25a0ede68, type: 3}
+  icon: {fileID: -2182896496336433635, guid: bc36ac77f1881444a9317ad2b88fe4b2, type: 3}
   itemType: 6
   weaponType: 0
   tier: 0
