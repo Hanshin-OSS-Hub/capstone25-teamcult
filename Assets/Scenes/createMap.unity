@@ -18788,7 +18788,7 @@ RectTransform:
   m_GameObject: {fileID: 1419066273}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.7918749, y: 1.775, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1299193849}
@@ -18812,7 +18812,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeartSlotController
   heartSlotImage: {fileID: 1419066276}
   fireHeartSprite: {fileID: 9113706974405658193, guid: 830f5a3e640a81d4db8f12e452e0bcfb, type: 3}
-  iceHeartSprite: {fileID: -2182896496336433635, guid: bc36ac77f1881444a9317ad2b88fe4b2, type: 3}
+  iceHeartSprite: {fileID: -2759899688140578059, guid: e0ecab26b7443b5478c5db9c1d463270, type: 3}
   lightningHeartSprite: {fileID: -3995917078818217826, guid: 79141cc8d7efe84478131a41729e176f, type: 3}
 --- !u!114 &1419066276
 MonoBehaviour:

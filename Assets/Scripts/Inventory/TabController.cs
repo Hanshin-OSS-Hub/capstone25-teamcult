@@ -36,7 +36,6 @@ public class TabController : MonoBehaviour
 
     private List<ItemSlot> weaponSlotUI = new List<ItemSlot>();
     private List<ItemSlot> consumableSlotUI = new List<ItemSlot>();
-    private List<ItemSlot> oopartsSlotUI = new List<ItemSlot>();
 
     private Item equippedHead, equippedWeapon, equippedUpper, equippedBottom;
 
@@ -103,7 +102,6 @@ public class TabController : MonoBehaviour
         switch (type)
         {
             case Item.ItemType.Consumable: return consumableSlotUI;
-            case Item.ItemType.Ooparts: return oopartsSlotUI;
             case Item.ItemType.Heart: return weaponSlotUI;
             default: return weaponSlotUI;
         }
@@ -211,13 +209,14 @@ public class TabController : MonoBehaviour
         }
     }
 
-    public void ShowWeaponTab() { SetTabActive(true, false, false); }
-    public void ShowConsumableTab() { SetTabActive(false, true, false); }
-    public void ShowOopartsTab() { SetTabActive(false, false, true); }
+    public void ShowWeaponTab() { SetTabActive(true, false); }
+    public void ShowConsumableTab() { SetTabActive(false, true); }
 
-    private void SetTabActive(bool isWeapon, bool isConsumable, bool isOoparts)
+    private void SetTabActive(bool isWeapon, bool isConsumable)
     {
         if (equipPanel != null) equipPanel.SetActive(isWeapon);
+        if (consumableEquipPanel != null) consumableEquipPanel.SetActive(isConsumable); 
+
         if (weaponScrollView != null) weaponScrollView.SetActive(isWeapon);
         if (consumableScrollView != null) consumableScrollView.SetActive(isConsumable);
     }
