@@ -11,7 +11,8 @@ public enum SFXType
     StateChange_Tension, StateChange_Combat,
     HeartObtain,
     HeartObtain_Fire, HeartObtain_Ice, HeartObtain_Lightning,
-    Hit_Fire, Hit_Ice, Hit_Lightning
+    Hit_Fire, Hit_Ice, Hit_Lightning,
+    EnemyHit_Slime, EnemyAttack_Mage, Trap_Electric
 }
 
 [System.Serializable]

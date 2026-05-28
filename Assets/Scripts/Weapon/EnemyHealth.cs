@@ -57,7 +57,21 @@ public class EnemyHealth : MonoBehaviour
 
     public bool IsInvincible() => isInvincible;
 
-    public void TakeDamage(int damage)
+    // =========================================================
+    // ★ 소리 재생 전용 가상(virtual) 함수 생성
+    // (자식 스크립트에서 마음대로 덮어쓸 수 있습니다)
+    // =========================================================
+    protected virtual void PlayHitSound()
+    {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+    }
+
+    protected virtual void PlayDeathSound()
+    {
+        if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+    }
+
+    public virtual void TakeDamage(int damage)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -82,16 +96,16 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            PlayDeathSound(); // ★ 변경됨
             Die();
         }
         else
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+            PlayHitSound(); // ★ 변경됨
         }
     }
 
-    public void TakeDamageIgnoreDefense(int damage)
+    public virtual void TakeDamageIgnoreDefense(int damage)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -115,12 +129,12 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
+            PlayDeathSound(); // ★ 변경됨
             Die();
         }
         else
         {
-            if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
+            PlayHitSound(); // ★ 변경됨
         }
     }
 
@@ -139,8 +153,7 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (GameManager.instance != null)
-            GameManager.instance.killCount++;
+        if (GameManager.instance != null) GameManager.instance.killCount++;
 
         if (maSeokPrefab != null)
         {
