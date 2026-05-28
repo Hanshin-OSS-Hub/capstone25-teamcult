@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-public enum OptionType { Attack, AttackSpeed, Defense, MoveSpeed }
+public enum OptionType { Attack, AttackSpeed, Defense, MoveSpeed, MissChanceReduce }
 public enum WeaponType { None, Sword, Axe, Handgun }
 [System.Serializable]
 public class ItemOption
@@ -18,7 +18,7 @@ public class ItemOption
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class Item : ScriptableObject
 {
-    public enum ItemType { Helmet, Weapon, Upper, Bottom, Consumable, Ooparts, Heart } // Heart 추가!
+    public enum ItemType { Helmet, Weapon, Upper, Bottom, Consumable, Ooparts, Heart }
     public enum ItemTier { Tier1, Tier2, Tier3 }
     [Header("기본 정보")]
     public string itemName;
@@ -40,7 +40,7 @@ public class Item : ScriptableObject
     public float cooldown;
     public AnimatorOverrideController weaponAnim;
     [Header("하트 전용 설정 (하트일 때만 넣으세요)")]
-    public string elementType; // Fire, Ice, Lightning
+    public string elementType;
     [Header("부여된 랜덤 옵션")]
     public List<ItemOption> currentOptions = new List<ItemOption>();
     public Item Clone()

@@ -24,6 +24,8 @@ public class EnemyHealth : MonoBehaviour
     [Range(0f, 100f)]
     public float maSeokDropChance = 50f;
 
+    public event System.Action OnDeath;
+
     protected bool isDead = false;
     private bool isInvincible = false;
 
@@ -138,6 +140,8 @@ public class EnemyHealth : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+
+        OnDeath?.Invoke();
 
         if (GameManager.instance != null)
             GameManager.instance.killCount++;
