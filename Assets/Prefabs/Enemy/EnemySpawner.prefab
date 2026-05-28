@@ -47,8 +47,31 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
   - {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
+  - {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
+  - {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
+  normalEnemyGroups:
+  - floor: 1
+    enemyPrefabs:
+    - {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
+    - {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
+    - {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
+  specialRoomEnemyGroups:
+  - roomType: 6
+    floorEnemyGroups: []
+  - roomType: 7
+    floorEnemyGroups: []
+  - roomType: 8
+    floorEnemyGroups:
+    - floor: 1
+      enemyPrefabs:
+      - {fileID: 7575059051696297546, guid: ee25f9dead71a5741a920e5e29a28d72, type: 3}
+      - {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
+  specialEnemyChanceInNormalRoom: 0.2
+  bossPrefabs:
+  - {fileID: 5992420211836326638, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
+  - {fileID: 5992420211836326638, guid: 0db852d21752c6d44af3494f42ecb7a9, type: 3}
   spawnInterval: -1
-  spawnRadius: 5
+  spawnRadius: 3
   enemiesPerTick: 1
-  useRoomClear: 1
-  totalEnemiesToSpawn: 2
+  useAutoSpawnForDebug: 0
+  debugFloor: 1

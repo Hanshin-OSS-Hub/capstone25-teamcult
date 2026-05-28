@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-public enum RoomType { Start, Normal, Empty, Shop, Boss, Chest }
+public enum RoomType { Start, Normal, Empty, Shop, Boss, Chest, Fire, Ice, Lightning }
 
 [System.Serializable]
 public class RoomTypeGroup {
@@ -42,6 +42,12 @@ public class RoomManager : MonoBehaviour {
 
     [Header("Floor Settings")]
     [SerializeField] private int currentFloor = 1; // 지하 1층이면 1, 지하 2층이면 2
+    public int CurrentFloor {
+        get { return currentFloor; }
+    }
+
+    [Header("Enemy Spawner Reference")]
+    [SerializeField] private EnemySpawner enemySpawner;
 
 
     [Header("Room Interior Settings")]
@@ -78,6 +84,8 @@ public class RoomManager : MonoBehaviour {
     private readonly System.Random rewardRandom = new System.Random();
 
     void Awake() {
+        ResolveEnemySpawner();
+
         InitWallPrefabDict();
 
         // 방 그룹 딕셔너리 초기화
@@ -90,6 +98,18 @@ public class RoomManager : MonoBehaviour {
 
     void Start() {
         GenerateDungeon();
+    }
+
+    void ResolveEnemySpawner() {
+        if (enemySpawner != null) {
+            return;
+        }
+
+        enemySpawner = FindFirstObjectByType<EnemySpawner>();
+
+        if (enemySpawner == null) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> RoomManager가 EnemySpawner를 찾지 못했습니다. 특수방 생성과 층별 몬스터 수 설정이 제한됩니다.");
+        }
     }
 
     void InitWallPrefabDict() {
@@ -253,13 +273,69 @@ public class RoomManager : MonoBehaviour {
                         continue;
                     }
 
-                    rooms[x, y].monsterCount = Random.Range(1, 4); // 방마다 1~3마리 랜덤
-                    AssignRandomRewards(rooms[x, y]);
+                    RoomData room = rooms[x, y];
+
+                    room.monsterCount = GetMonsterCountForRoom(room.type);
+                    AssignRandomRewards(room);
                 }
             }
         }
 
+        if (enemySpawner != null) {
+            enemySpawner.DebugPrintSpawnerData(currentFloor);
+        }
+        else {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> RoomManager의 enemySpawner가 null입니다.");
+        }
+
+        DebugPrintAllRooms();
+
         DrawMap();
+    }
+
+    public void DebugPrintAllRooms() {
+        Debug.Log($"<color=cyan><b>[RoomManager Debug]</b></color> ===== 전체 방 데이터 출력 시작 / CurrentFloor: {currentFloor} =====");
+
+        if (rooms == null || mapPlan == null) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> rooms 또는 mapPlan이 null입니다.");
+            return;
+        }
+
+        for (int x = 0; x < mapSize; x++) {
+            for (int y = 0; y < mapSize; y++) {
+                if (mapPlan[x, y] <= 0) {
+                    continue;
+                }
+
+                RoomData room = rooms[x, y];
+
+                if (room == null) {
+                    Debug.Log($"<color=#FFA500><b>주의!</b></color> RoomData null / Pos: ({x}, {y})");
+                    continue;
+                }
+
+                Debug.Log($"<color=cyan><b>[RoomManager Debug]</b></color> Pos: ({x}, {y}), Type: {room.type}, Status: {room.status}, MonsterCount: {room.monsterCount}, BossIndex: {room.bossIndex}, RewardCount: {room.rewardPrefabs.Count}");
+            }
+        }
+
+        Debug.Log("<color=cyan><b>[RoomManager Debug]</b></color> ===== 전체 방 데이터 출력 끝 =====");
+    }
+
+    int GetMonsterCountForRoom(RoomType roomType) {
+        if (!RoomTypeHelper.IsEnemyRoom(roomType)) {
+            return 0;
+        }
+
+        ResolveEnemySpawner();
+
+        if (enemySpawner != null) {
+            return enemySpawner.GetMonsterCountForRoom(roomType, currentFloor);
+        }
+
+        int minCount = Mathf.Max(1, currentFloor);
+        int maxCountExclusive = minCount + 3;
+
+        return Random.Range(minCount, maxCountExclusive);
     }
 
     string ListToString(List<Vector2Int> list, string separator) {
@@ -345,12 +421,78 @@ public class RoomManager : MonoBehaviour {
     }
 
     GameObject GetRandomInteriorByType(RoomType type) {
-        if (roomGroupDict.ContainsKey(type) && roomGroupDict[type].Count > 0) {
-            int randomIndex = Random.Range(0, roomGroupDict[type].Count);
-            return roomGroupDict[type][randomIndex];
+        List<GameObject> interiorPrefabs = GetValidInteriorPrefabs(type);
+
+        if (IsSpecialRoomType(type) && interiorPrefabs.Count == 0) {
+            interiorPrefabs = GetValidInteriorPrefabs(RoomType.Normal);
+
+            if (interiorPrefabs.Count > 0) {
+                Debug.Log($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방 내부 프리팹 데이터가 없어 Normal 방 내부 프리팹을 사용합니다.");
+            }
         }
 
-        return null;
+        if (interiorPrefabs.Count == 0) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방에 사용할 내부 프리팹이 없습니다.");
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, interiorPrefabs.Count);
+        return interiorPrefabs[randomIndex];
+    }
+
+    List<GameObject> GetValidInteriorPrefabs(RoomType type) {
+        List<GameObject> validPrefabs = new List<GameObject>();
+
+        if (!roomGroupDict.ContainsKey(type)) {
+            return validPrefabs;
+        }
+
+        List<GameObject> prefabs = roomGroupDict[type];
+
+        if (prefabs == null) {
+            return validPrefabs;
+        }
+
+        for (int i = 0; i < prefabs.Count; i++) {
+            if (prefabs[i] == null) {
+                continue;
+            }
+
+            validPrefabs.Add(prefabs[i]);
+        }
+
+        return validPrefabs;
+    }
+
+    bool IsSpecialRoomType(RoomType type) {
+        return type == RoomType.Fire
+            || type == RoomType.Ice
+            || type == RoomType.Lightning;
+    }
+
+    string GetRoomTypeDebugName(RoomType type) {
+        switch (type) {
+            case RoomType.Start:
+                return "시작방";
+            case RoomType.Normal:
+                return "일반방";
+            case RoomType.Empty:
+                return "빈방";
+            case RoomType.Shop:
+                return "상점방";
+            case RoomType.Boss:
+                return "보스방";
+            case RoomType.Chest:
+                return "상자방";
+            case RoomType.Fire:
+                return "불";
+            case RoomType.Ice:
+                return "얼음";
+            case RoomType.Lightning:
+                return "번개";
+            default:
+                return type.ToString();
+        }
     }
 
     bool IsInsideMap(Vector2Int pos) {
@@ -420,44 +562,135 @@ public class RoomManager : MonoBehaviour {
 
     // 방의 위치와 리스트를 바탕으로 타입을 결정하는 메서드
     void AssignRoomTypes(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub, List<Vector2Int> twigs) {
-        // 1. 모든 방을 기본적으로 Normal로 초기화 (혹시 모를 중복 생성 방지)
-        // (기존 코드에서 이미 생성되어 있다면 이 과정은 생략 가능합니다.)
-
-        // 2. 시작 지점 설정
+        // 1. 시작 지점 설정
         rooms[startPos.x, startPos.y].type = RoomType.Start;
+        rooms[startPos.x, startPos.y].monsterCount = 0;
 
-        // 3. 메인 가지(Main Branch)의 마지막 방 -> 보스방
+        // 2. 메인 가지(Main Branch)의 마지막 방 -> 보스방
         if (main != null && main.Count > 0) {
             Vector2Int bossPos = main[main.Count - 1];
             rooms[bossPos.x, bossPos.y].type = RoomType.Boss;
             rooms[bossPos.x, bossPos.y].bossIndex = GetBossIndexByFloor();
+            rooms[bossPos.x, bossPos.y].monsterCount = 0;
 
-            Debug.Log($"<color=red><b>[Boss]</b></color> 보스방 위치: {bossPos}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
+            Debug.Log($"<color=red><b>[Boss]</b></color> 보스방 위치: {bossPos}, Floor: {currentFloor}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
         }
 
-        // 4. 서브 가지(Sub Branch)의 마지막 방 -> 상점
+        // 3. 서브 가지(Sub Branch)의 마지막 방 -> 상점
         if (sub != null && sub.Count > 0) {
             Vector2Int shopPos = sub[sub.Count - 1];
             rooms[shopPos.x, shopPos.y].type = RoomType.Shop;
+            rooms[shopPos.x, shopPos.y].monsterCount = 0;
         }
 
-        // 5. 모든 잔가지(Twigs) -> 보물상자 방 (Chest)
+        // 4. 모든 잔가지(Twigs) -> 보물상자 방 (Chest)
         if (twigs != null) {
             foreach (var twigPos in twigs) {
                 rooms[twigPos.x, twigPos.y].type = RoomType.Chest;
-                // 보물상자 방에는 몬스터가 없어야 한다면 아래 설정 추가
                 rooms[twigPos.x, twigPos.y].monsterCount = 0;
             }
         }
+
+        // 5. EnemySpawner 데이터를 기준으로 일반방 일부를 특수방으로 변경
+        AssignSpecialRoomsBySpawnerData();
     }
+    void AssignSpecialRoomsBySpawnerData() {
+        ResolveEnemySpawner();
+
+        if (enemySpawner == null) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> EnemySpawner가 없어 특수방 생성을 건너뜁니다.");
+            return;
+        }
+
+        List<RoomType> creatableSpecialRoomTypes = enemySpawner.GetCreatableSpecialRoomTypes(currentFloor);
+
+        if (creatableSpecialRoomTypes == null || creatableSpecialRoomTypes.Count == 0) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> EnemySpawner 기준으로 생성 가능한 특수방이 없습니다.");
+            return;
+        }
+
+        List<Vector2Int> normalRoomPositions = GetNormalRoomPositions();
+
+        if (normalRoomPositions.Count == 0) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> 특수방으로 바꿀 일반방이 없습니다.");
+            return;
+        }
+
+        ShuffleList(creatableSpecialRoomTypes);
+
+        int createdCount = 0;
+
+        foreach (RoomType specialRoomType in creatableSpecialRoomTypes) {
+            if (normalRoomPositions.Count == 0) {
+                Debug.Log("<color=#FFA500><b>주의!</b></color> 일반방 개수가 부족해서 일부 특수방만 생성했습니다.");
+                break;
+            }
+
+            int randomIndex = Random.Range(0, normalRoomPositions.Count);
+            Vector2Int specialRoomPos = normalRoomPositions[randomIndex];
+            normalRoomPositions.RemoveAt(randomIndex);
+
+            rooms[specialRoomPos.x, specialRoomPos.y].type = specialRoomType;
+            rooms[specialRoomPos.x, specialRoomPos.y].monsterCount = 0;
+
+            createdCount++;
+
+            Debug.Log($"<color=magenta><b>[SpecialRoom]</b></color> {RoomTypeHelper.GetKoreanName(specialRoomType)} 특수방 생성 위치: {specialRoomPos}");
+        }
+
+        Debug.Log($"<color=cyan><b>[SpecialRoom]</b></color> 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
+    }
+
+    List<Vector2Int> GetNormalRoomPositions() {
+        List<Vector2Int> normalRoomPositions = new List<Vector2Int>();
+
+        if (mapPlan == null || rooms == null) {
+            return normalRoomPositions;
+        }
+
+        for (int x = 0; x < mapSize; x++) {
+            for (int y = 0; y < mapSize; y++) {
+                if (mapPlan[x, y] <= 0) {
+                    continue;
+                }
+
+                if (rooms[x, y].type != RoomType.Normal) {
+                    continue;
+                }
+
+                normalRoomPositions.Add(new Vector2Int(x, y));
+            }
+        }
+
+        return normalRoomPositions;
+    }
+
+    void ShuffleList<T>(List<T> list) {
+        if (list == null) {
+            return;
+        }
+
+        for (int i = list.Count - 1; i > 0; i--) {
+            int j = Random.Range(0, i + 1);
+
+            T temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
+    }
+
 
     void AssignRandomRewards(RoomData room) {
         // 보상 대상 방이 아니거나 보상 데이터가 없으면 종료
+        if (room == null) {
+            return;
+        }
+
         if (allRewards == null || allRewards.Count == 0) {
             return;
         }
 
-        if (room.type != RoomType.Normal && room.type != RoomType.Boss) {
+        if (!RoomTypeHelper.IsEnemyRoom(room.type) && room.type != RoomType.Boss) {
             return;
         }
 
@@ -488,6 +721,11 @@ public class RoomManager : MonoBehaviour {
     }
 
     int GetBossIndexByFloor() {
+        if (currentFloor <= 0) {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> currentFloor가 0 이하입니다. bossIndex를 0으로 처리합니다.");
+            return 0;
+        }
+
         return currentFloor - 1;
     }
 }
