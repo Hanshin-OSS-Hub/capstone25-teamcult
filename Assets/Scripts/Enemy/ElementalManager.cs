@@ -29,7 +29,7 @@ public class ElementalManager : MonoBehaviour
     public bool hasLightningHeart = false;
 
     [Header("타이머 설정")]
-    public float abilityDuration = 120f; // 2분
+    public float abilityDuration = 120f;
 
     [Header("Lightning Chain")]
     public int lightningHitCounter = 0;
@@ -43,7 +43,6 @@ public class ElementalManager : MonoBehaviour
     public bool isAbilityActive = false;
     public string currentType = "";
     public float abilityTimer = 0f;
-
 
     private struct ElementalConfig
     {
@@ -183,13 +182,17 @@ public class ElementalManager : MonoBehaviour
         if (screenEffectImage != null) screenEffectImage.gameObject.SetActive(true);
         ApplyLightningFlashShader(1f);
 
-        Color flashColor = new Color(2.0f, 1.8f, 0.8f);
+        Color flashColor = new Color(2.0f, 1.8f, 0.8f, 1f);
         SetTilemapColor(flashColor);
 
         yield return new WaitForSeconds(0.05f);
 
         Color targetMapColor = isAbilityActive && currentType == "Lightning"
-            ? Color.Lerp(Color.white, new Color(1.0f, 0.6f, 0.0f, 0.85f), 0.25f)
+            ? new Color(
+                Mathf.Lerp(1f, 1.0f, 0.25f),
+                Mathf.Lerp(1f, 0.6f, 0.25f),
+                Mathf.Lerp(1f, 0.0f, 0.25f),
+                1f)
             : Color.white;
 
         float t = 0f, duration = 0.12f;
@@ -233,7 +236,11 @@ public class ElementalManager : MonoBehaviour
 
         Sprite[] heartSprites = GetHeartSprites(type);
         float tintStrength = GetMapTintStrength(type);
-        SetTilemapColor(Color.Lerp(Color.white, cfg.edgeColor, tintStrength));
+
+        // 알파 강제 1로 고정해서 타일맵 반투명 방지
+        Color tintColor = Color.Lerp(Color.white, cfg.edgeColor, tintStrength);
+        tintColor.a = 1f;
+        SetTilemapColor(tintColor);
 
         float currentRadius = 0f, currentSoftness = 0.3f;
 
@@ -313,7 +320,7 @@ public class ElementalManager : MonoBehaviour
             effectType = 1f,
             scrollSpeed = new Vector2(0.02f, 0.05f),
             coreColor = new Color(0.8f, 0.97f, 1f, 0.9f),
-            edgeColor = new Color(0.3f, 0.7f, 1f, 0.85f),
+            edgeColor = new Color(0.3f, 0.7f, 1f, 1f),  // 0.85 → 1f
             radius = 0.88f,
             softness = 0.08f,
             distortPower = 0.35f
@@ -323,7 +330,7 @@ public class ElementalManager : MonoBehaviour
             effectType = 2f,
             scrollSpeed = new Vector2(0.06f, 0.1f),
             coreColor = new Color(0.35f, 0.55f, 0.15f, 0.6f),
-            edgeColor = new Color(0.15f, 0.05f, 0.25f, 0.6f),
+            edgeColor = new Color(0.15f, 0.05f, 0.25f, 1f),  // 0.6 → 1f
             radius = 0.18f,
             softness = 0.3f,
             distortPower = 0.18f
@@ -333,7 +340,7 @@ public class ElementalManager : MonoBehaviour
             effectType = 3f,
             scrollSpeed = new Vector2(0.3f, 1.4f),
             coreColor = new Color(1.0f, 1.0f, 0.8f, 1.0f),
-            edgeColor = new Color(1.0f, 0.6f, 0.0f, 0.85f),
+            edgeColor = new Color(1.0f, 0.6f, 0.0f, 1f),  // 0.85 → 1f
             radius = 0.10f,
             softness = 0.04f,
             distortPower = 0.18f
@@ -343,7 +350,7 @@ public class ElementalManager : MonoBehaviour
             effectType = 4f,
             scrollSpeed = new Vector2(0.02f, 0.04f),
             coreColor = new Color(1.0f, 1.0f, 0.85f, 0.5f),
-            edgeColor = new Color(1.0f, 0.75f, 0.1f, 0.55f),
+            edgeColor = new Color(1.0f, 0.75f, 0.1f, 1f),  // 0.55 → 1f
             radius = 0.65f,
             softness = 0.45f,
             distortPower = 0.02f
@@ -353,7 +360,7 @@ public class ElementalManager : MonoBehaviour
             effectType = 5f,
             scrollSpeed = new Vector2(0.02f, 0.15f),
             coreColor = new Color(0.8f, 1.0f, 0.4f, 0.9f),
-            edgeColor = new Color(0.1f, 0.5f, 0.15f, 0.7f),
+            edgeColor = new Color(0.1f, 0.5f, 0.15f, 1f),  // 0.7 → 1f
             radius = 0.55f,
             softness = 0.35f,
             distortPower = 0.08f
