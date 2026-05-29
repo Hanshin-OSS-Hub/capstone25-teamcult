@@ -59,7 +59,10 @@ MonoBehaviour:
   - roomType: 6
     floorEnemyGroups: []
   - roomType: 7
-    floorEnemyGroups: []
+    floorEnemyGroups:
+    - floor: 2
+      enemyPrefabs:
+      - {fileID: 7575059051696297546, guid: 6de82fd303195484f866a7c74b407582, type: 3}
   - roomType: 8
     floorEnemyGroups:
     - floor: 1
