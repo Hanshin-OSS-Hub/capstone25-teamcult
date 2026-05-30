@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 8aac8ae5180166746b2664255dcf73e2
+guid: fcb5b38d77a97594182ca5105fd3966f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 644849926683523439
-    second: crawlbat_0
+      213: 7691738765387995080
+    second: shield_attack_0
+  - first:
+      213: 4905463169031221606
+    second: shield_attack_1
+  - first:
+      213: 5559890763104856870
+    second: shield_attack_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +57,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,7 +106,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: crawlbat_0
+      name: shield_attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +121,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f69786d7797f2f800800000000000000
-      internalID: 644849926683523439
+      spriteID: 8c79d0097ab8eba60800000000000000
+      internalID: 7691738765387995080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shield_attack_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6613ed013c4b31440800000000000000
+      internalID: 4905463169031221606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shield_attack_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62b27d40133b82d40800000000000000
+      internalID: 5559890763104856870
       vertices: []
       indices: 
       edges: []
@@ -125,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 23500269ad173dc4bbb75cb70d32e644
+    spriteID: 721d3f92fdc2bc44d87855452a1b1d35
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +187,9 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      crawlbat_0: 644849926683523439
+      shield_attack_0: 7691738765387995080
+      shield_attack_1: 4905463169031221606
+      shield_attack_2: 5559890763104856870
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

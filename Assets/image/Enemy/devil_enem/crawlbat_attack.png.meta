@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 8aac8ae5180166746b2664255dcf73e2
+guid: 654634ae0b7fa1f419ab1cf3b396f6da
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 644849926683523439
-    second: crawlbat_0
+      213: -2683850483619911766
+    second: crawlbat_attack_0
+  - first:
+      213: -7048135427552196590
+    second: crawlbat_attack_1
+  - first:
+      213: -5221772464039631846
+    second: crawlbat_attack_2
+  - first:
+      213: -5566103316495068835
+    second: crawlbat_attack_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +109,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: crawlbat_0
+      name: crawlbat_attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +124,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f69786d7797f2f800800000000000000
-      internalID: 644849926683523439
+      spriteID: aa7239d643c01cad0800000000000000
+      internalID: -2683850483619911766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawlbat_attack_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 218c7e7db2eff2e90800000000000000
+      internalID: -7048135427552196590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawlbat_attack_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a14600f2c998887b0800000000000000
+      internalID: -5221772464039631846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawlbat_attack_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d51103d268a31c2b0800000000000000
+      internalID: -5566103316495068835
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 23500269ad173dc4bbb75cb70d32e644
+    spriteID: cc60ee7c7b217fa4e96ce28ec7de08cd
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +212,10 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      crawlbat_0: 644849926683523439
+      crawlbat_attack_0: -2683850483619911766
+      crawlbat_attack_1: -7048135427552196590
+      crawlbat_attack_2: -5221772464039631846
+      crawlbat_attack_3: -5566103316495068835
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
