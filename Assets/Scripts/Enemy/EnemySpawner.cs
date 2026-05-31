@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -307,7 +307,8 @@ public class EnemySpawner : MonoBehaviour {
         List<RoomType> result = new List<RoomType>();
         RoomType[] specialRoomTypes = RoomTypeHelper.GetSpecialRoomTypes();
 
-        Debug.Log($"<color=cyan><b>[EnemySpawner]</b></color> {currentFloor}층 특수방 몬스터 데이터 검사 시작");
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> {currentFloor}층 특수방 몬스터 데이터 검사 시작");
 
         for (int i = 0; i < specialRoomTypes.Length; i++) {
             RoomType roomType = specialRoomTypes[i];
@@ -319,18 +320,19 @@ public class EnemySpawner : MonoBehaviour {
                 result.Add(roomType);
 
                 if (usedFloor == currentFloor) {
-                    Debug.Log($"<color=cyan><b>[EnemySpawner]</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방 생성 가능. Floor: {usedFloor}, Monster Count: {prefabs.Count}");
+                    sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방 생성 가능. Floor: {usedFloor}, Monster Count: {prefabs.Count}");
                 }
                 else {
-                    Debug.Log($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 {RoomTypeHelper.GetKoreanName(roomType)} 특수방 데이터가 없어 {usedFloor}층 데이터로 생성 가능합니다. Monster Count: {prefabs.Count}");
+                    sb.AppendLine($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 {RoomTypeHelper.GetKoreanName(roomType)} 특수방 데이터가 없어 {usedFloor}층 데이터로 생성 가능합니다. Monster Count: {prefabs.Count}");
                 }
             }
             else {
-                Debug.Log($"<color=#FFA500><b>주의!</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방에 사용할 몬스터 데이터가 없어 생성 대상에서 제외합니다.");
+                sb.AppendLine($"<color=#FFA500><b>주의!</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방에 사용할 몬스터 데이터가 없어 생성 대상에서 제외합니다.");
             }
         }
 
-        Debug.Log($"<color=cyan><b>[EnemySpawner]</b></color> 생성 가능한 특수방 개수: {result.Count}");
+        sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> 생성 가능한 특수방 개수: {result.Count}");
+        Debug.Log(sb.ToString());
         return result;
     }
 
@@ -486,24 +488,43 @@ public class EnemySpawner : MonoBehaviour {
     }
 
     public void DebugPrintSpawnerData(int currentFloor) {
-        Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> ===== EnemySpawner 데이터 검사 시작 / CurrentFloor: {currentFloor} =====");
+        StringBuilder bodySb = new StringBuilder();
+        int lineCount = 0;
+        int warningCount = 0;
 
-        DebugPrintNormalEnemyData(currentFloor);
-        DebugPrintSpecialEnemyData(RoomType.Fire, currentFloor);
-        DebugPrintSpecialEnemyData(RoomType.Ice, currentFloor);
-        DebugPrintSpecialEnemyData(RoomType.Lightning, currentFloor);
-        DebugPrintBossData();
+        void AddLine(string line) {
+            if (string.IsNullOrEmpty(line)) {
+                return;
+            }
 
-        Debug.Log("<color=cyan><b>[EnemySpawner Debug]</b></color> ===== EnemySpawner 데이터 검사 끝 =====");
+            bodySb.AppendLine(line);
+            lineCount++;
+
+            if (line.Contains("주의!")) {
+                warningCount++;
+            }
+        }
+
+        DebugPrintNormalEnemyData(currentFloor, AddLine);
+        DebugPrintSpecialEnemyData(RoomType.Fire, currentFloor, AddLine);
+        DebugPrintSpecialEnemyData(RoomType.Ice, currentFloor, AddLine);
+        DebugPrintSpecialEnemyData(RoomType.Lightning, currentFloor, AddLine);
+        DebugPrintBossData(AddLine);
+
+        StringBuilder finalSb = new StringBuilder();
+        string warningText = warningCount > 0
+            ? $"<color=#FFA500><b>주의 {warningCount}건</b></color>"
+            : $"주의 {warningCount}건";
+        finalSb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> EnemySpawner 데이터 검사 결과 / CurrentFloor: {currentFloor}, 총 {lineCount}줄, {warningText}");
+        finalSb.Append(bodySb.ToString());
+        Debug.Log(finalSb.ToString());
     }
 
-    private void DebugPrintNormalEnemyData(int currentFloor) {
+    private void DebugPrintNormalEnemyData(int currentFloor, System.Action<string> addLine) {
         int usedFloor = -1;
         List<GameObject> prefabs = GetNormalEnemyPrefabsByFloor(currentFloor, out usedFloor);
 
-        Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 일반몹 검사 / 요청 층: {currentFloor}, 사용 층: {usedFloor}, 유효 프리팹 수: {prefabs.Count}");
-
-        StringBuilder sb = new StringBuilder();
+        addLine($"일반몹 검사 / 요청 층: {currentFloor}, 사용 층: {usedFloor}, 유효 프리팹 수: {prefabs.Count}");
 
         for (int i = 0; i < prefabs.Count; i++) {
             string prefabName = "null";
@@ -512,25 +533,21 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = prefabs[i].name;
             }
 
-            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> 일반몹 [{i}] = {prefabName}");
+            addLine($"일반몹 [{i}] = {prefabName}");
         }
 
-        if (sb.Length > 0) {
-            Debug.Log(sb.ToString());
-        }
+
     }
 
-    private void DebugPrintSpecialEnemyData(RoomType roomType, int currentFloor) {
+    private void DebugPrintSpecialEnemyData(RoomType roomType, int currentFloor, System.Action<string> addLine) {
         int usedFloor = -1;
         List<GameObject> prefabs = GetSpecialEnemyPrefabsByRoomType(roomType, currentFloor, out usedFloor);
 
-        Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 특수방 검사 / Type: {roomType}, 요청 층: {currentFloor}, 사용 층: {usedFloor}, 유효 프리팹 수: {prefabs.Count}");
+        addLine($"특수방 검사 / Type: {roomType}, 요청 층: {currentFloor}, 사용 층: {usedFloor}, 유효 프리팹 수: {prefabs.Count}");
 
         if (prefabs.Count == 0) {
-            Debug.Log($"<color=#FFA500><b>주의!</b></color> {roomType} 특수방에 사용할 유효 몬스터 프리팹이 없습니다.");
+            addLine($"<color=#FFA500><b>주의!</b></color> {roomType} 특수방에 사용할 유효 몬스터 프리팹이 없습니다.");
         }
-
-        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < prefabs.Count; i++) {
             string prefabName = "null";
@@ -539,23 +556,19 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = prefabs[i].name;
             }
 
-            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> {roomType} 몹 [{i}] = {prefabName}");
+            addLine($"{roomType} 몹 [{i}] = {prefabName}");
         }
 
-        if (sb.Length > 0) {
-            Debug.Log(sb.ToString());
-        }
+
     }
 
-    private void DebugPrintBossData() {
+    private void DebugPrintBossData(System.Action<string> addLine) {
         if (bossPrefabs == null) {
-            Debug.Log("<color=#FFA500><b>주의!</b></color> Boss Prefabs 배열이 null입니다.");
+            addLine("<color=#FFA500><b>주의!</b></color> Boss Prefabs 배열이 null입니다.");
             return;
         }
 
-        Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 보스 프리팹 수: {bossPrefabs.Length}");
-
-        StringBuilder sb = new StringBuilder();
+        addLine($"보스 프리팹 수: {bossPrefabs.Length}");
 
         for (int i = 0; i < bossPrefabs.Length; i++) {
             string prefabName = "null";
@@ -564,12 +577,11 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = bossPrefabs[i].name;
             }
 
-            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> Boss Prefabs [{i}] = {prefabName}");
+            addLine($"Boss Prefabs [{i}] = {prefabName}");
         }
 
-        if (sb.Length > 0) {
-            Debug.Log(sb.ToString());
-        }
+
     }
 }
+
 

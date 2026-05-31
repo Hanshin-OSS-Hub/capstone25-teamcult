@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
@@ -294,31 +294,52 @@ public class RoomManager : MonoBehaviour {
     }
 
     public void DebugPrintAllRooms() {
-        Debug.Log($"<color=cyan><b>[RoomManager Debug]</b></color> ===== 전체 방 데이터 출력 시작 / CurrentFloor: {currentFloor} =====");
+        StringBuilder bodySb = new StringBuilder();
+        int lineCount = 0;
+        int warningCount = 0;
 
-        if (rooms == null || mapPlan == null) {
-            Debug.Log("<color=#FFA500><b>주의!</b></color> rooms 또는 mapPlan이 null입니다.");
-            return;
-        }
+        void AddLine(string line) {
+            if (string.IsNullOrEmpty(line)) {
+                return;
+            }
 
-        for (int x = 0; x < mapSize; x++) {
-            for (int y = 0; y < mapSize; y++) {
-                if (mapPlan[x, y] <= 0) {
-                    continue;
-                }
+            bodySb.AppendLine(line);
+            lineCount++;
 
-                RoomData room = rooms[x, y];
-
-                if (room == null) {
-                    Debug.Log($"<color=#FFA500><b>주의!</b></color> RoomData null / Pos: ({x}, {y})");
-                    continue;
-                }
-
-                Debug.Log($"<color=cyan><b>[RoomManager Debug]</b></color> Pos: ({x}, {y}), Type: {room.type}, Status: {room.status}, MonsterCount: {room.monsterCount}, BossIndex: {room.bossIndex}, RewardCount: {room.rewardPrefabs.Count}");
+            if (line.Contains("주의!")) {
+                warningCount++;
             }
         }
 
-        Debug.Log("<color=cyan><b>[RoomManager Debug]</b></color> ===== 전체 방 데이터 출력 끝 =====");
+        if (rooms == null || mapPlan == null) {
+            AddLine("<color=#FFA500><b>주의!</b></color> rooms 또는 mapPlan이 null입니다.");
+        }
+        else {
+            for (int x = 0; x < mapSize; x++) {
+                for (int y = 0; y < mapSize; y++) {
+                    if (mapPlan[x, y] <= 0) {
+                        continue;
+                    }
+
+                    RoomData room = rooms[x, y];
+
+                    if (room == null) {
+                        AddLine($"<color=#FFA500><b>주의!</b></color> RoomData null / Pos: ({x}, {y})");
+                        continue;
+                    }
+
+                    AddLine($"Pos: ({x}, {y}), Type: {room.type}, Status: {room.status}, MonsterCount: {room.monsterCount}, BossIndex: {room.bossIndex}, RewardCount: {room.rewardPrefabs.Count}");
+                }
+            }
+        }
+
+        StringBuilder finalSb = new StringBuilder();
+        string warningText = warningCount > 0
+            ? $"<color=#FFA500><b>주의 {warningCount}건</b></color>"
+            : $"주의 {warningCount}건";
+        finalSb.AppendLine($"<color=cyan><b>[RoomManager]</b></color> 전체 방 데이터 검사 결과 / CurrentFloor: {currentFloor}, 총 {lineCount}줄, {warningText}");
+        finalSb.Append(bodySb.ToString());
+        Debug.Log(finalSb.ToString());
     }
 
     int GetMonsterCountForRoom(RoomType roomType) {
