@@ -1,14 +1,14 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RangedEnemy : MonoBehaviour
 {
-    [Header("����")]
-    public float detectRange = 7f;   // ��Ÿ� (�� �ȿ� ������ ��)
-    public float stopDistance = 3f;  // �ʹ� ������ ���� (�������� �ʰ�)
-    public float moveSpeed = 1.5f;   // �̵� �ӵ�
+    [Header("기본 설정")]
+    public float detectRange = 7f;   // 감지 범위 (플레이어를 인식하는 거리)
+    public float stopDistance = 3f;  // 정지 거리 (이 거리 안에서는 이동을 멈춤)
+    public float moveSpeed = 1.5f;   // 이동 속도
 
-    public GameObject bulletPrefab;  // �� �� �Ѿ� ������ �� ��������!
-    public float attackCooldown = 2f; // 2�ʸ��� �߻�
+    public GameObject bulletPrefab;  // 발사할 적 탄환 프리팹을 여기에 연결하세요
+    public float attackCooldown = 2f; // 공격 간격(초)
     protected float lastAttackTime;
 
     protected Transform player;
@@ -29,7 +29,7 @@ public class RangedEnemy : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, player.position);
 
-        // ��Ÿ� �ȿ� ��������?
+        // 감지 범위 안에 플레이어가 들어왔는지 확인
         if (distance <= detectRange)
         {
             
@@ -41,14 +41,14 @@ public class RangedEnemy : MonoBehaviour
             }
             
             
-            // ���� ��Ÿ�� üũ -> �߻�
+            // 공격 쿨타임 체크 후 발사
             if (Time.time > lastAttackTime + attackCooldown)
             {
                 Shoot();
                 lastAttackTime = Time.time;
             }
 
-            // �ʹ� �� ���� �ʰ�, ������ �Ÿ������� �ٰ���
+            // 정지 거리 밖이면 플레이어 쪽으로 이동, 안쪽이면 정지
             if (distance > stopDistance)
             {
                 transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
@@ -60,10 +60,10 @@ public class RangedEnemy : MonoBehaviour
     {
         if (bulletPrefab == null) return;
 
-        // �Ѿ� ����
+        // 탄환 생성
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
 
-        // �Ѿ˿��� "�÷��̾� ������ ���ư���" ����
+        // 생성한 탄환에 플레이어 방향 벡터 전달
         EnemyBullet bulletScript = bullet.GetComponent<EnemyBullet>();
         if (bulletScript != null)
         {
