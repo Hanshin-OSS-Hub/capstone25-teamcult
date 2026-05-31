@@ -307,9 +307,6 @@ public class EnemySpawner : MonoBehaviour {
         List<RoomType> result = new List<RoomType>();
         RoomType[] specialRoomTypes = RoomTypeHelper.GetSpecialRoomTypes();
 
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> {currentFloor}층 특수방 몬스터 데이터 검사 시작");
-
         for (int i = 0; i < specialRoomTypes.Length; i++) {
             RoomType roomType = specialRoomTypes[i];
 
@@ -318,21 +315,8 @@ public class EnemySpawner : MonoBehaviour {
 
             if (prefabs.Count > 0) {
                 result.Add(roomType);
-
-                if (usedFloor == currentFloor) {
-                    sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방 생성 가능. Floor: {usedFloor}, Monster Count: {prefabs.Count}");
-                }
-                else {
-                    sb.AppendLine($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 {RoomTypeHelper.GetKoreanName(roomType)} 특수방 데이터가 없어 {usedFloor}층 데이터로 생성 가능합니다. Monster Count: {prefabs.Count}");
-                }
-            }
-            else {
-                sb.AppendLine($"<color=#FFA500><b>주의!</b></color> {RoomTypeHelper.GetKoreanName(roomType)} 특수방에 사용할 몬스터 데이터가 없어 생성 대상에서 제외합니다.");
             }
         }
-
-        sb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> 생성 가능한 특수방 개수: {result.Count}");
-        Debug.Log(sb.ToString());
         return result;
     }
 
@@ -513,9 +497,9 @@ public class EnemySpawner : MonoBehaviour {
 
         StringBuilder finalSb = new StringBuilder();
         string warningText = warningCount > 0
-            ? $"<color=#FFA500><b>주의 {warningCount}건</b></color>"
-            : $"주의 {warningCount}건";
-        finalSb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> EnemySpawner 데이터 검사 결과 / CurrentFloor: {currentFloor}, 총 {lineCount}줄, {warningText}");
+            ? $"<color=#FFA500><b>주의 {warningCount}줄</b></color>"
+            : $"주의 {warningCount}줄";
+        finalSb.AppendLine($"<color=cyan><b>[EnemySpawner]</b></color> 검사 결과, 총 {lineCount}줄, {warningText}");
         finalSb.Append(bodySb.ToString());
         Debug.Log(finalSb.ToString());
     }

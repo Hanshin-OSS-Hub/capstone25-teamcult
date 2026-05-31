@@ -82,6 +82,8 @@ public class RoomManager : MonoBehaviour {
 
     private SumSegmentTree rewardWeightTree = new SumSegmentTree();
     private readonly System.Random rewardRandom = new System.Random();
+    private StringBuilder startupLogSb;
+    private string startupRoomReportLog;
 
     void Awake() {
         ResolveEnemySpawner();
@@ -161,6 +163,7 @@ public class RoomManager : MonoBehaviour {
     }
 
     void GenerateDungeon() {
+        startupLogSb = new StringBuilder();
         int totalPlanned = 1 + (mainBranchLength - 1) + (subBranchLength - 1) + twigCount;
 
         if (totalPlanned > maxRooms) {
@@ -249,19 +252,17 @@ public class RoomManager : MonoBehaviour {
             }
 
             generationSuccess = true;
-            Debug.Log($"<color=green><b>[1] 지도 생성 성공!</b></color> 생성된 방 개수: {1 + mainBranchRooms.Count + subBranchRooms.Count + twigRooms.Count}");
+            AppendStartupLog($"<color=green><b>[1] 지도 생성 성공!</b></color> 생성된 방 개수: {1 + mainBranchRooms.Count + subBranchRooms.Count + twigRooms.Count}");
             AssignRoomTypes(startPos, mainBranchRooms, subBranchRooms, twigRooms);
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<color=cyan><b>[던전 생성 보고서]</b></color>");
-            sb.AppendLine($"시작 지점: {startPos}");
-            sb.AppendLine($"<b>메인 가지 (길이: {mainBranchRooms.Count + 1}):</b> {startPos} -> {ListToString(mainBranchRooms, " -> ")}");
-            sb.AppendLine($"<b>서브 가지 (길이: {subBranchRooms.Count + 1}):</b> {startPos} -> {ListToString(subBranchRooms, " -> ")}");
-            sb.AppendLine($"<b>잔가지 (개수: {twigRooms.Count}):</b> {ListToString(twigRooms, ", ")}");
+            AppendStartupLog("<color=cyan><b>[던전 생성 보고서]</b></color>");
+            AppendStartupLog($"시작 지점: {startPos}");
+            AppendStartupLog($"<b>메인 가지 (길이: {mainBranchRooms.Count + 1}):</b> {startPos} -> {ListToString(mainBranchRooms, " -> ")}");
+            AppendStartupLog($"<b>서브 가지 (길이: {subBranchRooms.Count + 1}):</b> {startPos} -> {ListToString(subBranchRooms, " -> ")}");
+            AppendStartupLog($"<b>잔가지 (개수: {twigRooms.Count}):</b> {ListToString(twigRooms, ", ")}");
 
             int finalCount = 1 + mainBranchRooms.Count + subBranchRooms.Count + twigRooms.Count;
-            sb.AppendLine($"<color=yellow>총 방 개수: {finalCount}</color>");
-            Debug.Log(sb.ToString());
+            AppendStartupLog($"<color=yellow>총 방 개수: {finalCount}</color>");
         }
 
         PrepareRewardWeightTree();
@@ -291,12 +292,11 @@ public class RoomManager : MonoBehaviour {
         DebugPrintAllRooms();
 
         DrawMap();
+        FlushStartupLogs();
     }
 
     public void DebugPrintAllRooms() {
         StringBuilder bodySb = new StringBuilder();
-        int lineCount = 0;
-        int warningCount = 0;
 
         void AddLine(string line) {
             if (string.IsNullOrEmpty(line)) {
@@ -304,11 +304,6 @@ public class RoomManager : MonoBehaviour {
             }
 
             bodySb.AppendLine(line);
-            lineCount++;
-
-            if (line.Contains("주의!")) {
-                warningCount++;
-            }
         }
 
         if (rooms == null || mapPlan == null) {
@@ -333,13 +328,69 @@ public class RoomManager : MonoBehaviour {
             }
         }
 
-        StringBuilder finalSb = new StringBuilder();
-        string warningText = warningCount > 0
-            ? $"<color=#FFA500><b>주의 {warningCount}건</b></color>"
-            : $"주의 {warningCount}건";
-        finalSb.AppendLine($"<color=cyan><b>[RoomManager]</b></color> 전체 방 데이터 검사 결과 / CurrentFloor: {currentFloor}, 총 {lineCount}줄, {warningText}");
-        finalSb.Append(bodySb.ToString());
-        Debug.Log(finalSb.ToString());
+        startupRoomReportLog = bodySb.ToString();
+    }
+
+    void AppendStartupLog(string line) {
+        if (string.IsNullOrEmpty(line)) {
+            return;
+        }
+
+        if (startupLogSb != null) {
+            startupLogSb.AppendLine(line);
+            return;
+        }
+
+        Debug.Log(line);
+    }
+
+    void FlushStartupLogs() {
+        if (startupLogSb == null) {
+            return;
+        }
+
+        StringBuilder bodySb = new StringBuilder();
+
+        if (!string.IsNullOrEmpty(startupRoomReportLog)) {
+            bodySb.AppendLine(startupRoomReportLog.TrimEnd());
+        }
+
+        if (startupLogSb.Length > 0) {
+            bodySb.AppendLine(startupLogSb.ToString().TrimEnd());
+        }
+
+        if (bodySb.Length > 0) {
+            string bodyText = bodySb.ToString().TrimEnd();
+            string[] lines = bodyText.Split('\n');
+            int lineCount = 0;
+            int warningCount = 0;
+
+            for (int i = 0; i < lines.Length; i++) {
+                string line = lines[i].TrimEnd('\r');
+
+                if (string.IsNullOrWhiteSpace(line)) {
+                    continue;
+                }
+
+                lineCount++;
+
+                if (line.Contains("주의!")) {
+                    warningCount++;
+                }
+            }
+
+            string warningText = warningCount > 0
+                ? $"<color=#FFA500><b>주의 {warningCount}줄</b></color>"
+                : $"주의 {warningCount}줄";
+
+            StringBuilder finalStartupLog = new StringBuilder();
+            finalStartupLog.AppendLine($"<color=cyan><b>[RoomManager]</b></color> 검사 결과, 총 {lineCount}줄, {warningText}");
+            finalStartupLog.Append(bodyText);
+            Debug.Log(finalStartupLog.ToString());
+        }
+
+        startupRoomReportLog = null;
+        startupLogSb = null;
     }
 
     int GetMonsterCountForRoom(RoomType roomType) {
@@ -438,7 +489,7 @@ public class RoomManager : MonoBehaviour {
             }
         }
 
-        Debug.Log($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
+        AppendStartupLog($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
     }
 
     GameObject GetRandomInteriorByType(RoomType type) {
@@ -448,12 +499,12 @@ public class RoomManager : MonoBehaviour {
             interiorPrefabs = GetValidInteriorPrefabs(RoomType.Normal);
 
             if (interiorPrefabs.Count > 0) {
-                Debug.Log($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방 내부 프리팹 데이터가 없어 Normal 방 내부 프리팹을 사용합니다.");
+                AppendStartupLog($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방 내부 프리팹 데이터가 없어 Normal 방 내부 프리팹을 사용합니다.");
             }
         }
 
         if (interiorPrefabs.Count == 0) {
-            Debug.Log($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방에 사용할 내부 프리팹이 없습니다.");
+            AppendStartupLog($"<color=#FFA500><b>주의!</b></color> {GetRoomTypeDebugName(type)} 방에 사용할 내부 프리팹이 없습니다.");
             return null;
         }
 
@@ -594,7 +645,7 @@ public class RoomManager : MonoBehaviour {
             rooms[bossPos.x, bossPos.y].bossIndex = GetBossIndexByFloor();
             rooms[bossPos.x, bossPos.y].monsterCount = 0;
 
-            Debug.Log($"<color=red><b>[Boss]</b></color> 보스방 위치: {bossPos}, Floor: {currentFloor}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
+            AppendStartupLog($"<color=#4FC3F7><b>[Boss]</b></color> 보스방 위치: {bossPos}, Floor: {currentFloor}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
         }
 
         // 3. 서브 가지(Sub Branch)의 마지막 방 -> 상점
@@ -656,10 +707,10 @@ public class RoomManager : MonoBehaviour {
 
             createdCount++;
 
-            Debug.Log($"<color=magenta><b>[SpecialRoom]</b></color> {RoomTypeHelper.GetKoreanName(specialRoomType)} 특수방 생성 위치: {specialRoomPos}");
+            AppendStartupLog($"<color=magenta><b>[SpecialRoom]</b></color> {RoomTypeHelper.GetKoreanName(specialRoomType)} 특수방 생성 위치: {specialRoomPos}");
         }
 
-        Debug.Log($"<color=cyan><b>[SpecialRoom]</b></color> 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
+        AppendStartupLog($"<color=cyan><b>[SpecialRoom]</b></color> 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
     }
 
     List<Vector2Int> GetNormalRoomPositions() {
