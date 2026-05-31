@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 [System.Serializable]
 public class FloorEnemyPrefabGroup {
@@ -502,6 +503,8 @@ public class EnemySpawner : MonoBehaviour {
 
         Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 일반몹 검사 / 요청 층: {currentFloor}, 사용 층: {usedFloor}, 유효 프리팹 수: {prefabs.Count}");
 
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < prefabs.Count; i++) {
             string prefabName = "null";
 
@@ -509,7 +512,11 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = prefabs[i].name;
             }
 
-            Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 일반몹 [{i}] = {prefabName}");
+            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> 일반몹 [{i}] = {prefabName}");
+        }
+
+        if (sb.Length > 0) {
+            Debug.Log(sb.ToString());
         }
     }
 
@@ -523,6 +530,8 @@ public class EnemySpawner : MonoBehaviour {
             Debug.Log($"<color=#FFA500><b>주의!</b></color> {roomType} 특수방에 사용할 유효 몬스터 프리팹이 없습니다.");
         }
 
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < prefabs.Count; i++) {
             string prefabName = "null";
 
@@ -530,7 +539,11 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = prefabs[i].name;
             }
 
-            Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> {roomType} 몹 [{i}] = {prefabName}");
+            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> {roomType} 몹 [{i}] = {prefabName}");
+        }
+
+        if (sb.Length > 0) {
+            Debug.Log(sb.ToString());
         }
     }
 
@@ -542,6 +555,8 @@ public class EnemySpawner : MonoBehaviour {
 
         Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> 보스 프리팹 수: {bossPrefabs.Length}");
 
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < bossPrefabs.Length; i++) {
             string prefabName = "null";
 
@@ -549,7 +564,12 @@ public class EnemySpawner : MonoBehaviour {
                 prefabName = bossPrefabs[i].name;
             }
 
-            Debug.Log($"<color=cyan><b>[EnemySpawner Debug]</b></color> Boss Prefabs [{i}] = {prefabName}");
+            sb.AppendLine($"<color=cyan><b>[EnemySpawner Debug]</b></color> Boss Prefabs [{i}] = {prefabName}");
+        }
+
+        if (sb.Length > 0) {
+            Debug.Log(sb.ToString());
         }
     }
 }
+
