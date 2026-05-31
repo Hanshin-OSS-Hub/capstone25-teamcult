@@ -13,6 +13,10 @@ public class SoundEnemy : RangedEnemy
         {
             GameObject waveObj = Instantiate(soundWavePrefab, transform.position, Quaternion.identity);
             _waveController = waveObj.GetComponent<SoundWaveController>();
+            if (_waveController != null)
+            {
+                _waveController.SetOwnerTransform(transform);
+            }
         }
 
         // [협업 작업 반영] 몬스터 사망 시 회피율 복구 이벤트 연결

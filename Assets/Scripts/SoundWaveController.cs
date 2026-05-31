@@ -172,6 +172,11 @@ public class SoundWaveController : MonoBehaviour
 
     public float GetAppliedMissChance() => _appliedMissChance;
 
+    public void SetOwnerTransform(Transform owner)
+    {
+        enemyTransform = owner;
+    }
+
     public void NotifyOwnerDead()
     {
         _ownerDead = true;
@@ -192,6 +197,11 @@ public class SoundWaveController : MonoBehaviour
             wave.Elapsed += Time.deltaTime;
             float progress = wave.Elapsed / effectDuration;
             wave.Radius = progress * maxRadius;
+            if (!_ownerDead && enemyTransform != null)
+            {
+                wave.Center = GetEnemyScreenPos();
+                wave.WorldPos = enemyTransform.position;
+            }
 
             if (progress >= 1.0f)
             {
