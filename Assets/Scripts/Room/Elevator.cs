@@ -3,11 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class Elevator : MonoBehaviour
 {
-    [SerializeField] string sceneName = "demo"; // ÀÌµ¿ÇÒ ¾À ÀÌ¸§
+    [SerializeField] string sceneName = "demo"; // ì´ë™í•  ì”¬ ì´ë¦„
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.CompareTag("Player")) {
-            Debug.Log("ÇÃ·¹ÀÌ¾î ÁøÀÔ! ´ÙÀ½ ¾ÀÀ¸·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+            Debug.Log("í”Œë ˆì´ì–´ ì§„ì…! ë‹¤ìŒ ì”¬ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
             SceneManager.LoadScene(sceneName);
         }
     }

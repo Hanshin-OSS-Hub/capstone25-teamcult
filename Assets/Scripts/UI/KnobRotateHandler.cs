@@ -1,34 +1,34 @@
 using UnityEngine;
-using UnityEngine.EventSystems; // µå·¡±× ÀÌº¥Æ®¸¦ À§ÇØ ÇÊ¿ä
+using UnityEngine.EventSystems; // ë“œë˜ê·¸ ì´ë²¤íŠ¸ë¥¼ ìœ„í•´ í•„ìš”
 
 public class KnobRotateHandler : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
     [Header("Settings")]
-    public GameSettingManager manager; // ¾Æ±î ¸¸µç ¸Å´ÏÀú ¿¬°á
-    public bool isVolumeKnob = true;   // º¼·ıÀÎÁö ¹à±âÀÎÁö Ã¼Å©
+    public GameSettingManager manager; // ì•„ê¹Œ ë§Œë“  ë§¤ë‹ˆì € ì—°ê²°
+    public bool isVolumeKnob = true;   // ë³¼ë¥¨ì¸ì§€ ë°ê¸°ì¸ì§€ ì²´í¬
 
     private Vector2 centerPoint;
 
-    // µå·¡±× ½ÃÀÛ ½Ã ³ëºêÀÇ Áß½ÉÁ¡À» °è»êÇÕ´Ï´Ù.
+    // ë“œë˜ê·¸ ì‹œì‘ ì‹œ ë…¸ë¸Œì˜ ì¤‘ì‹¬ì ì„ ê³„ì‚°í•©ë‹ˆë‹¤.
     public void OnBeginDrag(PointerEventData eventData)
     {
         centerPoint = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, transform.position);
     }
 
-    // ¸¶¿ì½º¸¦ µå·¡±×ÇÏ´Â µ¿¾È °è¼Ó È£ÃâµË´Ï´Ù.
+    // ë§ˆìš°ìŠ¤ë¥¼ ë“œë˜ê·¸í•˜ëŠ” ë™ì•ˆ ê³„ì† í˜¸ì¶œë©ë‹ˆë‹¤.
     public void OnDrag(PointerEventData eventData)
     {
         if (manager == null) return;
 
-        // ³ëºêÀÇ Áß½ÉÁ¡À» ±¸ÇÕ´Ï´Ù.
+        // ë…¸ë¸Œì˜ ì¤‘ì‹¬ì ì„ êµ¬í•©ë‹ˆë‹¤.
         Vector2 center = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, transform.position);
         Vector2 dir = eventData.position - center;
 
-        // °¢µµ °è»ê (12½Ã ¹æÇâÀÌ 0µµ°¡ µÇµµ·Ï ¼³Á¤)
+        // ê°ë„ ê³„ì‚° (12ì‹œ ë°©í–¥ì´ 0ë„ê°€ ë˜ë„ë¡ ì„¤ì •)
         float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
         if (angle < 0) angle += 360f;
 
-        // 0~1 »çÀÌÀÇ °ªÀ¸·Î º¯È¯
+        // 0~1 ì‚¬ì´ì˜ ê°’ìœ¼ë¡œ ë³€í™˜
         float value = angle / 360f;
 
         if (isVolumeKnob)

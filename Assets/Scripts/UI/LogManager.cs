@@ -41,19 +41,19 @@ public class LogManager : MonoBehaviour {
     }
 
     private void Start() {
-        AddLog("½ÃÀÛ");
+        AddLog("ì‹œì‘");
     }
 
     private int testLogIndex = 1;
     private void Update() {
-        // Enter·Î ·Î±× Ã¢ Åä±Û
+        // Enterë¡œ ë¡œê·¸ ì°½ í† ê¸€
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) {
             ToggleLogWindow();
         }
 
-        // K·Î Å×½ºÆ® ·Î±× Ãß°¡
+        // Kë¡œ í…ŒìŠ¤íŠ¸ ë¡œê·¸ ì¶”ê°€
         if (Input.GetKeyDown(KeyCode.K)) {
-            AddLog($"{testLogIndex++}. ·Î±× Å×½ºÆ®Áß");
+            AddLog($"{testLogIndex++}. ë¡œê·¸ í…ŒìŠ¤íŠ¸ì¤‘");
         }
     }
 
@@ -78,7 +78,7 @@ public class LogManager : MonoBehaviour {
 
     private void AddPermanentLog(string message) {
         if (logEntryPrefab == null || contentParent == null) {
-            Debug.LogWarning("LogManager: logEntryPrefab ¶Ç´Â contentParent°¡ ºñ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogWarning("LogManager: logEntryPrefab ë˜ëŠ” contentParentê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -129,7 +129,7 @@ public class LogManager : MonoBehaviour {
             text.text = message;
         }
         else {
-            Debug.LogWarning("LogManager: logEntryPrefab¿¡¼­ TextMeshProUGUI¸¦ Ã£Áö ¸øÇß½À´Ï´Ù.");
+            Debug.LogWarning("LogManager: logEntryPrefabì—ì„œ TextMeshProUGUIë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
         }
     }
 

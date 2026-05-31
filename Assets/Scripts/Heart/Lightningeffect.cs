@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class LightningEffect : MonoBehaviour
 {
-    [Header("Ã¼ÀÎ ¼³Á¤")]
+    [Header("ì²´ì¸ ì„¤ì •")]
     public ElementalManager elementalManager;
     public float chainRadius = 4f;
     public float chainDamageRatio = 0.5f;
@@ -13,7 +13,7 @@ public class LightningEffect : MonoBehaviour
     public int originalDamage = 10;
     public Vector3 chainOrigin;
     public GameObject originEnemy;
-    public List<GameObject> visitedEnemies = new List<GameObject>(); // ¹æ¹®ÇÑ Àû ¸ñ·Ï
+    public List<GameObject> visitedEnemies = new List<GameObject>(); // ë°©ë¬¸í•œ ì  ëª©ë¡
     private bool hasChained = false;
 
     void Start()
@@ -46,13 +46,13 @@ public class LightningEffect : MonoBehaviour
             if (!hit.CompareTag("Enemy")) continue;
             if (Vector3.Distance(hit.transform.position, origin) < 0.1f) continue;
 
-            // Ã³À½ ¸ÂÀº Àû Á¦¿Ü
+            // ì²˜ìŒ ë§ì€ ì  ì œì™¸
             if (originEnemy != null && hit.gameObject == originEnemy) continue;
 
-            // ÀÌ¹Ì ¹æ¹®ÇÑ Àû Á¦¿Ü (Áßº¹ ¹æÁö)
+            // ì´ë¯¸ ë°©ë¬¸í•œ ì  ì œì™¸ (ì¤‘ë³µ ë°©ì§€)
             if (visitedEnemies.Contains(hit.gameObject)) continue;
 
-            // ¹«ÀûÀÎ Àû Á¦¿Ü (ºĞ¿­ Á÷ÈÄ)
+            // ë¬´ì ì¸ ì  ì œì™¸ (ë¶„ì—´ ì§í›„)
             EnemyHealth eh = hit.GetComponent<EnemyHealth>();
             if (eh != null && eh.IsInvincible()) continue;
 
@@ -61,7 +61,7 @@ public class LightningEffect : MonoBehaviour
 
         if (chainTargets.Count == 0) return;
 
-        // ¹æ¹® ¸ñ·Ï¿¡ Ãß°¡
+        // ë°©ë¬¸ ëª©ë¡ì— ì¶”ê°€
         foreach (GameObject target in chainTargets)
             visitedEnemies.Add(target);
 
@@ -81,7 +81,7 @@ public class LightningEffect : MonoBehaviour
             chainEffect.duration = duration * 0.5f;
             chainEffect.maxChainCount = remainingChains - 1;
             chainEffect.originEnemy = originEnemy;
-            chainEffect.visitedEnemies = new List<GameObject>(visitedEnemies); // ¹æ¹® ¸ñ·Ï Àü´Ş
+            chainEffect.visitedEnemies = new List<GameObject>(visitedEnemies); // ë°©ë¬¸ ëª©ë¡ ì „ë‹¬
         }
 
         foreach (GameObject target in chainTargets)

@@ -2,7 +2,7 @@ using UnityEngine;
 public class BurnOnHit : MonoBehaviour
 {
     public ElementalManager elementalManager;
-    public float burnDamage = 3f; // Ãß°¡!
+    public float burnDamage = 3f; // ì¶”ê°€!
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -12,7 +12,7 @@ public class BurnOnHit : MonoBehaviour
         if (other.GetComponent<BurnEffect>() == null)
         {
             BurnEffect burn = other.gameObject.AddComponent<BurnEffect>();
-            burn.damage = burnDamage; // µ¥¹ÌÁö Àü´Ş!
+            burn.damage = burnDamage; // ë°ë¯¸ì§€ ì „ë‹¬!
         }
     }
 }

@@ -20,28 +20,28 @@ public class Item : ScriptableObject
 {
     public enum ItemType { Helmet, Weapon, Upper, Bottom, Consumable, Ooparts, Heart }
     public enum ItemTier { Tier1, Tier2, Tier3 }
-    [Header("±âº» Á¤º¸")]
+    [Header("ê¸°ë³¸ ì •ë³´")]
     public string itemName;
     [TextArea] public string itemDesc;
     public Sprite icon;
-    [Header("ºĞ·ù")]
+    [Header("ë¶„ë¥˜")]
     public ItemType itemType;
     public WeaponType weaponType;
     public ItemTier tier;
-    [Header("±âº» Àåºñ ½ºÅÈ")]
+    [Header("ê¸°ë³¸ ì¥ë¹„ ìŠ¤íƒ¯")]
     public int bonusAttack;
     public int bonusDefense;
     public int bonusHealth;
-    [Header("¹«±â Àü¿ë ¼³Á¤ (¹«±âÀÏ ¶§¸¸ ³ÖÀ¸¼¼¿ä)")]
+    [Header("ë¬´ê¸° ì „ìš© ì„¤ì • (ë¬´ê¸°ì¼ ë•Œë§Œ ë„£ìœ¼ì„¸ìš”)")]
     public GameObject prefab;
     public float damage;
     public float speed;
     public float lifeTime;
     public float cooldown;
     public AnimatorOverrideController weaponAnim;
-    [Header("ÇÏÆ® Àü¿ë ¼³Á¤ (ÇÏÆ®ÀÏ ¶§¸¸ ³ÖÀ¸¼¼¿ä)")]
+    [Header("í•˜íŠ¸ ì „ìš© ì„¤ì • (í•˜íŠ¸ì¼ ë•Œë§Œ ë„£ìœ¼ì„¸ìš”)")]
     public string elementType;
-    [Header("ºÎ¿©µÈ ·£´ı ¿É¼Ç")]
+    [Header("ë¶€ì—¬ëœ ëœë¤ ì˜µì…˜")]
     public List<ItemOption> currentOptions = new List<ItemOption>();
     public Item Clone()
     {

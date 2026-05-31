@@ -6,12 +6,12 @@ public class DamageText : MonoBehaviour
     public TextMeshPro tmp;
     public float duration = 1f;
     public float riseSpeed = 2f;
-    // ? int¸¸ ¹Ş´Â ¹öÀü (EnemyHealth¿¡¼­ È£Ãâ)
+    // ? intë§Œ ë°›ëŠ” ë²„ì „ (EnemyHealthì—ì„œ í˜¸ì¶œ)
     public void Setup(int damage)
     {
         Setup(damage, Color.white);
     }
-    // ? »ö»óµµ ¹Ş´Â ¹öÀü (È­»ó µî¿¡¼­ È£Ãâ)
+    // ? ìƒ‰ìƒë„ ë°›ëŠ” ë²„ì „ (í™”ìƒ ë“±ì—ì„œ í˜¸ì¶œ)
     public void Setup(int damage, Color color)
     {
         if (tmp == null) tmp = GetComponent<TextMeshPro>();
@@ -28,18 +28,18 @@ public class DamageText : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            // ÅëÅë Æ¢´Â È¿°ú
+            // í†µí†µ íŠ€ëŠ” íš¨ê³¼
             float bounce = Mathf.Abs(Mathf.Sin(t * Mathf.PI * 2.5f)) * bounceHeight * (1f - t);
-            // À§·Î ¿Ã¶ó°¡¸é¼­ Æ¦
+            // ìœ„ë¡œ ì˜¬ë¼ê°€ë©´ì„œ íŠ
             transform.position = startPos + new Vector3(
                 0f,
                 t * riseSpeed * 0.5f + bounce,
                 0f
             );
-            // ÈÄ¹İºÎ ÆäÀÌµå¾Æ¿ô
+            // í›„ë°˜ë¶€ í˜ì´ë“œì•„ì›ƒ
             float alpha = t < 0.6f ? 1f : Mathf.Lerp(1f, 0f, (t - 0.6f) / 0.4f);
             tmp.color = new Color(tmp.color.r, tmp.color.g, tmp.color.b, alpha);
-            // Å©±â ÅëÅë
+            // í¬ê¸° í†µí†µ
             float scale = 1f + Mathf.Abs(Mathf.Sin(t * Mathf.PI * 3f)) * 0.3f * (1f - t);
             transform.localScale = Vector3.one * scale;
             yield return null;

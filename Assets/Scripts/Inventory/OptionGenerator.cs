@@ -52,23 +52,23 @@ public class OptionGenerator : MonoBehaviour
         {
             case OptionType.Attack:
                 value = Random.Range(3, 11);
-                desc = $"°ø°İ·Â +{value}";
+                desc = $"ê³µê²©ë ¥ +{value}";
                 break;
             case OptionType.AttackSpeed:
                 value = Random.Range(0.05f, 0.20f);
-                desc = $"°ø°İ¼Óµµ +{(value * 100).ToString("F0")}%";
+                desc = $"ê³µê²©ì†ë„ +{(value * 100).ToString("F0")}%";
                 break;
             case OptionType.Defense:
                 value = Random.Range(2, 8);
-                desc = $"¹æ¾î·Â +{value}";
+                desc = $"ë°©ì–´ë ¥ +{value}";
                 break;
             case OptionType.MoveSpeed:
                 value = Random.Range(0.2f, 1.0f);
-                desc = $"ÀÌµ¿¼Óµµ +{value.ToString("F1")}";
+                desc = $"ì´ë™ì†ë„ +{value.ToString("F1")}";
                 break;
             case OptionType.MissChanceReduce:
                 value = Random.Range(5f, 16f);
-                desc = $"¸íÁß·ü +{value.ToString("F0")}%";
+                desc = $"ëª…ì¤‘ë¥  +{value.ToString("F0")}%";
                 break;
         }
         return new ItemOption(type, value, desc);

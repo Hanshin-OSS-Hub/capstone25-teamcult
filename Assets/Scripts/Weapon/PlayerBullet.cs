@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerBullet : MonoBehaviour
 {
-    [Header("ÃÑ¾Ë ¼³Á¤")]
+    [Header("ì´ì•Œ ì„¤ì •")]
     public float damage;
     public float speed = 10f;
 
@@ -41,7 +41,7 @@ public class PlayerBullet : MonoBehaviour
                 float roll = Random.Range(0f, 100f);
                 if (roll < playerStats.GetEffectiveMissChance())
                 {
-                    LogManager.Instance.AddLog("[MISS] À½ÆÄ µğ¹öÇÁ·Î ÃÑ¾Ë ºø³ª°¨");
+                    LogManager.Instance.AddLog("[MISS] ìŒíŒŒ ë””ë²„í”„ë¡œ ì´ì•Œ ë¹—ë‚˜ê°");
                     return;
                 }
             }

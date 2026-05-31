@@ -4,7 +4,7 @@ using System.Collections;
 
 public class HeartPickupParticle : MonoBehaviour
 {
-    [Header("ÆÄÆ¼Å¬ ¼³Á¤")]
+    [Header("íŒŒí‹°í´ ì„¤ì •")]
     public int particleCount = 25;
     public float lifetime = 1.5f;
     public float riseSpeed = 150f;
@@ -15,7 +15,7 @@ public class HeartPickupParticle : MonoBehaviour
         Canvas targetCanvas = FindHeartCanvas();
         if (targetCanvas == null)
         {
-            Debug.LogWarning("Heart Canvas¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogWarning("Heart Canvasë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
         StartCoroutine(SpawnParticles(worldPosition, targetCanvas));
@@ -28,7 +28,7 @@ public class HeartPickupParticle : MonoBehaviour
         {
             if (c.name == "Heart Canvas") return c;
         }
-        // ¸øÃ£À¸¸é °¡Àå ³ôÀº sortingOrder Äµ¹ö½º ¹İÈ¯
+        // ëª»ì°¾ìœ¼ë©´ ê°€ì¥ ë†’ì€ sortingOrder ìº”ë²„ìŠ¤ ë°˜í™˜
         Canvas top = null;
         int maxOrder = -9999;
         foreach (var c in canvases)
@@ -60,7 +60,7 @@ public class HeartPickupParticle : MonoBehaviour
         {
             GameObject p = new GameObject("AshParticle");
             p.transform.SetParent(canvas.transform, false);
-            p.transform.SetAsLastSibling(); // ScreenEffectPanelº¸´Ù À§¿¡ ±×·ÁÁü
+            p.transform.SetAsLastSibling(); // ScreenEffectPanelë³´ë‹¤ ìœ„ì— ê·¸ë ¤ì§
 
             RectTransform rt = p.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);

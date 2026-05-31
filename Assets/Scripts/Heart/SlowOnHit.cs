@@ -11,7 +11,7 @@ public class SlowOnHit : MonoBehaviour
 
         if (other.GetComponent<SlowEffect>() == null)
         {
-            Debug.Log("[¾óÀ½ ÇÏÆ®] ½½·Î¿ì ºÎ¿©!");
+            Debug.Log("[ì–¼ìŒ í•˜íŠ¸] ìŠ¬ë¡œìš° ë¶€ì—¬!");
             other.gameObject.AddComponent<SlowEffect>();
         }
     }

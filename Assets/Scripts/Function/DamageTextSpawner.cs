@@ -15,7 +15,7 @@ public class DamageTextSpawner : MonoBehaviour
     {
         if (damageTextPrefab == null) return;
 
-        // »ìÂ¦ ·£´ı À§Ä¡
+        // ì‚´ì§ ëœë¤ ìœ„ì¹˜
         Vector3 spawnPos = position + new Vector3(Random.Range(-0.2f, 0.2f), 0.5f, 0f);
         GameObject obj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
 
@@ -23,8 +23,8 @@ public class DamageTextSpawner : MonoBehaviour
         if (dt != null)
         {
             Color color = Color.white;
-            if (isCrit) color = new Color(1f, 0.8f, 0f);   // Ä¡¸íÅ¸ ¡æ ³ë¶õ»ö
-            if (isBurn) color = new Color(1f, 0.4f, 0.1f); // È­»ó ¡æ ÁÖÈ²»ö
+            if (isCrit) color = new Color(1f, 0.8f, 0f);   // ì¹˜ëª…íƒ€ â†’ ë…¸ë€ìƒ‰
+            if (isBurn) color = new Color(1f, 0.4f, 0.1f); // í™”ìƒ â†’ ì£¼í™©ìƒ‰
             dt.Setup(damage, color);
         }
     }

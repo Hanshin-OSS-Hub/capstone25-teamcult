@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DashEnemy : MonoBehaviour
 {
-    [Header("ÀÌµ¿")]
+    [Header("ì´ë™")]
     public float detectRange = 8f;
     public float dashRange = 5f;
     public float stopDistance = 1f;
@@ -12,7 +12,7 @@ public class DashEnemy : MonoBehaviour
     public float dashSpeed = 7f;
     public float dashCooldown = 3f;
 
-    [Header("Ã¼·Â")]
+    [Header("ì²´ë ¥")]
     public int maxHealth = 30;
     private int currentHealth;
 
@@ -56,7 +56,7 @@ public class DashEnemy : MonoBehaviour
             }
         }
 
-        // ¹æÇâ ÀüÈ¯
+        // ë°©í–¥ ì „í™˜
         Vector3 scale = transform.localScale;
         if (player.position.x < transform.position.x)
             scale.x = -Mathf.Abs(scale.x);

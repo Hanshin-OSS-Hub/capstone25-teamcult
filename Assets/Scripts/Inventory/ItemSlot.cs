@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; // ÀÌ ÁÙÀÌ ¹İµå½Ã ÇÊ¿äÇÕ´Ï´Ù!
+using UnityEngine.EventSystems; // ì´ ì¤„ì´ ë°˜ë“œì‹œ í•„ìš”í•©ë‹ˆë‹¤!
 
-// ÀÎÅÍÆäÀÌ½º 2°³ Ãß°¡ (IPointerEnterHandler, IPointerExitHandler)
+// ì¸í„°í˜ì´ìŠ¤ 2ê°œ ì¶”ê°€ (IPointerEnterHandler, IPointerExitHandler)
 public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image icon;
@@ -30,21 +30,21 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (item != null)
         {
             TabController.instance.EquipItem(item, this);
-            // ÀåÂøÇØ¼­ ¾ÆÀÌÅÛÀÌ »ç¶óÁö¸é ÅøÆÁµµ ²¨ÁÜ
+            // ì¥ì°©í•´ì„œ ì•„ì´í…œì´ ì‚¬ë¼ì§€ë©´ íˆ´íŒë„ êº¼ì¤Œ
             TooltipController.instance.HideTooltip();
         }
     }
 
-    // --- ¸¶¿ì½º°¡ ½½·Ô¿¡ µé¾î¿ÔÀ» ¶§ ---
+    // --- ë§ˆìš°ìŠ¤ê°€ ìŠ¬ë¡¯ì— ë“¤ì–´ì™”ì„ ë•Œ ---
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item != null) // ¾ÆÀÌÅÛÀÌ ÀÖÀ» ¶§¸¸ ÅøÆÁ Ç¥½Ã
+        if (item != null) // ì•„ì´í…œì´ ìˆì„ ë•Œë§Œ íˆ´íŒ í‘œì‹œ
         {
             TooltipController.instance.ShowTooltip(item, true);
         }
     }
 
-    // --- ¸¶¿ì½º°¡ ½½·Ô¿¡¼­ ³ª°¬À» ¶§ ---
+    // --- ë§ˆìš°ìŠ¤ê°€ ìŠ¬ë¡¯ì—ì„œ ë‚˜ê°”ì„ ë•Œ ---
     public void OnPointerExit(PointerEventData eventData)
     {
         TooltipController.instance.HideTooltip();

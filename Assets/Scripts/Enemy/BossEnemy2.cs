@@ -3,24 +3,24 @@ using UnityEngine;
 
 public class BossEnemy2 : MonoBehaviour
 {
-    [Header("ÀÌµ¿")]
+    [Header("ì´ë™")]
     public float detectRange = 12f;
     public float stopDistance = 4f;
     public float moveSpeed = 1.5f;
 
-    [Header("ÀÏ¹İ °ø°İ")]
+    [Header("ì¼ë°˜ ê³µê²©")]
     public GameObject bulletPrefab;
     public float attackCooldown = 2f;
     public float spreadAngle = 25f;
 
-    [Header("¸¶¹ıÁø ÆĞÅÏ")]
+    [Header("ë§ˆë²•ì§„ íŒ¨í„´")]
     public GameObject magicCirclePrefab;
     public float magicCooldown = 5f;
     public float magicWarningTime = 1.5f;
     public int magicDamage = 25;
-    public float triangleRadius = 2f; // »ï°¢Çü Å©±â
+    public float triangleRadius = 2f; // ì‚¼ê°í˜• í¬ê¸°
 
-    [Header("Ã¼·Â")]
+    [Header("ì²´ë ¥")]
     public int maxHealth = 200;
     private int currentHealth;
 
@@ -86,13 +86,13 @@ public class BossEnemy2 : MonoBehaviour
 
         Vector3 center = player.position;
 
-        // »ï°¢Çü 3°³ À§Ä¡ °è»ê
-        // À§, ÁÂÇÏ, ¿ìÇÏ
+        // ì‚¼ê°í˜• 3ê°œ ìœ„ì¹˜ ê³„ì‚°
+        // ìœ„, ì¢Œí•˜, ìš°í•˜
         Vector3[] positions = new Vector3[]
         {
-            center + new Vector3(0f, triangleRadius, 0f),                                          // À§
-            center + new Vector3(-triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f),            // ÁÂÇÏ
-            center + new Vector3( triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f)             // ¿ìÇÏ
+            center + new Vector3(0f, triangleRadius, 0f),                                          // ìœ„
+            center + new Vector3(-triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f),            // ì¢Œí•˜
+            center + new Vector3( triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f)             // ìš°í•˜
         };
 
         foreach (Vector3 pos in positions)
