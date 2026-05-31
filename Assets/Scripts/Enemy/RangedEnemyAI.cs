@@ -20,6 +20,7 @@ public class RangedEnemy : MonoBehaviour
     {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
+        lastAttackTime = Time.time - attackCooldown + Mathf.Min(attackCooldown, 1.5f);
     }
 
     void Update()
