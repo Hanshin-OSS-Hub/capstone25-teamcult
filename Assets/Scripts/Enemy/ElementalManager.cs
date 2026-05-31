@@ -5,6 +5,7 @@ using System.Collections;
 
 public class ElementalManager : MonoBehaviour
 {
+    public static ElementalManager Instance;
     [Header("References")]
     public PlayerHealth playerHealth;
     public Image screenEffectImage;
@@ -57,6 +58,13 @@ public class ElementalManager : MonoBehaviour
 
     void Start()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
         InitScreenEffect();
         InitHeartSprite();
         allMaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);

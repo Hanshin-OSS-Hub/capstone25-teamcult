@@ -35,7 +35,14 @@ public class SFXManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         sfxDictionary = new Dictionary<SFXType, SFXData>();
         
         foreach (var sfx in sfxList)

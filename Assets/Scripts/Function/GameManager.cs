@@ -28,8 +28,13 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
 
         Time.timeScale = 1;
 
@@ -64,7 +69,7 @@ public class GameManager : MonoBehaviour
         isLive = false;
         Time.timeScale = 0f;
 
-        // Á×À¸¸é ·± µ¥ÀÌÅÍ ÃÊ±âÈ­ (¸¶¼®Àº À¯Áö)
+        // ì£½ìœ¼ë©´ ëŸ° ë°ì´í„° ì´ˆê¸°í™” (ë§ˆì„ì€ ìœ ì§€)
         if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
 
         if (gameOverPanel != null)
@@ -74,7 +79,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("[GameManager] gameOverPanel ½½·ÔÀÌ ºñ¾îÀÖÀ½!");
+            Debug.LogError("[GameManager] gameOverPanel ìŠ¬ë¡¯ì´ ë¹„ì–´ìˆìŒ!");
         }
 
         if (PlayerStats.instance != null)
@@ -87,10 +92,10 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log($"°ÔÀÓ ¿À¹ö! »ıÁ¸½Ã°£: {gameTime:F1}ÃÊ, Ã³Ä¡ ¼ö: {killCount}");
+        Debug.Log($"ê²Œì„ ì˜¤ë²„! ìƒì¡´ì‹œê°„: {gameTime:F1}ì´ˆ, ì²˜ì¹˜ ìˆ˜: {killCount}");
     }
 
-    // Ã³À½ºÎÅÍ
+    // ì²˜ìŒë¶€í„°
     public void Retry()
     {
         Time.timeScale = 1f;
@@ -99,7 +104,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // ¸ŞÀÎ¸Ş´º
+    // ë©”ì¸ë©”ë‰´
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;

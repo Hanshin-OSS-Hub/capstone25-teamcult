@@ -28,18 +28,16 @@ public class LogManager : MonoBehaviour {
     private Coroutine scrollCoroutine;
 
     void Awake() {
-        if (Instance == null) {
-            Instance = this;
-
-            DontDestroyOnLoad(gameObject);
-
-            ClearLog();
-            ApplyLogWindowVisibility();
-        }
-        else {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        ClearLog();
+        ApplyLogWindowVisibility();
     }
 
     private void Start() {
