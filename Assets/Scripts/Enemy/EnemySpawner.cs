@@ -86,6 +86,11 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField] private int debugFloor = 1;
 
     private Transform player;
+    private bool hasSpawnedSoundEnemyInRoom;
+
+    void Awake() {
+        NormalizeSoundEnemyOrder();
+    }
 
     void Start() {
         GameObject p = GameObject.Find("Player");
@@ -114,6 +119,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public List<GameObject> SpawnByRoomData(RoomData roomData, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> spawnedList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 호출됨 / CurrentFloor: {currentFloor}, SpawnCenter: {spawnCenter}");
 
@@ -182,6 +188,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public List<GameObject> SpawnEnemy(int cnt, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> enemyList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         if (cnt <= 0) {
             return enemyList;
@@ -285,6 +292,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public List<GameObject> SpawnSpecialEnemies(RoomType roomType, int cnt, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> enemyList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         Debug.Log($"<color=cyan><b>[SpawnSpecialEnemies]</b></color> 호출됨 / Type: {roomType}, Count: {cnt}, CurrentFloor: {currentFloor}");
 
@@ -391,17 +399,92 @@ public class EnemySpawner : MonoBehaviour {
             return null;
         }
 
-        int randomIndex = Random.Range(0, prefabs.Count);
+        int maxExclusive = prefabs.Count;
+        bool soundEnemyAtEnd = IsSoundEnemyPrefab(prefabs[prefabs.Count - 1]);
+        if (hasSpawnedSoundEnemyInRoom && soundEnemyAtEnd) {
+            maxExclusive = Mathf.Max(1, prefabs.Count - 1);
+            if (prefabs.Count == 1) {
+                Debug.LogWarning("[EnemySpawner] SoundEnemy 중복 제한 예외: 후보가 1개뿐이라 재스폰 허용됨.");
+            }
+        }
+
+        int randomIndex = Random.Range(0, maxExclusive);
         GameObject enemyPrefab = prefabs[randomIndex];
 
         if (enemyPrefab == null) {
             return null;
         }
 
+        if (IsSoundEnemyPrefab(enemyPrefab)) {
+            if (hasSpawnedSoundEnemyInRoom) {
+                Debug.LogWarning("[EnemySpawner] SoundEnemy 중복 제한 예외: SoundEnemy가 다시 선택되었습니다.");
+            }
+            hasSpawnedSoundEnemyInRoom = true;
+        }
+
         Vector3 spawnPos = GetRandomSpawnPosition(spawnCenter);
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
 
         return enemy;
+    }
+
+    private bool IsSoundEnemyPrefab(GameObject prefab) {
+        return prefab != null && prefab.GetComponent<SoundEnemy>() != null;
+    }
+
+    private void NormalizeSoundEnemyOrder() {
+        if (enemyPrefabs != null) {
+            MoveSoundEnemyToEnd(enemyPrefabs);
+        }
+
+        for (int i = 0; i < normalEnemyGroups.Count; i++) {
+            if (normalEnemyGroups[i] == null) continue;
+            if (normalEnemyGroups[i].enemyPrefabs == null) continue;
+            MoveSoundEnemyToEnd(normalEnemyGroups[i].enemyPrefabs);
+        }
+
+        for (int i = 0; i < specialRoomEnemyGroups.Count; i++) {
+            SpecialRoomEnemyGroup roomGroup = specialRoomEnemyGroups[i];
+            if (roomGroup == null || roomGroup.floorEnemyGroups == null) continue;
+
+            for (int j = 0; j < roomGroup.floorEnemyGroups.Count; j++) {
+                FloorEnemyPrefabGroup floorGroup = roomGroup.floorEnemyGroups[j];
+                if (floorGroup == null || floorGroup.enemyPrefabs == null) continue;
+                MoveSoundEnemyToEnd(floorGroup.enemyPrefabs);
+            }
+        }
+    }
+
+    private void MoveSoundEnemyToEnd(GameObject[] prefabs) {
+        int soundIndex = -1;
+        for (int i = 0; i < prefabs.Length; i++) {
+            if (IsSoundEnemyPrefab(prefabs[i])) {
+                soundIndex = i;
+                break;
+            }
+        }
+
+        if (soundIndex < 0 || soundIndex == prefabs.Length - 1) return;
+
+        GameObject temp = prefabs[prefabs.Length - 1];
+        prefabs[prefabs.Length - 1] = prefabs[soundIndex];
+        prefabs[soundIndex] = temp;
+    }
+
+    private void MoveSoundEnemyToEnd(List<GameObject> prefabs) {
+        int soundIndex = -1;
+        for (int i = 0; i < prefabs.Count; i++) {
+            if (IsSoundEnemyPrefab(prefabs[i])) {
+                soundIndex = i;
+                break;
+            }
+        }
+
+        if (soundIndex < 0 || soundIndex == prefabs.Count - 1) return;
+
+        GameObject temp = prefabs[prefabs.Count - 1];
+        prefabs[prefabs.Count - 1] = prefabs[soundIndex];
+        prefabs[soundIndex] = temp;
     }
 
     private Vector3 GetRandomSpawnPosition(Vector3 spawnCenter) {
