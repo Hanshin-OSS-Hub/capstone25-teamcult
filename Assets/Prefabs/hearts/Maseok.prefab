@@ -81,7 +81,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -2094805801
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 100
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3410496089979405422, guid: 4ec8e7cb35561c7478f1852f65aace4d, type: 3}
@@ -106,6 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e28bdad005e376847a856c550a2c4b61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaSeok
+  magicstoneItem: {fileID: 11400000, guid: 1757a4f967d01ed4fa95d270287235d6, type: 2}
 --- !u!61 &1860873254977476301
 BoxCollider2D:
   m_ObjectHideFlags: 0

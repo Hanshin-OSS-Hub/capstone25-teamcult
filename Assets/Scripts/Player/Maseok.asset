@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58450d4237467af4e9828a2dc728e98f, type: 3}
+  m_Name: Maseok
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemName: "\uB9C8\uC11D "
+  itemDesc: "\uB2A5\uB825\uC744 \uD574\uAE08\uD558\uB294 \uB370 \uC0AC\uC6A9\uB418\uB294
+    \uACB0\uC815. O\uD0A4\uB97C \uB20C\uB7EC \uB9C8\uC11D \uD398\uC774\uC9C0\uC5D0\uC11C
+    \uB2A5\uB825\uC744 \uD574\uAE08\uD560 \uC218 \uC788\uB2E4."
+  icon: {fileID: 7475517122152442389, guid: d25462f105abdd9498e5badb5c1f181d, type: 3}
+  itemType: 5
+  weaponType: 0
+  tier: 0
+  bonusAttack: 0
+  bonusDefense: 0
+  bonusHealth: 0
+  prefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
+  damage: 0
+  speed: 0
+  lifeTime: 0
+  cooldown: 0
+  weaponAnim: {fileID: 0}
+  elementType: 
+  currentOptions: []
