@@ -28,7 +28,8 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
         else
         {
-            Debug.LogError("EquipSlot에 Icon Image가 연결되지 않았습니다! 인스펙터를 확인해주세요.");
+            //Debug.LogError("EquipSlot에 Icon Image가 연결되지 않았습니다! 인스펙터를 확인해주세요.");
+            Debug.Log("<color=orange>주의!</color> EquipSlot에 Icon Image가 연결되지 않았습니다! 인스펙터를 확인해주세요.");
         }
     }
 
