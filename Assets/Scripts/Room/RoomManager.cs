@@ -691,6 +691,10 @@ public class RoomManager : MonoBehaviour {
             return;
         }
 
+        AppendStartupLog("<color=cyan><b>[SpecialRoom]</b></color> 특수방 배치 디버그");
+        AppendStartupLog($"- 생성 가능한 특수방 타입 수: {creatableSpecialRoomTypes.Count}");
+        AppendStartupLog($"- 전체 Normal 후보 수: {normalRoomPositions.Count}");
+
         List<Vector2Int> nonAdjacentCandidates = new List<Vector2Int>();
         List<Vector2Int> adjacentCandidates = new List<Vector2Int>();
 
@@ -705,10 +709,20 @@ public class RoomManager : MonoBehaviour {
             }
         }
 
+        AppendStartupLog($"- 인접(거리 1) Normal 후보 수: {adjacentCandidates.Count}");
+        AppendStartupLog($"- 비인접 Normal 후보 수: {nonAdjacentCandidates.Count}");
+
         // 후보가 충분하면 시작방 인접(거리 1) Normal 방을 특수방 후보에서 제외
         List<Vector2Int> specialRoomCandidates = nonAdjacentCandidates.Count >= creatableSpecialRoomTypes.Count
             ? nonAdjacentCandidates
             : normalRoomPositions;
+
+        bool excludedAdjacent = ReferenceEquals(specialRoomCandidates, nonAdjacentCandidates);
+        string exclusionReason = excludedAdjacent
+            ? "비인접 후보 수가 충분해서 인접 후보 제외"
+            : "비인접 후보만으로 부족해서 인접 후보 포함";
+        AppendStartupLog($"- 인접 후보 제외 적용: {(excludedAdjacent ? "예" : "아니오")} ({exclusionReason})");
+        AppendStartupLog($"- 최종 특수방 후보 수: {specialRoomCandidates.Count}");
 
         ShuffleList(creatableSpecialRoomTypes);
 
@@ -729,16 +743,17 @@ public class RoomManager : MonoBehaviour {
 
             Vector2Int specialRoomPos = specialRoomCandidates[selectedIndex];
             specialRoomCandidates.RemoveAt(selectedIndex);
+            int selectedDistance = GetRoomDistanceByCreationOrder(distanceByCreationOrder, specialRoomPos);
 
             rooms[specialRoomPos.x, specialRoomPos.y].type = specialRoomType;
             rooms[specialRoomPos.x, specialRoomPos.y].monsterCount = 0;
 
             createdCount++;
 
-            AppendStartupLog($"<color=magenta><b>[SpecialRoom]</b></color> {RoomTypeHelper.GetKoreanName(specialRoomType)} 특수방 생성 위치: {specialRoomPos}");
+            AppendStartupLog($"- 선택 결과: {RoomTypeHelper.GetKoreanName(specialRoomType)} -> {specialRoomPos}, 거리(생성순서): {selectedDistance}");
         }
 
-        AppendStartupLog($"<color=cyan><b>[SpecialRoom]</b></color> 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
+        AppendStartupLog($"- 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
     }
 
     Dictionary<Vector2Int, int> BuildRoomDistanceByCreationOrder(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub) {
