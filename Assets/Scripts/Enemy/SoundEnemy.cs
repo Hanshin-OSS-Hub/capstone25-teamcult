@@ -1,21 +1,25 @@
+using System.Collections;
 using UnityEngine;
-
 public class SoundEnemy : RangedEnemy
 {
     [SerializeField] private GameObject soundWavePrefab;
+    public float waveDelay = 0.2f; // 애니 시작 후 음파 나오기까지 딜레이(초)
     private SoundWaveController _waveController;
+    private Animator soundAnim;
 
     protected override void Start()
     {
         base.Start();
+
+        soundAnim = GetComponent<Animator>();
+        if (soundAnim != null) soundAnim.enabled = false;
+
         if (soundWavePrefab != null)
         {
             GameObject waveObj = Instantiate(soundWavePrefab, transform.position, Quaternion.identity);
             waveObj.transform.SetParent(this.transform);
             _waveController = waveObj.GetComponent<SoundWaveController>();
         }
-
-        // [팀원 작업 반영] 몬스터 사망 시 회피율 복구 이벤트 연결
         EnemyHealth enemyHealth = GetComponent<EnemyHealth>();
         if (enemyHealth != null)
             enemyHealth.OnDeath += RestoreMissChance;
@@ -23,28 +27,46 @@ public class SoundEnemy : RangedEnemy
 
     protected override void Shoot()
     {
-        LogManager.Instance.AddLog("사운드 shot()");
-        
-        if (_waveController != null)
+        StopAllCoroutines();
+        StartCoroutine(AttackRoutine());
+    }
+
+    IEnumerator AttackRoutine()
+    {
+        // 1. 애니메이션 먼저 (부모의 attackStateName 사용)
+        if (soundAnim != null)
         {
+            soundAnim.enabled = true;
+            soundAnim.Rebind();
+            soundAnim.Play(attackStateName, 0, 0f);
+            soundAnim.Update(0f);
+        }
+
+        // 2. 잠깐 기다렸다가 음파 발사
+        yield return new WaitForSeconds(waveDelay);
+
+        LogManager.Instance.AddLog("사운드 shot()");
+
+        if (_waveController != null)
             _waveController.CreateWave();
-        }
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySFX(SFXType.EnemyAttack_Mage);
+        if (BattleStateBGM.Instance != null)
+            BattleStateBGM.Instance.TriggerSonicWobble(1.5f);
 
-        // [유저님 작업 반영] 공격 사운드 및 공감각적 BGM 울렁임 효과
-        if (SFXManager.Instance != null) {
-            SFXManager.Instance.PlaySFX(SFXType.EnemyAttack_Mage); 
-        }
-
-        if (BattleStateBGM.Instance != null) {
-            BattleStateBGM.Instance.TriggerSonicWobble(1.5f); 
+        // 3. 애니 끝나면 끄기
+        if (soundAnim != null)
+        {
+            float len = soundAnim.GetCurrentAnimatorStateInfo(0).length;
+            float remaining = len - waveDelay;
+            if (remaining > 0) yield return new WaitForSeconds(remaining);
+            soundAnim.enabled = false;
         }
     }
 
-    // [팀원 작업 반영] 회피율 복구 함수
     private void RestoreMissChance()
     {
         if (PlayerStats.instance == null || _waveController == null) return;
-
         float applied = _waveController.GetAppliedMissChance();
         if (applied > 0)
         {

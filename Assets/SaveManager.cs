@@ -1,13 +1,11 @@
 using UnityEngine;
 using System.IO;
 using System.Collections;
-
 [System.Serializable]
 public class RunSaveData
 {
     // PlayerHealth
     public float maxHealth;
-
     // ElementalManager
     public bool hasFireHeart;
     public bool hasIceHeart;
@@ -17,22 +15,17 @@ public class RunSaveData
     public float abilityTimer;
     public int lightningHitCounter;
 }
-
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager instance;
-
     private string savePath => Application.persistentDataPath + "/run_save.json";
-
     public PlayerHealth playerHealth;
     public ElementalManager elementalManager;
-
     void Awake()
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
     }
-
     void Start()
     {
         int isContinue = PlayerPrefs.GetInt("IsContinue", 0);
@@ -41,13 +34,11 @@ public class SaveManager : MonoBehaviour
             StartCoroutine(LoadAfterFrame());
         }
     }
-
     IEnumerator LoadAfterFrame()
     {
         yield return null;
         LoadRun();
     }
-
     public void SaveRun()
     {
         RunSaveData data = new RunSaveData
@@ -61,12 +52,10 @@ public class SaveManager : MonoBehaviour
             abilityTimer = elementalManager.abilityTimer,
             lightningHitCounter = elementalManager.lightningHitCounter
         };
-
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
         Debug.Log("[SaveManager] 저장 완료");
     }
-
     public void LoadRun()
     {
         if (!File.Exists(savePath))
@@ -74,13 +63,12 @@ public class SaveManager : MonoBehaviour
             Debug.Log("[SaveManager] 저장 파일 없음");
             return;
         }
-
         string json = File.ReadAllText(savePath);
         RunSaveData data = JsonUtility.FromJson<RunSaveData>(json);
 
-        // HP 풀로 시작
+        // maxHealth는 복원하되, 시작 체력은 3칸(24)으로 고정
         playerHealth.maxHealth = data.maxHealth;
-        playerHealth.currentHealth = playerHealth.maxHealth;
+        playerHealth.currentHealth = 24f;
         playerHealth.UpdateUI();
 
         // ElementalManager 복원
@@ -90,10 +78,8 @@ public class SaveManager : MonoBehaviour
             elementalManager.ActivateAbility(data.currentType);
             elementalManager.abilityTimer = data.abilityTimer;
         }
-
-        Debug.Log("[SaveManager] 불러오기 완료 - 풀피로 시작");
+        Debug.Log("[SaveManager] 불러오기 완료 - 3칸으로 시작");
     }
-
     public void DeleteRun()
     {
         if (File.Exists(savePath))
@@ -102,6 +88,5 @@ public class SaveManager : MonoBehaviour
             Debug.Log("[SaveManager] 런 데이터 삭제");
         }
     }
-
     public bool HasSavedRun() => File.Exists(savePath);
 }

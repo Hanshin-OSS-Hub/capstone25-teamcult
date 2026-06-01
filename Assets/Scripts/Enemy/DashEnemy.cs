@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-
 public class DashEnemy : MonoBehaviour
 {
     [Header("이동")]
@@ -11,18 +10,31 @@ public class DashEnemy : MonoBehaviour
     public float chaseSpeed = 5f;
     public float dashSpeed = 7f;
     public float dashCooldown = 3f;
+    public float prepareTime = 0.4f;
+
+    [Header("공격")]
+    public int damage = 10;
 
     [Header("체력")]
     public int maxHealth = 30;
     private int currentHealth;
-
     private Transform player;
+    private PlayerHealth playerHealth;
+    private EnemyStats stats;
+    private EnemyHealth enemyHealth;
+    private Animator anim;
     private bool isDashing = false;
+    private bool hasHit = false;
     private float lastDashTime;
 
     void Start()
     {
         currentHealth = maxHealth;
+        anim = GetComponent<Animator>();
+        stats = GetComponent<EnemyStats>();
+        enemyHealth = GetComponent<EnemyHealth>();
+        if (stats != null) damage = stats.damage;
+
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
@@ -30,13 +42,16 @@ public class DashEnemy : MonoBehaviour
             rb.freezeRotation = true;
         }
         GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null) player = p.transform;
+        if (p != null)
+        {
+            player = p.transform;
+            playerHealth = p.GetComponent<PlayerHealth>();
+        }
     }
 
     void Update()
     {
         if (player == null || isDashing) return;
-
         float distance = Vector2.Distance(transform.position, player.position);
 
         if (distance <= detectRange)
@@ -56,6 +71,11 @@ public class DashEnemy : MonoBehaviour
             }
         }
 
+        FacePlayer();
+    }
+
+    void FacePlayer()
+    {
         // 방향 전환
         Vector3 scale = transform.localScale;
         if (player.position.x < transform.position.x)
@@ -63,35 +83,55 @@ public class DashEnemy : MonoBehaviour
         else
             scale.x = Mathf.Abs(scale.x);
         transform.localScale = scale;
+
+        // 체력바 방향 보정 (적이 뒤집혀도 체력바는 똑바로)
+        if (enemyHealth != null && enemyHealth.hpSlider != null)
+        {
+            Vector3 hpScale = enemyHealth.hpSlider.transform.localScale;
+            hpScale.x = (transform.localScale.x < 0) ? -Mathf.Abs(hpScale.x) : Mathf.Abs(hpScale.x);
+            enemyHealth.hpSlider.transform.localScale = hpScale;
+        }
     }
 
     IEnumerator Dash()
     {
         isDashing = true;
+        hasHit = false;
         lastDashTime = Time.time;
 
-        yield return new WaitForSeconds(0.4f);
+        if (anim != null) anim.SetTrigger("PrepareAttack");
+        yield return new WaitForSeconds(prepareTime);
 
+        if (anim != null) anim.SetTrigger("ExecuteAttack");
+
+        Vector2 dashDir = (player.position - transform.position).normalized;
+        float dashTimer = 0f;
         float dashDuration = 0.5f;
-        float timer = 0f;
-
-        while (timer < dashDuration)
+        while (dashTimer < dashDuration)
         {
-            float distance = Vector2.Distance(transform.position, player.position);
-
-            if (distance <= stopDistance)
-                break;
-
-            transform.position = Vector2.MoveTowards(
-                transform.position,
-                player.position,
-                dashSpeed * Time.deltaTime
-            );
-            timer += Time.deltaTime;
+            transform.position += (Vector3)(dashDir * dashSpeed * Time.deltaTime);
+            dashTimer += Time.deltaTime;
             yield return null;
         }
 
         isDashing = false;
+    }
+
+    void OnTriggerEnter2D(Collider2D other) { TryHit(other); }
+    void OnTriggerStay2D(Collider2D other) { TryHit(other); }
+
+    void TryHit(Collider2D other)
+    {
+        if (!isDashing || hasHit) return;
+        if (!other.CompareTag("Player")) return;
+
+        if (playerHealth != null)
+        {
+            int dmg = (stats != null) ? stats.damage : damage;
+            playerHealth.TakeDamage(dmg);
+            hasHit = true;
+            Debug.Log("돌진 적 공격!");
+        }
     }
 
     public void TakeDamage(int damage)

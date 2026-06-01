@@ -1,15 +1,13 @@
-ï»¿using System.Collections;
 using UnityEngine;
-public class MeleeEnemy : MonoBehaviour
+public class ShieldEnemy : MonoBehaviour
 {
-    [Header("ì„¤ì •")]
+    [Header("¼³Á¤")]
     public float detectRange = 25f;
     public float attackRange = 2f;
     public float attackCooldown = 1f;
     public float moveSpeed;
     public int damage;
-    [SerializeField] private string attackStateName = "Attack"; // ê³µê²© ì• ë‹ˆ ìƒíƒœ ì´ë¦„
-    public float damageDelay = 0.2f; // ì¹¼ íœ˜ë‘ë¥´ê³  ë°ë¯¸ì§€ ë“¤ì–´ê°€ê¸°ê¹Œì§€ ë”œë ˆì´(ì´ˆ)
+    public float damageDelay = 0.2f; // °ø°İ ¾Ö´Ï ÈÄ µ¥¹ÌÁö±îÁö µô·¹ÀÌ
     private Transform player;
     private float lastAttackTime;
     private PlayerHealth playerHealth;
@@ -23,7 +21,6 @@ public class MeleeEnemy : MonoBehaviour
         stats = GetComponent<EnemyStats>();
         enemyHealth = GetComponent<EnemyHealth>();
         anim = GetComponent<Animator>();
-        if (anim != null) anim.enabled = false; // í‰ì†Œì—” êº¼ë‘ê¸°
 
         if (stats != null)
         {
@@ -45,6 +42,9 @@ public class MeleeEnemy : MonoBehaviour
 
         if (distance <= attackRange)
         {
+            // °ø°İ ¹üÀ§ = Á¤Áö
+            if (anim != null) anim.SetBool("isWalking", false);
+
             if (!hasSpotted)
             {
                 hasSpotted = true;
@@ -59,9 +59,12 @@ public class MeleeEnemy : MonoBehaviour
         }
         else if (distance <= detectRange)
         {
+            // ÃßÀû = °È±â
+            if (anim != null) anim.SetBool("isWalking", true);
+
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
-            // ë°©í–¥ ë°˜ì „ + ì²´ë ¥ë°” ë³´ì •
+            // ¹æÇâ ¹İÀü + Ã¼·Â¹Ù º¸Á¤
             if (player.position.x < transform.position.x)
             {
                 transform.localScale = new Vector3(-1, 1, 1);
@@ -75,42 +78,28 @@ public class MeleeEnemy : MonoBehaviour
                     enemyHealth.hpSlider.transform.localScale = new Vector3(1, 1, 1);
             }
         }
+        else
+        {
+            if (anim != null) anim.SetBool("isWalking", false);
+        }
     }
 
     void Attack()
     {
-        StopAllCoroutines();
-        StartCoroutine(AttackRoutine());
+        // °ø°İ ¾Ö´Ï Æ®¸®°Å (enabled ¾È ²û)
+        if (anim != null) anim.SetTrigger("Attack");
+
+        // µ¥¹ÌÁö´Â »ìÂ¦ µÚ¿¡
+        Invoke(nameof(DealDamage), damageDelay);
     }
 
-    IEnumerator AttackRoutine()
+    void DealDamage()
     {
-        // 1. ì¹¼ íœ˜ë‘ë¥´ëŠ” ì• ë‹ˆ ë¨¼ì €
-        if (anim != null)
-        {
-            anim.enabled = true;
-            anim.Rebind();
-            anim.Play(attackStateName, 0, 0f);
-            anim.Update(0f);
-        }
-
-        // 2. ì¹¼ì´ ë‹¿ëŠ” íƒ€ì´ë°ì— ë°ë¯¸ì§€
-        yield return new WaitForSeconds(damageDelay);
-
         if (playerHealth != null)
         {
             int dmg = (stats != null) ? stats.damage : damage;
             playerHealth.TakeDamage(dmg);
-            Debug.Log("ê·¼ê±°ë¦¬ ì  ê³µê²©!");
-        }
-
-        // 3. ì• ë‹ˆ ëë‚˜ë©´ ë„ê¸°
-        if (anim != null)
-        {
-            float len = anim.GetCurrentAnimatorStateInfo(0).length;
-            float remaining = len - damageDelay;
-            if (remaining > 0) yield return new WaitForSeconds(remaining);
-            anim.enabled = false;
+            Debug.Log("¹æÆĞ Àû °ø°İ!");
         }
     }
 

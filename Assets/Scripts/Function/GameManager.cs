@@ -2,27 +2,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
     [Header("Game Control")]
     public bool isLive = true;
     public bool isUIOpen = false;
     public float gameTime;
     public float maxGameTime = 20 * 60f;
     public int killCount = 0;
-
     [Header("UI References")]
     public TMP_Text timerText;
     public GameObject gameOverPanel;
-    public Button btnRestart;
-    public Button btnMainMenu;
-
     [Header("Scene Names")]
     public string mainMenuSceneName = "MainMenu";
-
     [Header("Revive")]
     public int reviveCount = 0;
 
@@ -30,13 +23,7 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
-
         Time.timeScale = 1;
-
-        if (btnRestart != null)
-            btnRestart.onClick.AddListener(Retry);
-        if (btnMainMenu != null)
-            btnMainMenu.onClick.AddListener(GoToMainMenu);
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
     }
@@ -48,9 +35,7 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R)) Retry();
             return;
         }
-
         gameTime += Time.deltaTime;
-
         if (timerText != null)
         {
             int min = (int)(gameTime / 60);
@@ -64,8 +49,7 @@ public class GameManager : MonoBehaviour
         isLive = false;
         Time.timeScale = 0f;
 
-        // 죽으면 런 데이터 초기화 (마석은 유지)
-        if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
+        // 세이브는 지우지 않음 (Continue를 위해 유지)
 
         if (gameOverPanel != null)
         {
@@ -86,16 +70,16 @@ public class GameManager : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         Debug.Log($"게임 오버! 생존시간: {gameTime:F1}초, 처치 수: {killCount}");
     }
 
-    // 처음부터
+    // 처음부터 (세이브 삭제하고 새로)
     public void Retry()
     {
         Time.timeScale = 1f;
         reviveCount = 0;
         if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
+        PlayerPrefs.SetInt("IsContinue", 0);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -104,7 +88,8 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         reviveCount = 0;
-        if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
+        // 세이브는 유지 (메인에서 이어하기 가능하게). 지우려면 아래 주석 해제
+        // if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
         SceneManager.LoadScene(mainMenuSceneName);
     }
 

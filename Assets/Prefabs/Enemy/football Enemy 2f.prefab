@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: -2479722704769909259}
   - component: {fileID: 2357294865263631128}
   m_Layer: 0
-  m_Name: Dash Enemy
+  m_Name: football Enemy 2f
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -370,7 +370,7 @@ Transform:
   m_GameObject: {fileID: 7575059051696297546}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.354, y: 1.031, z: 0}
+  m_LocalPosition: {x: 0, y: 1.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -426,11 +426,11 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2683850483619911766, guid: 654634ae0b7fa1f419ab1cf3b396f6da, type: 3}
+  m_Sprite: {fileID: 2841489990555321664, guid: 111d0dbc3aa981445928cb74c2f738ee, type: 3}
   m_Color: {r: 1, g: 0.9716981, b: 0.99039453, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 1
+  m_DrawMode: 0
   m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -497,17 +497,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0007969141, y: 0.018515587}
+  m_Offset: {x: -0.011998653, y: 0.9781953}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
-    drawMode: 1
+    drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.0122378, y: 2.0244763}
+  m_Size: {x: 1.4065728, y: 1.7600315}
   m_EdgeRadius: 0
 --- !u!114 &1632963202285371723
 MonoBehaviour:
@@ -565,9 +565,11 @@ MonoBehaviour:
   dashRange: 5
   stopDistance: 1
   moveSpeed: 3
-  chaseSpeed: 5
-  dashSpeed: 6
-  dashCooldown: 3
+  chaseSpeed: 2
+  dashSpeed: 10
+  dashCooldown: 2
+  prepareTime: 0.4
+  damage: 10
   maxHealth: 30
 --- !u!95 &2357294865263631128
 Animator:
@@ -579,7 +581,7 @@ Animator:
   m_GameObject: {fileID: 7575059051696297546}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 10fcb7a5bb39e434e9a15a88ef617be6, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2494e59ed4852dc4fa2fe00b602761b2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -702,7 +704,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.06, y: 1.29}
+  m_AnchoredPosition: {x: 0.02, y: 2.07}
   m_SizeDelta: {x: 2, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8540203242986734407

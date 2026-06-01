@@ -16,9 +16,6 @@ public class EnemyHealth : MonoBehaviour
     public Slider hpSlider;
     public TMP_Text hpText;
 
-    [Header("플로팅 효과")]
-    public GameObject damageTextPrefab;
-
     [Header("마석")]
     public GameObject maSeokPrefab;
     [Range(0f, 100f)]
@@ -59,9 +56,6 @@ public class EnemyHealth : MonoBehaviour
 
     public bool IsInvincible() => isInvincible;
 
-    // =========================================================
-    // ★ 소리 재생 전용 가상(virtual) 함수 
-    // =========================================================
     protected virtual void PlayHitSound()
     {
         if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit);
@@ -72,7 +66,14 @@ public class EnemyHealth : MonoBehaviour
         if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyDeath);
     }
 
-    public virtual void TakeDamage(int damage)
+    Vector3 GetTextSpawnPos()
+    {
+        return hpSlider != null
+            ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
+            : transform.position + new Vector3(0, 1.5f, 0);
+    }
+
+    public virtual void TakeDamage(int damage, bool isCrit = false, bool isBurn = false)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -84,29 +85,31 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
-        if (damageTextPrefab != null)
+        // === 디버그 ===
+        if (DamageTextSpawner.Instance != null)
         {
-            Vector3 spawnPos = hpSlider != null
-                ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
-                : transform.position + new Vector3(0, 1.5f, 0);
-
-            GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
-            DamageText dmgTextScript = textObj.GetComponent<DamageText>();
-            if (dmgTextScript != null) dmgTextScript.Setup(finalDamage);
+            Vector3 pos = GetTextSpawnPos();
+            DamageTextSpawner.Instance.Spawn(finalDamage, pos, isCrit, isBurn);
+            Debug.Log($"[데미지텍스트] Spawn 호출됨 - 데미지:{finalDamage}, 위치:{pos}");
         }
+        else
+        {
+            Debug.LogWarning("[데미지텍스트] DamageTextSpawner.Instance가 null!");
+        }
+        // =============
 
         if (currentHealth <= 0)
         {
-            PlayDeathSound(); 
+            PlayDeathSound();
             Die();
         }
         else
         {
-            PlayHitSound(); 
+            PlayHitSound();
         }
     }
 
-    public virtual void TakeDamageIgnoreDefense(int damage)
+    public virtual void TakeDamageIgnoreDefense(int damage, bool isCrit = false, bool isBurn = false)
     {
         if (isInvincible) return;
         if (isDead) return;
@@ -117,26 +120,33 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
-        if (damageTextPrefab != null)
+        if (DamageTextSpawner.Instance != null)
         {
-            Vector3 spawnPos = hpSlider != null
-                ? hpSlider.transform.position + new Vector3(0, 0.5f, 0)
-                : transform.position + new Vector3(0, 1.5f, 0);
-
-            GameObject textObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
-            DamageText dmgTextScript = textObj.GetComponent<DamageText>();
-            if (dmgTextScript != null) dmgTextScript.Setup(damage);
+            Vector3 pos = GetTextSpawnPos();
+            DamageTextSpawner.Instance.Spawn(damage, pos, isCrit, isBurn);
+            Debug.Log($"[데미지텍스트] (관통) Spawn 호출됨 - 데미지:{damage}, 위치:{pos}");
+        }
+        else
+        {
+            Debug.LogWarning("[데미지텍스트] DamageTextSpawner.Instance가 null!");
         }
 
         if (currentHealth <= 0)
         {
-            PlayDeathSound(); 
+            PlayDeathSound();
             Die();
         }
         else
         {
-            PlayHitSound(); 
+            PlayHitSound();
         }
+    }
+
+    public void ShowMiss()
+    {
+        if (isDead) return;
+        if (DamageTextSpawner.Instance != null)
+            DamageTextSpawner.Instance.SpawnMiss(GetTextSpawnPos());
     }
 
     public void UpdateUI()
@@ -154,7 +164,6 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // [팀원 작업 반영] 사망 이벤트 호출 (회피율 복구 등에 사용됨)
         OnDeath?.Invoke();
 
         if (GameManager.instance != null)

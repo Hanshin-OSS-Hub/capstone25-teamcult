@@ -1,19 +1,20 @@
 using UnityEngine;
-
 public class PlayerBullet : MonoBehaviour
 {
     [Header("총알 설정")]
-    public float damage;
-    public float speed = 10f;
+    public float damage; // 최종 데미지
+    public float speed = 10f; // 총알 속도
 
     void Start()
     {
+        // 앞으로 날아가기
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = transform.right * speed;
         }
 
+        // 데미지가 0이면 플레이어 스탯에서 자동 계산
         if (damage == 0)
         {
             GameObject player = GameObject.Find("Player");
@@ -33,34 +34,30 @@ public class PlayerBullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // 1. 적에 닿았을 때
         if (other.CompareTag("Enemy"))
         {
-            PlayerStats playerStats = GameObject.Find("Player")?.GetComponent<PlayerStats>();
-            if (playerStats != null && playerStats.GetEffectiveMissChance() > 0)
-            {
-                float roll = Random.Range(0f, 100f);
-                if (roll < playerStats.GetEffectiveMissChance())
-                {
-                    LogManager.Instance.AddLog("[MISS] 음파 디버프로 총알 빗나감");
-                    return;
-                }
-            }
-
             EnemyHealth enemy = other.GetComponent<EnemyHealth>();
             if (enemy != null)
             {
-                enemy.TakeDamage((int)damage);
+                // 음파 디버프로 인한 빗나감 판정
+                float missChance = (PlayerStats.instance != null) ? PlayerStats.instance.missChance : 0f;
+                if (missChance > 0f && Random.Range(0f, 100f) < missChance)
+                {
+                    enemy.ShowMiss(); // 빗나감
+                }
+                else
+                {
+                    enemy.TakeDamage((int)damage); // 명중
+                }
             }
             Destroy(gameObject);
         }
+        // 2. 기믹(나무통/상자)에 닿았을 때
         else if (other.GetComponent<BreakableObject>() != null)
         {
             BreakableObject box = other.GetComponent<BreakableObject>();
             box.TakeDamage((int)damage);
-            Destroy(gameObject);
-        }
-        else if (other.CompareTag("Wall"))
-        {
             Destroy(gameObject);
         }
     }

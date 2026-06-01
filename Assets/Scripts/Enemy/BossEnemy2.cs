@@ -18,7 +18,7 @@ public class BossEnemy2 : MonoBehaviour
     public float magicCooldown = 5f;
     public float magicWarningTime = 1.5f;
     public int magicDamage = 25;
-    public float triangleRadius = 2f; // 삼각형 크기
+    public float triangleRadius = 2f;
 
     [Header("체력")]
     public int maxHealth = 200;
@@ -28,12 +28,14 @@ public class BossEnemy2 : MonoBehaviour
     private float lastMagicTime;
     private Transform player;
     private Rigidbody2D playerRb;
+    private Animator anim;
     private bool hasGreeted = false;
     private bool isMagicAttacking = false;
 
     void Start()
     {
         currentHealth = maxHealth;
+        anim = GetComponent<Animator>();
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null)
         {
@@ -45,9 +47,7 @@ public class BossEnemy2 : MonoBehaviour
     void Update()
     {
         if (player == null) return;
-
         float distance = Vector2.Distance(transform.position, player.position);
-
         if (distance <= detectRange)
         {
             if (!hasGreeted)
@@ -56,26 +56,19 @@ public class BossEnemy2 : MonoBehaviour
                 if (SFXManager.Instance != null)
                     SFXManager.Instance.PlaySFX(SFXType.BossGreeting);
             }
-
             if (!isMagicAttacking && Time.time > lastMagicTime + magicCooldown)
             {
                 StartCoroutine(MagicCirclePattern());
                 lastMagicTime = Time.time;
             }
-
             if (Time.time > lastAttackTime + attackCooldown)
             {
                 ShootTriple();
                 lastAttackTime = Time.time;
             }
-
             if (distance > stopDistance)
             {
-                transform.position = Vector2.MoveTowards(
-                    transform.position,
-                    player.position,
-                    moveSpeed * Time.deltaTime
-                );
+                transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
             }
         }
     }
@@ -83,23 +76,16 @@ public class BossEnemy2 : MonoBehaviour
     IEnumerator MagicCirclePattern()
     {
         isMagicAttacking = true;
-
         Vector3 center = player.position;
-
-        // 삼각형 3개 위치 계산
-        // 위, 좌하, 우하
         Vector3[] positions = new Vector3[]
         {
-            center + new Vector3(0f, triangleRadius, 0f),                                          // 위
-            center + new Vector3(-triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f),            // 좌하
-            center + new Vector3( triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f)             // 우하
+            center + new Vector3(0f, triangleRadius, 0f),
+            center + new Vector3(-triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f),
+            center + new Vector3( triangleRadius * 0.866f, -triangleRadius * 0.5f, 0f)
         };
-
         foreach (Vector3 pos in positions)
             SpawnMagicCircle(pos);
-
         yield return new WaitForSecondsRealtime(magicWarningTime + 0.5f);
-
         isMagicAttacking = false;
         lastAttackTime = Time.time;
     }
@@ -118,6 +104,8 @@ public class BossEnemy2 : MonoBehaviour
     void ShootTriple()
     {
         if (bulletPrefab == null || player == null) return;
+
+        if (anim != null) anim.SetTrigger("Attack");
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);

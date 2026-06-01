@@ -12,6 +12,7 @@ public class BossEnemy : MonoBehaviour
     public GameObject bulletPrefab;
     public float attackCooldown = 2.5f;
     public float spreadAngle = 25f;
+    public float attackAnimLength = 0.5f; // doctor_attack 클립 길이(초)
 
     [Header("마법진 패턴")]
     public GameObject magicCirclePrefab;
@@ -28,12 +29,16 @@ public class BossEnemy : MonoBehaviour
     private float lastMagicTime;
     private Transform player;
     private Rigidbody2D playerRb;
+    private Animator anim;
     private bool hasGreeted = false;
     private bool isMagicAttacking = false;
 
     void Start()
     {
         currentHealth = maxHealth;
+        anim = GetComponent<Animator>();
+        if (anim != null) anim.enabled = false; // 평소엔 꺼두기 (기본 스프라이트 유지)
+
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null)
         {
@@ -84,10 +89,8 @@ public class BossEnemy : MonoBehaviour
     {
         isMagicAttacking = true;
 
-        // 현재 위치
         SpawnMagicCircle(player.position);
 
-        // 예측 위치
         if (playerRb != null)
         {
             Vector3 predictedPos = player.position + (Vector3)(playerRb.linearVelocity * predictTime);
@@ -103,7 +106,7 @@ public class BossEnemy : MonoBehaviour
     void SpawnMagicCircle(Vector3 pos)
     {
         GameObject circle = Instantiate(magicCirclePrefab, pos, Quaternion.identity);
-        
+
         MagicCircle magicScript = circle.GetComponent<MagicCircle>();
         if (magicScript != null)
         {
@@ -115,6 +118,15 @@ public class BossEnemy : MonoBehaviour
     void ShootTriple()
     {
         if (bulletPrefab == null || player == null) return;
+
+        // 공격할 때만 애니메이터 켜고 재생
+        if (anim != null)
+        {
+            anim.enabled = true;
+            anim.Play("doctor_attack", 0, 0f);
+            CancelInvoke(nameof(DisableAnim));
+            Invoke(nameof(DisableAnim), attackAnimLength);
+        }
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);
@@ -132,6 +144,11 @@ public class BossEnemy : MonoBehaviour
             if (bulletScript != null)
                 bulletScript.SetDirection(shootDir);
         }
+    }
+
+    void DisableAnim()
+    {
+        if (anim != null) anim.enabled = false;
     }
 
     public void TakeDamage(int damage)

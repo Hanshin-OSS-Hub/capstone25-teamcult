@@ -7,6 +7,11 @@ public class MaSeok : MonoBehaviour
         {
             if (OopartsTreeManager.instance != null)
                 OopartsTreeManager.instance.AddPoint(1);
+
+            // 마석 먹는 순간 저장 → 게임오버 시 Continue 활성화됨
+            if (SaveManager.instance != null)
+                SaveManager.instance.SaveRun();
+
             Destroy(gameObject);
         }
     }

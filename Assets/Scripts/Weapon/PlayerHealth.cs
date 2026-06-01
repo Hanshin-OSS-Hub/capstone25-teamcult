@@ -43,10 +43,26 @@ public class PlayerHealth : MonoBehaviour
             if (container != null) hearts = container.GetComponentsInChildren<Image>();
         }
 
+        // maxHealth는 하트 칸 수 기준 (4칸이면 32)
         if (hearts != null && hearts.Length > 0) maxHealth = hearts.Length * 8;
-        else maxHealth = 24;
+        else maxHealth = 32;
 
-        currentHealth = 24f;
+        int isContinue = PlayerPrefs.GetInt("IsContinue", 0);
+        bool willLoad = (isContinue == 1 && SaveManager.instance != null && SaveManager.instance.HasSavedRun());
+
+        if (willLoad)
+        {
+            // 이어하기 — SaveManager.LoadRun()이 체력 복원함 (여기선 임시 기본값)
+            currentHealth = 24f;
+        }
+        else
+        {
+            // 새 게임 / Retry — 무조건 3칸(24)으로 시작
+            currentHealth = 24f;
+        }
+
+        Debug.Log($"[PlayerHealth] 시작 - maxHealth: {maxHealth}, currentHealth: {currentHealth}, 하트칸: {(hearts != null ? hearts.Length : 0)}, IsContinue: {isContinue}");
+
         UpdateUI();
     }
 

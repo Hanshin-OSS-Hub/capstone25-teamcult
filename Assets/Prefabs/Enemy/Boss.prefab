@@ -391,7 +391,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5461496712832900230, guid: a5f52ce526b3935498bcdbdd3098cebf, type: 3}
+  m_Sprite: {fileID: 7327924489319291332, guid: f31dbec25eba0a6419bef5a0dedfd4a3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -435,11 +435,11 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.8666666, y: 3.1333334}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 4.266667, y: 4.266667}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 1
@@ -532,6 +532,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 7413192166536640196, guid: fde2b9091d2bc6449a1735bae72324ee, type: 3}
   attackCooldown: 1.5
   spreadAngle: 25
+  attackAnimLength: 0.5
   magicCirclePrefab: {fileID: 3690183335811230425, guid: cfd4b4da51c75aa4ebeceb147729da5d, type: 3}
   magicCooldown: 0.05
   magicWarningTime: 1.5
