@@ -663,10 +663,13 @@ public class RoomManager : MonoBehaviour {
             }
         }
 
-        // 5. EnemySpawner 데이터를 기준으로 일반방 일부를 특수방으로 변경
-        AssignSpecialRoomsBySpawnerData();
+        // 5. main/sub 생성 순서를 root 거리로 저장해 특수방 배치에 활용
+        Dictionary<Vector2Int, int> distanceByCreationOrder = BuildRoomDistanceByCreationOrder(startPos, main, sub);
+
+        // 6. EnemySpawner 데이터를 기준으로 일반방 일부를 특수방으로 변경
+        AssignSpecialRoomsBySpawnerData(startPos, distanceByCreationOrder);
     }
-    void AssignSpecialRoomsBySpawnerData() {
+    void AssignSpecialRoomsBySpawnerData(Vector2Int startPos, Dictionary<Vector2Int, int> distanceByCreationOrder) {
         ResolveEnemySpawner();
 
         if (enemySpawner == null) {
@@ -688,29 +691,136 @@ public class RoomManager : MonoBehaviour {
             return;
         }
 
+        AppendStartupLog("<color=cyan><b>[SpecialRoom]</b></color> 특수방 배치 디버그");
+        AppendStartupLog($"- 생성 가능한 특수방 타입 수: {creatableSpecialRoomTypes.Count}");
+        AppendStartupLog($"- 전체 Normal 후보 수: {normalRoomPositions.Count}");
+
+        List<Vector2Int> nonAdjacentCandidates = new List<Vector2Int>();
+        List<Vector2Int> adjacentCandidates = new List<Vector2Int>();
+
+        foreach (var pos in normalRoomPositions) {
+            int distance = GetRoomDistanceByCreationOrder(distanceByCreationOrder, pos);
+
+            if (distance <= 1) {
+                adjacentCandidates.Add(pos);
+            }
+            else {
+                nonAdjacentCandidates.Add(pos);
+            }
+        }
+
+        AppendStartupLog($"- 인접(거리 1) Normal 후보 수: {adjacentCandidates.Count}");
+        AppendStartupLog($"- 비인접 Normal 후보 수: {nonAdjacentCandidates.Count}");
+
+        // 후보가 충분하면 시작방 인접(거리 1) Normal 방을 특수방 후보에서 제외
+        List<Vector2Int> specialRoomCandidates = nonAdjacentCandidates.Count >= creatableSpecialRoomTypes.Count
+            ? nonAdjacentCandidates
+            : normalRoomPositions;
+
+        bool excludedAdjacent = ReferenceEquals(specialRoomCandidates, nonAdjacentCandidates);
+        string exclusionReason = excludedAdjacent
+            ? "비인접 후보 수가 충분해서 인접 후보 제외"
+            : "비인접 후보만으로 부족해서 인접 후보 포함";
+        AppendStartupLog($"- 인접 후보 제외 적용: {(excludedAdjacent ? "예" : "아니오")} ({exclusionReason})");
+        AppendStartupLog($"- 최종 특수방 후보 수: {specialRoomCandidates.Count}");
+
         ShuffleList(creatableSpecialRoomTypes);
 
         int createdCount = 0;
 
         foreach (RoomType specialRoomType in creatableSpecialRoomTypes) {
-            if (normalRoomPositions.Count == 0) {
+            if (specialRoomCandidates.Count == 0) {
                 Debug.Log("<color=#FFA500><b>주의!</b></color> 일반방 개수가 부족해서 일부 특수방만 생성했습니다.");
                 break;
             }
 
-            int randomIndex = Random.Range(0, normalRoomPositions.Count);
-            Vector2Int specialRoomPos = normalRoomPositions[randomIndex];
-            normalRoomPositions.RemoveAt(randomIndex);
+            int selectedIndex = GetWeightedRandomIndexByCreationOrderDistance(specialRoomCandidates, distanceByCreationOrder);
+
+            if (selectedIndex < 0 || selectedIndex >= specialRoomCandidates.Count) {
+                Debug.Log("<color=#FFA500><b>주의!</b></color> 가중치 기반 특수방 후보 선택에 실패했습니다.");
+                break;
+            }
+
+            Vector2Int specialRoomPos = specialRoomCandidates[selectedIndex];
+            specialRoomCandidates.RemoveAt(selectedIndex);
+            int selectedDistance = GetRoomDistanceByCreationOrder(distanceByCreationOrder, specialRoomPos);
 
             rooms[specialRoomPos.x, specialRoomPos.y].type = specialRoomType;
             rooms[specialRoomPos.x, specialRoomPos.y].monsterCount = 0;
 
             createdCount++;
 
-            AppendStartupLog($"<color=magenta><b>[SpecialRoom]</b></color> {RoomTypeHelper.GetKoreanName(specialRoomType)} 특수방 생성 위치: {specialRoomPos}");
+            AppendStartupLog($"- 선택 결과: {RoomTypeHelper.GetKoreanName(specialRoomType)} -> {specialRoomPos}, 거리(생성순서): {selectedDistance}");
         }
 
-        AppendStartupLog($"<color=cyan><b>[SpecialRoom]</b></color> 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
+        AppendStartupLog($"- 특수방 생성 완료: {createdCount}/{creatableSpecialRoomTypes.Count}");
+    }
+
+    Dictionary<Vector2Int, int> BuildRoomDistanceByCreationOrder(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub) {
+        Dictionary<Vector2Int, int> distanceMap = new Dictionary<Vector2Int, int>();
+        distanceMap[startPos] = 0;
+
+        if (main != null) {
+            for (int i = 0; i < main.Count; i++) {
+                Vector2Int pos = main[i];
+                int distance = i + 1;
+
+                if (!distanceMap.ContainsKey(pos) || distance < distanceMap[pos]) {
+                    distanceMap[pos] = distance;
+                }
+            }
+        }
+
+        if (sub != null) {
+            for (int i = 0; i < sub.Count; i++) {
+                Vector2Int pos = sub[i];
+                int distance = i + 1;
+
+                if (!distanceMap.ContainsKey(pos) || distance < distanceMap[pos]) {
+                    distanceMap[pos] = distance;
+                }
+            }
+        }
+
+        return distanceMap;
+    }
+
+    int GetRoomDistanceByCreationOrder(Dictionary<Vector2Int, int> distanceByCreationOrder, Vector2Int roomPos) {
+        if (distanceByCreationOrder != null && distanceByCreationOrder.TryGetValue(roomPos, out int distance)) {
+            return Mathf.Max(1, distance);
+        }
+
+        // 생성 순서 거리 정보가 없으면 최소 가중치로 처리
+        return 1;
+    }
+
+    int GetWeightedRandomIndexByCreationOrderDistance(List<Vector2Int> candidates, Dictionary<Vector2Int, int> distanceByCreationOrder) {
+        if (candidates == null || candidates.Count == 0) {
+            return -1;
+        }
+
+        int totalWeight = 0;
+
+        for (int i = 0; i < candidates.Count; i++) {
+            totalWeight += GetRoomDistanceByCreationOrder(distanceByCreationOrder, candidates[i]);
+        }
+
+        if (totalWeight <= 0) {
+            return Random.Range(0, candidates.Count);
+        }
+
+        int randomWeight = Random.Range(0, totalWeight);
+        int cumulative = 0;
+
+        for (int i = 0; i < candidates.Count; i++) {
+            cumulative += GetRoomDistanceByCreationOrder(distanceByCreationOrder, candidates[i]);
+
+            if (randomWeight < cumulative) {
+                return i;
+            }
+        }
+
+        return candidates.Count - 1;
     }
 
     List<Vector2Int> GetNormalRoomPositions() {

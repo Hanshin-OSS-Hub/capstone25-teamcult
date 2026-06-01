@@ -86,6 +86,11 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField] private int debugFloor = 1;
 
     private Transform player;
+    private bool hasSpawnedSoundEnemyInRoom;
+
+    void Awake() {
+        NormalizeSoundEnemyOrder();
+    }
 
     void Start() {
         GameObject p = GameObject.Find("Player");
@@ -114,6 +119,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public List<GameObject> SpawnByRoomData(RoomData roomData, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> spawnedList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 호출됨 / CurrentFloor: {currentFloor}, SpawnCenter: {spawnCenter}");
 
@@ -149,7 +155,7 @@ public class EnemySpawner : MonoBehaviour {
         if (roomData.type == RoomType.Normal) {
             Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 일반방 처리 시작 / MonsterCount: {roomData.monsterCount}");
 
-            spawnedList.AddRange(SpawnEnemy(roomData.monsterCount, currentFloor, spawnCenter));
+            spawnedList.AddRange(SpawnNormalRoomEnemiesWithSpecialRule(roomData.monsterCount, currentFloor, spawnCenter));
 
             Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 일반방 최종 스폰 수: {spawnedList.Count}");
             return spawnedList;
@@ -182,6 +188,7 @@ public class EnemySpawner : MonoBehaviour {
 
     public List<GameObject> SpawnEnemy(int cnt, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> enemyList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         if (cnt <= 0) {
             return enemyList;
@@ -221,8 +228,71 @@ public class EnemySpawner : MonoBehaviour {
         return enemyList;
     }
 
+    private List<GameObject> SpawnNormalRoomEnemiesWithSpecialRule(int cnt, int currentFloor, Vector3 spawnCenter) {
+        List<GameObject> enemyList = new List<GameObject>();
+
+        if (cnt <= 0) {
+            return enemyList;
+        }
+
+        int usedFloor = -1;
+        List<GameObject> normalPrefabs = GetNormalEnemyPrefabsByFloor(currentFloor, out usedFloor);
+
+        if (normalPrefabs.Count == 0) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 일반 몬스터 데이터가 없습니다. 일반 몬스터를 스폰하지 않습니다.");
+            return enemyList;
+        }
+
+        if (usedFloor > 0 && usedFloor != currentFloor) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 일반 몬스터 데이터가 없어 {usedFloor}층 일반 몬스터 데이터를 사용합니다.");
+        }
+        else if (usedFloor == 0) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> 층별 일반 몬스터 데이터가 없어 Fallback Enemy Settings를 사용합니다.");
+        }
+
+        bool canTrySpecial = cnt >= 3;
+        List<GameObject> specialPrefabsForNormalRoom = canTrySpecial
+            ? GetAllAvailableSpecialEnemyPrefabs(currentFloor)
+            : new List<GameObject>();
+
+        bool spawnSpecialInNormalRoom = canTrySpecial
+            && specialPrefabsForNormalRoom.Count > 0
+            && Random.value < specialEnemyChanceInNormalRoom;
+
+        if (spawnSpecialInNormalRoom) {
+            GameObject specialEnemy = SpawnOneFromList(specialPrefabsForNormalRoom, spawnCenter);
+
+            if (specialEnemy != null) {
+                enemyList.Add(specialEnemy);
+            }
+
+            int normalCount = Mathf.Max(0, cnt - 2);
+
+            for (int i = 0; i < normalCount; i++) {
+                GameObject normalEnemy = SpawnOneFromList(normalPrefabs, spawnCenter);
+
+                if (normalEnemy != null) {
+                    enemyList.Add(normalEnemy);
+                }
+            }
+
+            return enemyList;
+        }
+
+        for (int i = 0; i < cnt; i++) {
+            GameObject normalEnemy = SpawnOneFromList(normalPrefabs, spawnCenter);
+
+            if (normalEnemy != null) {
+                enemyList.Add(normalEnemy);
+            }
+        }
+
+        return enemyList;
+    }
+
     public List<GameObject> SpawnSpecialEnemies(RoomType roomType, int cnt, int currentFloor, Vector3 spawnCenter) {
         List<GameObject> enemyList = new List<GameObject>();
+        hasSpawnedSoundEnemyInRoom = false;
 
         Debug.Log($"<color=cyan><b>[SpawnSpecialEnemies]</b></color> 호출됨 / Type: {roomType}, Count: {cnt}, CurrentFloor: {currentFloor}");
 
@@ -297,6 +367,10 @@ public class EnemySpawner : MonoBehaviour {
             return 0;
         }
 
+        if (RoomTypeHelper.IsSpecialEnemyRoom(roomType)) {
+            return 2;
+        }
+
         int minCount = Mathf.Max(1, currentFloor);
         int maxCountExclusive = minCount + 3;
 
@@ -325,17 +399,92 @@ public class EnemySpawner : MonoBehaviour {
             return null;
         }
 
-        int randomIndex = Random.Range(0, prefabs.Count);
+        int maxExclusive = prefabs.Count;
+        bool soundEnemyAtEnd = IsSoundEnemyPrefab(prefabs[prefabs.Count - 1]);
+        if (hasSpawnedSoundEnemyInRoom && soundEnemyAtEnd) {
+            maxExclusive = Mathf.Max(1, prefabs.Count - 1);
+            if (prefabs.Count == 1) {
+                Debug.LogWarning("[EnemySpawner] SoundEnemy 중복 제한 예외: 후보가 1개뿐이라 재스폰 허용됨.");
+            }
+        }
+
+        int randomIndex = Random.Range(0, maxExclusive);
         GameObject enemyPrefab = prefabs[randomIndex];
 
         if (enemyPrefab == null) {
             return null;
         }
 
+        if (IsSoundEnemyPrefab(enemyPrefab)) {
+            if (hasSpawnedSoundEnemyInRoom) {
+                Debug.LogWarning("[EnemySpawner] SoundEnemy 중복 제한 예외: SoundEnemy가 다시 선택되었습니다.");
+            }
+            hasSpawnedSoundEnemyInRoom = true;
+        }
+
         Vector3 spawnPos = GetRandomSpawnPosition(spawnCenter);
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
 
         return enemy;
+    }
+
+    private bool IsSoundEnemyPrefab(GameObject prefab) {
+        return prefab != null && prefab.GetComponent<SoundEnemy>() != null;
+    }
+
+    private void NormalizeSoundEnemyOrder() {
+        if (enemyPrefabs != null) {
+            MoveSoundEnemyToEnd(enemyPrefabs);
+        }
+
+        for (int i = 0; i < normalEnemyGroups.Count; i++) {
+            if (normalEnemyGroups[i] == null) continue;
+            if (normalEnemyGroups[i].enemyPrefabs == null) continue;
+            MoveSoundEnemyToEnd(normalEnemyGroups[i].enemyPrefabs);
+        }
+
+        for (int i = 0; i < specialRoomEnemyGroups.Count; i++) {
+            SpecialRoomEnemyGroup roomGroup = specialRoomEnemyGroups[i];
+            if (roomGroup == null || roomGroup.floorEnemyGroups == null) continue;
+
+            for (int j = 0; j < roomGroup.floorEnemyGroups.Count; j++) {
+                FloorEnemyPrefabGroup floorGroup = roomGroup.floorEnemyGroups[j];
+                if (floorGroup == null || floorGroup.enemyPrefabs == null) continue;
+                MoveSoundEnemyToEnd(floorGroup.enemyPrefabs);
+            }
+        }
+    }
+
+    private void MoveSoundEnemyToEnd(GameObject[] prefabs) {
+        int soundIndex = -1;
+        for (int i = 0; i < prefabs.Length; i++) {
+            if (IsSoundEnemyPrefab(prefabs[i])) {
+                soundIndex = i;
+                break;
+            }
+        }
+
+        if (soundIndex < 0 || soundIndex == prefabs.Length - 1) return;
+
+        GameObject temp = prefabs[prefabs.Length - 1];
+        prefabs[prefabs.Length - 1] = prefabs[soundIndex];
+        prefabs[soundIndex] = temp;
+    }
+
+    private void MoveSoundEnemyToEnd(List<GameObject> prefabs) {
+        int soundIndex = -1;
+        for (int i = 0; i < prefabs.Count; i++) {
+            if (IsSoundEnemyPrefab(prefabs[i])) {
+                soundIndex = i;
+                break;
+            }
+        }
+
+        if (soundIndex < 0 || soundIndex == prefabs.Count - 1) return;
+
+        GameObject temp = prefabs[prefabs.Count - 1];
+        prefabs[prefabs.Count - 1] = prefabs[soundIndex];
+        prefabs[soundIndex] = temp;
     }
 
     private Vector3 GetRandomSpawnPosition(Vector3 spawnCenter) {
