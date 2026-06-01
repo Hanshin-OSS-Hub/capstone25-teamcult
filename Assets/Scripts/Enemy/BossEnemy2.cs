@@ -12,6 +12,7 @@ public class BossEnemy2 : MonoBehaviour
     public GameObject bulletPrefab;
     public float attackCooldown = 2f;
     public float spreadAngle = 25f;
+    public float attackAnimLength = 0.5f; // doctor_attack 클립 길이(초)
 
     [Header("마법진 패턴")]
     public GameObject magicCirclePrefab;
@@ -36,6 +37,8 @@ public class BossEnemy2 : MonoBehaviour
     {
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
+        if (anim != null) anim.enabled = false; // 평소엔 꺼두기
+
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null)
         {
@@ -105,7 +108,14 @@ public class BossEnemy2 : MonoBehaviour
     {
         if (bulletPrefab == null || player == null) return;
 
-        if (anim != null) anim.SetTrigger("Attack");
+        // 공격할 때만 애니메이터 켜고 재생
+        if (anim != null)
+        {
+            anim.enabled = true;
+            anim.Play("doctor_attack", 0, 0f);
+            CancelInvoke(nameof(DisableAnim));
+            Invoke(nameof(DisableAnim), attackAnimLength);
+        }
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);
@@ -123,6 +133,11 @@ public class BossEnemy2 : MonoBehaviour
             if (bulletScript != null)
                 bulletScript.SetDirection(shootDir);
         }
+    }
+
+    void DisableAnim()
+    {
+        if (anim != null) anim.enabled = false;
     }
 
     public void TakeDamage(int damage)
