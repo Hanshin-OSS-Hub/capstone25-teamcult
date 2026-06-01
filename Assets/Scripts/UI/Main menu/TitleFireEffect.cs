@@ -7,40 +7,40 @@ using System.Collections.Generic;
 
 public class TitleFireEffect : MonoBehaviour
 {
-    [Header("¾À ÀÌ¸§")]
+    [Header("ì”¬ ì´ë¦„")]
     public string gameSceneName = "createMap";
 
-    [Header("Å¸ÀÌÆ² ÅØ½ºÆ®")]
+    [Header("íƒ€ì´í‹€ í…ìŠ¤íŠ¸")]
     public string titleText = "BLIND ECHO";
     public string subTitleText = "ROGUELIKE  -  ENTER THE DARK";
 
-    [Header("Å¸ÀÌ¹Ö")]
+    [Header("íƒ€ì´ë°")]
     public float initialDelay = 0.5f;
     public float charAnimDuration = 1.2f;
     public float subTextDelay = 0.4f;
     public float subTextFadeDuration = 1.0f;
     public float pressKeyDelay = 0.5f;
 
-    [Header("Å¸ÀÌÆ² ±ÛÀÚ ½ºÅ¸ÀÏ")]
+    [Header("íƒ€ì´í‹€ ê¸€ì ìŠ¤íƒ€ì¼")]
     public float titleFontSize = 110f;
     public float charSpacing = 72f;
     public float titleYPos = 140f;
     public float charRiseOffset = 60f;
     public Color titleFinalColor = new Color(0.95f, 0.88f, 0.70f, 1f);
 
-    [Header("¼­ºêÅ¸ÀÌÆ² ½ºÅ¸ÀÏ")]
+    [Header("ì„œë¸Œíƒ€ì´í‹€ ìŠ¤íƒ€ì¼")]
     public float subFontSize = 18f;
     public Color subTextColor = new Color(0.45f, 0.38f, 0.30f, 1f);
     public float subTextYPos = 60f;
     public float subCharacterSpacing = 12f;
 
-    [Header("PRESS ANY KEY ½ºÅ¸ÀÏ")]
+    [Header("PRESS ANY KEY ìŠ¤íƒ€ì¼")]
     public float pressKeyFontSize = 22f;
     public Color pressKeyColor = new Color(0.80f, 0.70f, 0.50f, 1f);
     public float pressKeyYPos = -80f;
     public float blinkSpeed = 1.2f;
 
-    [Header("¸ÕÁö ÆÄÆ¼Å¬")]
+    [Header("ë¨¼ì§€ íŒŒí‹°í´")]
     public int dustParticleCount = 80;
     public float dustSpreadX = 800f;
     public float dustSpreadY = 500f;
@@ -67,7 +67,7 @@ public class TitleFireEffect : MonoBehaviour
 
     void Update()
     {
-        // ½Ç½Ã°£ À§Ä¡ ¹İ¿µ
+        // ì‹¤ì‹œê°„ ìœ„ì¹˜ ë°˜ì˜
         for (int i = 0; i < charRects.Count; i++)
         {
             charRects[i].anchoredPosition = new Vector2(charFinalPositions[i].x, titleYPos);
@@ -80,7 +80,7 @@ public class TitleFireEffect : MonoBehaviour
         if (pressKeyText != null)
             pressKeyText.rectTransform.anchoredPosition = new Vector2(0, pressKeyYPos);
 
-        // ¾Æ¹« Å°³ª ´©¸£¸é ½ÃÀÛ
+        // ì•„ë¬´ í‚¤ë‚˜ ëˆ„ë¥´ë©´ ì‹œì‘
         if (canStart && Input.anyKeyDown)
         {
             SceneManager.LoadScene(gameSceneName);
@@ -133,7 +133,7 @@ public class TitleFireEffect : MonoBehaviour
             currentX += charSpacing;
         }
 
-        // ¼­ºêÅ¸ÀÌÆ²
+        // ì„œë¸Œíƒ€ì´í‹€
         subText = CreateTMP(canvasGO, "SubText", subTitleText, subFontSize,
             new Color(subTextColor.r, subTextColor.g, subTextColor.b, 0f));
         subText.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
@@ -143,10 +143,10 @@ public class TitleFireEffect : MonoBehaviour
         subText.characterSpacing = subCharacterSpacing;
         subText.alignment = TextAlignmentOptions.Center;
 
-        // ±¸ºĞ¼±
+        // êµ¬ë¶„ì„ 
         CreateDivider(canvasGO, new Vector2(0, subTextYPos - 18f), new Vector2(320, 1));
 
-        // PRESS ANY KEY ÅØ½ºÆ®
+        // PRESS ANY KEY í…ìŠ¤íŠ¸
         pressKeyText = CreateTMP(canvasGO, "PressKeyText", "PRESS ANY KEY", pressKeyFontSize,
             new Color(pressKeyColor.r, pressKeyColor.g, pressKeyColor.b, 0f));
         pressKeyText.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
@@ -156,7 +156,7 @@ public class TitleFireEffect : MonoBehaviour
         pressKeyText.characterSpacing = 8f;
         pressKeyText.alignment = TextAlignmentOptions.Center;
 
-        // ¹öÀü ÅØ½ºÆ®
+        // ë²„ì „ í…ìŠ¤íŠ¸
         versionText = CreateTMP(canvasGO, "VersionText", "v0.1 ALPHA", 13f,
             new Color(0.3f, 0.25f, 0.20f, 0f));
         versionText.rectTransform.anchorMin = new Vector2(1f, 0f);
@@ -279,7 +279,7 @@ public class TitleFireEffect : MonoBehaviour
 
         yield return new WaitForSeconds(pressKeyDelay);
 
-        // PRESS ANY KEY ÆäÀÌµåÀÎ ÈÄ ±ôºıÀÌ±â
+        // PRESS ANY KEY í˜ì´ë“œì¸ í›„ ê¹œë¹¡ì´ê¸°
         yield return StartCoroutine(FadeInTMP(pressKeyText, 0.6f));
         canStart = true;
         StartCoroutine(BlinkText(pressKeyText));

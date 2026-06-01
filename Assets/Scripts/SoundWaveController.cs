@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
 
@@ -53,6 +53,8 @@ public class SoundWaveController : MonoBehaviour
     private float _currentDynamicDuration = 1.0f;
     private static readonly int IntensityID = Shader.PropertyToID("_EffectIntensity");
     private Material _glitchMaterial;
+    private bool _ownerDead;
+    private bool _isCleaningUp;
 
     void Start()
     {
@@ -75,7 +77,7 @@ public class SoundWaveController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Player ÅÂ±×¸¦ °¡Áø ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogWarning("Player íƒœê·¸ë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
         }
     }
 
@@ -84,6 +86,7 @@ public class SoundWaveController : MonoBehaviour
         UpdateAndUploadWaves();
         UpdateGlitchIntensity();
         HandleScoreDecay();
+        TryCleanupAfterOwnerDeath();
     }
 
     public void TriggerScreenDistortion()
@@ -138,6 +141,7 @@ public class SoundWaveController : MonoBehaviour
 
     public void CreateWave()
     {
+        if (_ownerDead) return;
         if (_activeWaves.Count >= 30 || enemyTransform == null) return;
 
         _activeWaves.Add(new Wave
@@ -161,12 +165,27 @@ public class SoundWaveController : MonoBehaviour
                 playerStats.missChance = Mathf.Min(playerStats.missChance + missChancePenalty, 30f);
                 float added = playerStats.missChance - before;
                 _appliedMissChance += added;
-                LogManager.Instance.AddLog($"[À½ÆÄ] ¸íÁß·ü °¨¼Ò: {playerStats.missChance}%");
+                LogManager.Instance.AddLog($"[ìŒíŒŒ] ëª…ì¤‘ë¥  ê°ì†Œ: {playerStats.missChance}%");
             }
         }
     }
 
     public float GetAppliedMissChance() => _appliedMissChance;
+
+    public void SetOwnerTransform(Transform owner)
+    {
+        enemyTransform = owner;
+    }
+
+    public void NotifyOwnerDead()
+    {
+        _ownerDead = true;
+
+        if (_activeWaves.Count == 0 && !IsDistortionRunning())
+        {
+            CleanupAndDestroy();
+        }
+    }
 
     private void UpdateAndUploadWaves()
     {
@@ -178,6 +197,11 @@ public class SoundWaveController : MonoBehaviour
             wave.Elapsed += Time.deltaTime;
             float progress = wave.Elapsed / effectDuration;
             wave.Radius = progress * maxRadius;
+            if (!_ownerDead && enemyTransform != null)
+            {
+                wave.Center = GetEnemyScreenPos();
+                wave.WorldPos = enemyTransform.position;
+            }
 
             if (progress >= 1.0f)
             {
@@ -204,9 +228,49 @@ public class SoundWaveController : MonoBehaviour
         return new Vector4(viewPos.x, viewPos.y, 0, 0);
     }
 
+    private void TryCleanupAfterOwnerDeath()
+    {
+        if (!_ownerDead || _isCleaningUp) return;
+        if (_activeWaves.Count > 0) return;
+        if (IsDistortionRunning()) return;
+
+        CleanupAndDestroy();
+    }
+
+    private bool IsDistortionRunning()
+    {
+        return _glitchFeature != null && _glitchFeature.isActive;
+    }
+
+    private void CleanupAndDestroy()
+    {
+        if (_isCleaningUp) return;
+        _isCleaningUp = true;
+
+        _activeWaves.Clear();
+
+        if (rippleMaterial != null)
+        {
+            rippleMaterial.SetInt("_ActiveWaveCount", 0);
+            rippleMaterial.SetVectorArray("_WaveCenters", _centersArray);
+            rippleMaterial.SetFloatArray("_WaveRadii", _radiiArray);
+            rippleMaterial.SetFloatArray("_WaveStrengths", _strengthsArray);
+        }
+
+        if (_glitchFeature != null) _glitchFeature.SetActive(false);
+        if (_glitchMaterial != null) _glitchMaterial.SetFloat(IntensityID, 0f);
+
+        Destroy(gameObject);
+    }
+
     private void OnDisable()
     {
         if (_glitchFeature != null) _glitchFeature.SetActive(false);
         if (_glitchMaterial != null) _glitchMaterial.SetFloat(IntensityID, 0f);
+
+        if (rippleMaterial != null)
+        {
+            rippleMaterial.SetInt("_ActiveWaveCount", 0);
+        }
     }
 }

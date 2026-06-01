@@ -18,18 +18,18 @@ public class MaSeokAura : MonoBehaviour
         main.startSpeed = 0.5f;
         main.startSize = new ParticleSystem.MinMaxCurve(0.02f, 0.05f);
         main.startColor = new Color(0.6f, 0.1f, 1f, 1f);
-        main.gravityModifier = -0.15f;   // À§·Î ¿Ã¶ó°¡°Ô
+        main.gravityModifier = -0.15f;   // ìœ„ë¡œ ì˜¬ë¼ê°€ê²Œ
         main.simulationSpace = ParticleSystemSimulationSpace.World;
 
         var emission = auraParticle.emission;
         emission.rateOverTime = 6f;
 
-        // ¡Ú ¾Æ·¡¿¡¼­ À§·Î ¿Ã¶ó¿À°Ô - Edge Å¸ÀÔÀ¸·Î ¹Ù´Ú¼±¿¡¼­ »ı¼º
+        // â˜… ì•„ë˜ì—ì„œ ìœ„ë¡œ ì˜¬ë¼ì˜¤ê²Œ - Edge íƒ€ì…ìœ¼ë¡œ ë°”ë‹¥ì„ ì—ì„œ ìƒì„±
         var shape = auraParticle.shape;
         shape.enabled = true;
         shape.shapeType = ParticleSystemShapeType.SingleSidedEdge;
-        shape.radius = 0.2f;             // ¸¶¼® ³Êºñ¸¸Å­¸¸
-        shape.rotation = new Vector3(0, 0, 0); // °¡·Î·Î ´¯Çô¼­ ¹Ù´ÚÃ³·³
+        shape.radius = 0.2f;             // ë§ˆì„ ë„ˆë¹„ë§Œí¼ë§Œ
+        shape.rotation = new Vector3(0, 0, 0); // ê°€ë¡œë¡œ ëˆ•í˜€ì„œ ë°”ë‹¥ì²˜ëŸ¼
 
         var colorOverLifetime = auraParticle.colorOverLifetime;
         colorOverLifetime.enabled = true;

@@ -54,13 +54,13 @@ public class SettingsPanelManager : MonoBehaviour
         if (!isOpen) gameObject.SetActive(false);
     }
 
-    // ÀúÀå ¹öÆ° OnClick¿¡ ¿¬°á
+    // ì €ì¥ ë²„íŠ¼ OnClickì— ì—°ê²°
     public void SaveGame()
     {
         if (SaveManager.instance != null)
         {
             SaveManager.instance.SaveRun();
-            Debug.Log("[Settings] ¼öµ¿ ÀúÀå ¿Ï·á");
+            Debug.Log("[Settings] ìˆ˜ë™ ì €ì¥ ì™„ë£Œ");
         }
     }
 }

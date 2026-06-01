@@ -36,7 +36,7 @@ public class LightningOnHit : MonoBehaviour
         effect.duration = duration;
         effect.chainOrigin = origin;
         effect.originEnemy = hitEnemy;
-        effect.visitedEnemies = new List<GameObject> { hitEnemy }; // Ã³À½ ¸ÂÀº Àûµµ ¹æ¹® ¸ñ·Ï¿¡ Ãß°¡
+        effect.visitedEnemies = new List<GameObject> { hitEnemy }; // ì²˜ìŒ ë§ì€ ì ë„ ë°©ë¬¸ ëª©ë¡ì— ì¶”ê°€
     }
 
     int GetOriginalDamage()
