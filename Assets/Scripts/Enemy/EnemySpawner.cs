@@ -149,7 +149,7 @@ public class EnemySpawner : MonoBehaviour {
         if (roomData.type == RoomType.Normal) {
             Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 일반방 처리 시작 / MonsterCount: {roomData.monsterCount}");
 
-            spawnedList.AddRange(SpawnEnemy(roomData.monsterCount, currentFloor, spawnCenter));
+            spawnedList.AddRange(SpawnNormalRoomEnemiesWithSpecialRule(roomData.monsterCount, currentFloor, spawnCenter));
 
             Debug.Log($"<color=cyan><b>[SpawnByRoomData]</b></color> 일반방 최종 스폰 수: {spawnedList.Count}");
             return spawnedList;
@@ -215,6 +215,68 @@ public class EnemySpawner : MonoBehaviour {
 
             if (enemy != null) {
                 enemyList.Add(enemy);
+            }
+        }
+
+        return enemyList;
+    }
+
+    private List<GameObject> SpawnNormalRoomEnemiesWithSpecialRule(int cnt, int currentFloor, Vector3 spawnCenter) {
+        List<GameObject> enemyList = new List<GameObject>();
+
+        if (cnt <= 0) {
+            return enemyList;
+        }
+
+        int usedFloor = -1;
+        List<GameObject> normalPrefabs = GetNormalEnemyPrefabsByFloor(currentFloor, out usedFloor);
+
+        if (normalPrefabs.Count == 0) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 일반 몬스터 데이터가 없습니다. 일반 몬스터를 스폰하지 않습니다.");
+            return enemyList;
+        }
+
+        if (usedFloor > 0 && usedFloor != currentFloor) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> {currentFloor}층 일반 몬스터 데이터가 없어 {usedFloor}층 일반 몬스터 데이터를 사용합니다.");
+        }
+        else if (usedFloor == 0) {
+            Debug.Log($"<color=#FFA500><b>주의!</b></color> 층별 일반 몬스터 데이터가 없어 Fallback Enemy Settings를 사용합니다.");
+        }
+
+        bool canTrySpecial = cnt >= 3;
+        List<GameObject> specialPrefabsForNormalRoom = canTrySpecial
+            ? GetAllAvailableSpecialEnemyPrefabs(currentFloor)
+            : new List<GameObject>();
+
+        bool spawnSpecialInNormalRoom = canTrySpecial
+            && specialPrefabsForNormalRoom.Count > 0
+            && Random.value < specialEnemyChanceInNormalRoom;
+
+        if (spawnSpecialInNormalRoom) {
+            GameObject specialEnemy = SpawnOneFromList(specialPrefabsForNormalRoom, spawnCenter);
+
+            if (specialEnemy != null) {
+                enemyList.Add(specialEnemy);
+            }
+
+            int normalCount = Mathf.Max(0, cnt - 2);
+
+            for (int i = 0; i < normalCount; i++) {
+                GameObject normalEnemy = SpawnOneFromList(normalPrefabs, spawnCenter);
+
+                if (normalEnemy != null) {
+                    enemyList.Add(normalEnemy);
+                }
+            }
+
+            return enemyList;
+        }
+
+        for (int i = 0; i < cnt; i++) {
+            GameObject normalEnemy = SpawnOneFromList(normalPrefabs, spawnCenter);
+
+            if (normalEnemy != null) {
+                enemyList.Add(normalEnemy);
             }
         }
 
@@ -295,6 +357,10 @@ public class EnemySpawner : MonoBehaviour {
     public int GetMonsterCountForRoom(RoomType roomType, int currentFloor) {
         if (!RoomTypeHelper.IsEnemyRoom(roomType)) {
             return 0;
+        }
+
+        if (RoomTypeHelper.IsSpecialEnemyRoom(roomType)) {
+            return 2;
         }
 
         int minCount = Mathf.Max(1, currentFloor);
