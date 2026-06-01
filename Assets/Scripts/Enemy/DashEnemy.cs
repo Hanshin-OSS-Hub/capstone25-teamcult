@@ -8,9 +8,14 @@ public class DashEnemy : MonoBehaviour
     public float stopDistance = 1f;
     public float moveSpeed = 2f;
     public float chaseSpeed = 5f;
-    public float dashSpeed = 7f;
+    public float dashSpeed = 4f;
     public float dashCooldown = 3f;
     public float prepareTime = 0.4f;
+    public float dashDuration = 0.9f;
+
+    [Header("벽 감지")]
+    public float wallCheckDistance = 0.5f;
+    public string wallNameKeyword = "Tilemap_Wall"; // 이 이름 포함하면 벽으로 인식
 
     [Header("공격")]
     public int damage = 10;
@@ -24,6 +29,7 @@ public class DashEnemy : MonoBehaviour
     private EnemyHealth enemyHealth;
     private Animator anim;
     private bool isDashing = false;
+    private bool canHit = false;
     private bool hasHit = false;
     private float lastDashTime;
 
@@ -76,7 +82,6 @@ public class DashEnemy : MonoBehaviour
 
     void FacePlayer()
     {
-        // 방향 전환
         Vector3 scale = transform.localScale;
         if (player.position.x < transform.position.x)
             scale.x = -Mathf.Abs(scale.x);
@@ -84,7 +89,6 @@ public class DashEnemy : MonoBehaviour
             scale.x = Mathf.Abs(scale.x);
         transform.localScale = scale;
 
-        // 체력바 방향 보정 (적이 뒤집혀도 체력바는 똑바로)
         if (enemyHealth != null && enemyHealth.hpSlider != null)
         {
             Vector3 hpScale = enemyHealth.hpSlider.transform.localScale;
@@ -97,6 +101,7 @@ public class DashEnemy : MonoBehaviour
     {
         isDashing = true;
         hasHit = false;
+        canHit = false;
         lastDashTime = Time.time;
 
         if (anim != null) anim.SetTrigger("PrepareAttack");
@@ -104,17 +109,34 @@ public class DashEnemy : MonoBehaviour
 
         if (anim != null) anim.SetTrigger("ExecuteAttack");
 
+        canHit = true;
+
         Vector2 dashDir = (player.position - transform.position).normalized;
         float dashTimer = 0f;
-        float dashDuration = 0.5f;
         while (dashTimer < dashDuration)
         {
+            // 앞쪽에 벽(이름으로 판별) 있으면 돌진 중단
+            if (IsWallAhead(dashDir))
+                break;
+
             transform.position += (Vector3)(dashDir * dashSpeed * Time.deltaTime);
             dashTimer += Time.deltaTime;
             yield return null;
         }
 
+        canHit = false;
         isDashing = false;
+    }
+
+    bool IsWallAhead(Vector2 dir)
+    {
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, dir, wallCheckDistance);
+        foreach (var hit in hits)
+        {
+            if (hit.collider != null && hit.collider.name.Contains(wallNameKeyword))
+                return true;
+        }
+        return false;
     }
 
     void OnTriggerEnter2D(Collider2D other) { TryHit(other); }
@@ -122,7 +144,7 @@ public class DashEnemy : MonoBehaviour
 
     void TryHit(Collider2D other)
     {
-        if (!isDashing || hasHit) return;
+        if (!canHit || hasHit) return;
         if (!other.CompareTag("Player")) return;
 
         if (playerHealth != null)

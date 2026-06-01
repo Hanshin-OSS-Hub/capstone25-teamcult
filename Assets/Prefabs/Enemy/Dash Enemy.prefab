@@ -352,8 +352,8 @@ GameObject:
   - component: {fileID: 4953120043658853714}
   - component: {fileID: 1632963202285371723}
   - component: {fileID: 5026637328627402883}
-  - component: {fileID: -2479722704769909259}
   - component: {fileID: 2357294865263631128}
+  - component: {fileID: 1757356856496260726}
   m_Layer: 0
   m_Name: Dash Enemy
   m_TagString: Enemy
@@ -370,8 +370,8 @@ Transform:
   m_GameObject: {fileID: 7575059051696297546}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.354, y: 1.031, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.41, y: 0.8, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5847922552810126883}
@@ -426,11 +426,11 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2683850483619911766, guid: 654634ae0b7fa1f419ab1cf3b396f6da, type: 3}
+  m_Sprite: {fileID: -7048135427552196590, guid: 654634ae0b7fa1f419ab1cf3b396f6da, type: 3}
   m_Color: {r: 1, g: 0.9716981, b: 0.99039453, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 1
+  m_DrawMode: 0
   m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -497,17 +497,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0007969141, y: 0.018515587}
+  m_Offset: {x: -0.009015799, y: 0.5925563}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
     oldSize: {x: 1, y: 1}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
-    drawMode: 1
+    drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.0122378, y: 2.0244763}
+  m_Size: {x: 1.305726, y: 1.0333973}
   m_EdgeRadius: 0
 --- !u!114 &1632963202285371723
 MonoBehaviour:
@@ -526,7 +526,6 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 5426590261145882454}
   hpText: {fileID: 7723665171618840921}
-  damageTextPrefab: {fileID: 4564337897028911482, guid: 5df6cde4faae9b348a15afd20c517f33, type: 3}
   maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
   maSeokDropChance: 5
 --- !u!114 &5026637328627402883
@@ -549,26 +548,6 @@ MonoBehaviour:
   defense: 3
   danger: 10
   expReward: 10
---- !u!114 &-2479722704769909259
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7575059051696297546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2683f844abd8db4f807a43fa5130118, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DashEnemy
-  detectRange: 8
-  dashRange: 5
-  stopDistance: 1
-  moveSpeed: 3
-  chaseSpeed: 5
-  dashSpeed: 6
-  dashCooldown: 3
-  maxHealth: 30
 --- !u!95 &2357294865263631128
 Animator:
   serializedVersion: 7
@@ -591,6 +570,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1757356856496260726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7575059051696297546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2683f844abd8db4f807a43fa5130118, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashEnemy
+  detectRange: 8
+  dashRange: 5
+  stopDistance: 1
+  moveSpeed: 2
+  chaseSpeed: 5
+  dashSpeed: 7
+  dashCooldown: 3
+  prepareTime: 0.4
+  dashDuration: 0.9
+  damage: 10
+  maxHealth: 30
 --- !u!1 &8159280484519314814
 GameObject:
   m_ObjectHideFlags: 0
