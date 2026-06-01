@@ -16655,13 +16655,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: shield
       objectReference: {fileID: 0}
-    - target: {fileID: 8514516333010168615, guid: 3d53b1df7fae65249b158198675134e3, type: 3}
-      propertyPath: m_AnchorMax.x
+    - target: {fileID: 7575059051696297546, guid: 3d53b1df7fae65249b158198675134e3, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8514516333010168615, guid: 3d53b1df7fae65249b158198675134e3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8514516333010168615, guid: 3d53b1df7fae65249b158198675134e3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -27225,86 +27229,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: bossPrefabs.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'bossPrefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 5992420211836326638, guid: 0db852d21752c6d44af3494f42ecb7a9, type: 3}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: normalEnemyGroups.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialEnemyChanceInNormalRoom
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: normalEnemyGroups.Array.data[0].floor
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[0].roomType
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[1].roomType
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[2].roomType
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[3].roomType
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: normalEnemyGroups.Array.data[0].enemyPrefabs.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'normalEnemyGroups.Array.data[0].enemyPrefabs.Array.data[0]'
-      value: 
-      objectReference: {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'normalEnemyGroups.Array.data[0].enemyPrefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'normalEnemyGroups.Array.data[0].enemyPrefabs.Array.data[2]'
-      value: 
-      objectReference: {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[0].floorEnemyGroups.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[2].floorEnemyGroups.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[2].floorEnemyGroups.Array.data[0].floor
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: specialRoomEnemyGroups.Array.data[2].floorEnemyGroups.Array.data[0].enemyPrefabs.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'specialRoomEnemyGroups.Array.data[2].floorEnemyGroups.Array.data[0].enemyPrefabs.Array.data[0]'
-      value: 
-      objectReference: {fileID: 7575059051696297546, guid: ee25f9dead71a5741a920e5e29a28d72, type: 3}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'specialRoomEnemyGroups.Array.data[2].floorEnemyGroups.Array.data[0].enemyPrefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 7575059051696297546, guid: 62531976e341d574a8579300c463cb64, type: 3}
     - target: {fileID: 6296186735131701427, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_Color.b
       value: 1
