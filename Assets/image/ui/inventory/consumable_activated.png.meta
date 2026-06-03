@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: f34aff029e4636e469ea1083a5f0e7b5
+guid: 8f0f693ed80e16c439b36b62eca586ec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7067950718093392881
-    second: consumable_0
-  - first:
-      213: -4763552143823676030
-    second: consumable_1
+      213: 5015772589664457064
+    second: consumable_unactivated_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: consumable_0
+      name: consumable_activated_0
       rect:
         serializedVersion: 2
-        x: 59
-        y: 193
-        width: 4481
-        height: 722
+        x: 0
+        y: 0
+        width: 2107
+        height: 354
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1fb7ce10bb7661260800000000000000
-      internalID: 7067950718093392881
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: consumable_1
-      rect:
-        serializedVersion: 2
-        x: 4489
-        y: 31
-        width: 50
-        height: 50
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 28dd656409674edb0800000000000000
-      internalID: -4763552143823676030
+      spriteID: 8615719789a9b9540800000000000000
+      internalID: 5015772589664457064
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 786cd3b4f161f3541a20ffb4ac619a4e
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      consumable_0: 7067950718093392881
-      consumable_1: -4763552143823676030
+      consumable_activated_0: 5015772589664457064
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
