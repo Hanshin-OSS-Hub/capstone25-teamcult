@@ -217,8 +217,17 @@ public class TabController : MonoBehaviour
         if (equipPanel != null) equipPanel.SetActive(isWeapon);
         if (consumableEquipPanel != null) consumableEquipPanel.SetActive(isConsumable);
 
-        if (weaponScrollView != null) weaponScrollView.SetActive(isWeapon);
-        if (consumableScrollView != null) consumableScrollView.SetActive(isConsumable);
+        if (weaponScrollView != null)
+        {
+            weaponScrollView.SetActive(isWeapon);
+            if (isWeapon) weaponScrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
+        }
+
+        if (consumableScrollView != null)
+        {
+            consumableScrollView.SetActive(isConsumable);
+            if (isConsumable) consumableScrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
+        }
     }
 
     void Update()
