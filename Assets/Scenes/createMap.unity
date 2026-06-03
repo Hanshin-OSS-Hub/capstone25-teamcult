@@ -691,6 +691,10 @@ MonoBehaviour:
   mainBranchLength: 6
   subBranchLength: 5
   twigCount: 4
+  useDemoLayout: 0
+  demoRoomSequence: 000000000100000006000000050000000300000004000000
+  demoLineDirection: 1
+  demoBossIndexOverride: -1
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
@@ -24302,15 +24306,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 191312666450871, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 191312666450871, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5992420211836326638, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
       propertyPath: m_Name
       value: Boss (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5992420211836326638, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6648536702406314250, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
       propertyPath: curveBulletLifetime

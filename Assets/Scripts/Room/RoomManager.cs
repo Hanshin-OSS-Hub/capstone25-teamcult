@@ -4,6 +4,8 @@ using System.Text;
 
 public enum RoomType { Start, Normal, Empty, Shop, Boss, Chest, Fire, Ice, Lightning }
 
+public enum DemoLineDirection { Up, Right, Down, Left }
+
 [System.Serializable]
 public class RoomTypeGroup {
     public RoomType type;
@@ -66,6 +68,19 @@ public class RoomManager : MonoBehaviour {
     [SerializeField] int mainBranchLength = 6;
     [SerializeField] int subBranchLength = 5;
     [SerializeField] int twigCount = 4;
+
+    [Header("Demo Layout Settings")]
+    [SerializeField] private bool useDemoLayout = false;
+    [SerializeField] private List<RoomType> demoRoomSequence = new List<RoomType> {
+        RoomType.Start,
+        RoomType.Normal,
+        RoomType.Fire,
+        RoomType.Chest,
+        RoomType.Shop,
+        RoomType.Boss
+    };
+    [SerializeField] private DemoLineDirection demoLineDirection = DemoLineDirection.Right;
+    [SerializeField] private int demoBossIndexOverride = -1;
 
     private int[,] mapPlan;
     public RoomData[,] rooms;
@@ -164,6 +179,12 @@ public class RoomManager : MonoBehaviour {
 
     void GenerateDungeon() {
         startupLogSb = new StringBuilder();
+
+        if (useDemoLayout) {
+            GenerateDemoDungeon();
+            return;
+        }
+
         int totalPlanned = 1 + (mainBranchLength - 1) + (subBranchLength - 1) + twigCount;
 
         if (totalPlanned > maxRooms) {
@@ -293,6 +314,126 @@ public class RoomManager : MonoBehaviour {
 
         DrawMap();
         FlushStartupLogs();
+    }
+
+    void GenerateDemoDungeon() {
+        mapPlan = new int[mapSize, mapSize];
+        rooms = new RoomData[mapSize, mapSize];
+
+        for (int x = 0; x < mapSize; x++) {
+            for (int y = 0; y < mapSize; y++) {
+                rooms[x, y] = new RoomData();
+            }
+        }
+
+        List<RoomType> sequence = GetDemoRoomSequence();
+        Vector2Int startPos = new Vector2Int(mapSize / 2, mapSize / 2);
+        Vector2Int direction = GetDemoDirection();
+        List<Vector2Int> demoPositions = new List<Vector2Int>();
+
+        for (int i = 0; i < sequence.Count; i++) {
+            Vector2Int pos = startPos + direction * i;
+
+            if (!IsInsideMap(pos)) {
+                Debug.LogError($"<color=red><b>[DemoLayout]</b></color> 데모 방 위치가 맵 범위를 벗어났습니다: {pos}");
+                return;
+            }
+
+            demoPositions.Add(pos);
+            RoomData room = rooms[pos.x, pos.y];
+            room.type = sequence[i];
+            room.status = RoomData.RoomStatus.Empty;
+            room.shouldLockOnVisit = room.type != RoomType.Start;
+
+            if (room.type == RoomType.Start) {
+                room.monsterCount = 0;
+                room.shouldLockOnVisit = false;
+            }
+
+            if (room.type == RoomType.Boss) {
+                room.bossIndex = demoBossIndexOverride >= 0 ? demoBossIndexOverride : GetBossIndexByFloor();
+            }
+        }
+
+        for (int i = 0; i < demoPositions.Count - 1; i++) {
+            Vector2Int current = demoPositions[i];
+            Vector2Int next = demoPositions[i + 1];
+            int directionIndex = GetDirectionIndex(next - current);
+            int oppositeIndex = (directionIndex + 2) % 4;
+
+            mapPlan[current.x, current.y] |= (1 << directionIndex);
+            mapPlan[next.x, next.y] |= (1 << oppositeIndex);
+        }
+
+        PrepareRewardWeightTree();
+
+        foreach (Vector2Int pos in demoPositions) {
+            RoomData room = rooms[pos.x, pos.y];
+            room.monsterCount = GetMonsterCountForRoom(room.type);
+            AssignRandomRewards(room);
+        }
+
+        if (enemySpawner != null) {
+            enemySpawner.DebugPrintSpawnerData(currentFloor);
+        }
+        else {
+            Debug.Log("<color=#FFA500><b>주의!</b></color> RoomManager의 enemySpawner가 null입니다.");
+        }
+
+        DebugPrintAllRooms();
+        AppendStartupLog($"<color=cyan><b>[DemoLayout]</b></color> 고정 데모 방 {demoPositions.Count}개 생성 완료: {ListToString(demoPositions, " -> ")}");
+        DrawMap();
+        FlushStartupLogs();
+    }
+
+    List<RoomType> GetDemoRoomSequence() {
+        List<RoomType> sequence = new List<RoomType>();
+
+        if (demoRoomSequence != null) {
+            for (int i = 0; i < demoRoomSequence.Count; i++) {
+                sequence.Add(demoRoomSequence[i]);
+            }
+        }
+
+        if (sequence.Count == 0) {
+            sequence.Add(RoomType.Start);
+            sequence.Add(RoomType.Normal);
+            sequence.Add(RoomType.Fire);
+            sequence.Add(RoomType.Chest);
+            sequence.Add(RoomType.Shop);
+            sequence.Add(RoomType.Boss);
+        }
+
+        if (sequence[0] != RoomType.Start) {
+            sequence[0] = RoomType.Start;
+        }
+
+        return sequence;
+    }
+
+    Vector2Int GetDemoDirection() {
+        switch (demoLineDirection) {
+            case DemoLineDirection.Up:
+                return directions[0];
+            case DemoLineDirection.Right:
+                return directions[1];
+            case DemoLineDirection.Down:
+                return directions[2];
+            case DemoLineDirection.Left:
+                return directions[3];
+            default:
+                return directions[1];
+        }
+    }
+
+    int GetDirectionIndex(Vector2Int direction) {
+        for (int i = 0; i < directions.Length; i++) {
+            if (directions[i] == direction) {
+                return i;
+            }
+        }
+
+        return 1;
     }
 
     public void DebugPrintAllRooms() {
