@@ -24,6 +24,14 @@ public class TabController : MonoBehaviour
     public GameObject weaponContent;
     public GameObject consumableContent;
 
+    [Header("탭 버튼 이미지 연결")]
+    public Image weaponTabImage;
+    public Image consumableTabImage;
+    public Sprite weaponActiveSprite;
+    public Sprite weaponInactiveSprite;
+    public Sprite consumableActiveSprite;
+    public Sprite consumableInactiveSprite;
+
     [Header("장착 슬롯 이미지 (UI)")]
     public Image headSlotImage;
     public Image weaponSlotImage;
@@ -284,6 +292,17 @@ public class TabController : MonoBehaviour
             consumableScrollView.SetActive(isConsumable);
             if (isConsumable) consumableScrollView.GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
         }
+
+        UpdateTabButtonSprites(isWeapon, isConsumable);
+    }
+
+    private void UpdateTabButtonSprites(bool isWeapon, bool isConsumable)
+    {
+        if (weaponTabImage != null)
+            weaponTabImage.sprite = isWeapon ? weaponActiveSprite : weaponInactiveSprite;
+
+        if (consumableTabImage != null)
+            consumableTabImage.sprite = isConsumable ? consumableActiveSprite : consumableInactiveSprite;
     }
 
     void Update()

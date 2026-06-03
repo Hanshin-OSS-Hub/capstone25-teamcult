@@ -25087,6 +25087,12 @@ MonoBehaviour:
   consumableScrollView: {fileID: 670294109}
   weaponContent: {fileID: 972607554}
   consumableContent: {fileID: 635916609}
+  weaponTabImage: {fileID: 2017743211}
+  consumableTabImage: {fileID: 1945477593}
+  weaponActiveSprite: {fileID: 5357457282185501634, guid: b08b92d684b5873499abf47343ead0d6, type: 3}
+  weaponInactiveSprite: {fileID: -2085060333964815493, guid: a786c0471ebe230409446923a6f669a0, type: 3}
+  consumableActiveSprite: {fileID: 5015772589664457064, guid: 8f0f693ed80e16c439b36b62eca586ec, type: 3}
+  consumableInactiveSprite: {fileID: 7067950718093392881, guid: f34aff029e4636e469ea1083a5f0e7b5, type: 3}
   headSlotImage: {fileID: 78008513}
   weaponSlotImage: {fileID: 1817572764}
   armorSlotImage: {fileID: 1183685802}
