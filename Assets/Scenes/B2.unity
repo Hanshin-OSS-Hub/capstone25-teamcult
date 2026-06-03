@@ -666,17 +666,13 @@ MonoBehaviour:
   twigCount: 4
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
-    weight: 30
+    weight: 50
   - rewardPrefab: {fileID: 6556682162464984417, guid: 01d04464cf8b59a46b06293f19d12409, type: 3}
-    weight: 1
+    weight: 10
   - rewardPrefab: {fileID: 7560031331587836119, guid: 57583cbde71171441a346dc1590e3102, type: 3}
-    weight: 1
+    weight: 10
   - rewardPrefab: {fileID: 6569257465189000285, guid: 992fe83a2ee49f64995da349c3be7336, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 1084652883148240085, guid: 835f8ba2920b2734ca6a46723b6e0967, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 9156394391337551233, guid: 0dddb47b805dacf46bd8dc7563e2b55c, type: 3}
-    weight: 1
+    weight: 10
   - rewardPrefab: {fileID: 4875841497743311934, guid: 21710129f0eb47f4bbd29ac0d708814e, type: 3}
     weight: 3
   - rewardPrefab: {fileID: 5784821071563565229, guid: 42eb1027b032cae47aae17374121c3f0, type: 3}
@@ -694,6 +690,24 @@ MonoBehaviour:
   - rewardPrefab: {fileID: 7877680013972068381, guid: 6b2b019a263f8aa46a6dd72bc2582d14, type: 3}
     weight: 2
   - rewardPrefab: {fileID: 2277685023529718003, guid: 17425ea13ef6d0d40984d779cbe31306, type: 3}
+    weight: 1
+  - rewardPrefab: {fileID: 1536908440480944303, guid: 7a9c741eea35ce34b97ccad70f599705, type: 3}
+    weight: 3
+  - rewardPrefab: {fileID: 5797664720744645465, guid: d260d63884854ba4abd13c0d6387363e, type: 3}
+    weight: 2
+  - rewardPrefab: {fileID: 3300011006504784378, guid: 060b03f1ac484ea41b0ca6dc55dfdcdf, type: 3}
+    weight: 1
+  - rewardPrefab: {fileID: 3022509507861104767, guid: e77343a361af05249b609463eae4bfd3, type: 3}
+    weight: 3
+  - rewardPrefab: {fileID: 2031972557479575575, guid: 629199a617521094bab1f5d3bab62106, type: 3}
+    weight: 2
+  - rewardPrefab: {fileID: 5240344766646553700, guid: 06d11fe8eafce4d478279e44460d761e, type: 3}
+    weight: 1
+  - rewardPrefab: {fileID: 6903925108880583032, guid: 5b8162f8226f65848a10c3b170aaaf0c, type: 3}
+    weight: 3
+  - rewardPrefab: {fileID: 6020811297936715169, guid: a8b36412a61f2924d9d378c23ff003f8, type: 3}
+    weight: 2
+  - rewardPrefab: {fileID: 5825993296176267064, guid: 26d4adb949d2515478e2191e4dbe669d, type: 3}
     weight: 1
 --- !u!4 &116460504
 Transform:
@@ -4914,8 +4928,6 @@ MonoBehaviour:
   killCount: 0
   timerText: {fileID: 0}
   gameOverPanel: {fileID: 901172335}
-  btnRestart: {fileID: 1388170407}
-  btnMainMenu: {fileID: 1864043064}
   mainMenuSceneName: MainMenu
   reviveCount: 0
 --- !u!4 &1085376939
@@ -6096,17 +6108,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1364013833}
   m_CullTransparentMesh: 1
---- !u!114 &1388170407 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 76280913213014477, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-  m_PrefabInstance: {fileID: 1889374044}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1405309097
 GameObject:
   m_ObjectHideFlags: 0
@@ -9429,17 +9430,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1845778766}
   m_CullTransparentMesh: 1
---- !u!114 &1864043064 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2908106098905775006, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-  m_PrefabInstance: {fileID: 1889374044}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1870218946
 GameObject:
   m_ObjectHideFlags: 0
