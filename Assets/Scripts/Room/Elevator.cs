@@ -3,23 +3,39 @@ using UnityEngine.SceneManagement;
 
 public class Elevator : MonoBehaviour
 {
-    [SerializeField] string sceneName = "demo"; // 이동할 씬 이름
+    [SerializeField] private string sceneName = "demo";
 
-    private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.CompareTag("Player")) {
-            Debug.Log("플레이어 진입! 다음 씬으로 이동합니다.");
-            SceneManager.LoadScene(sceneName);
-        }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Player")) return;
+
+        Debug.Log("Player entered elevator. Loading next scene.");
+        SavePlayerState(collision.gameObject);
+        SceneManager.LoadScene(sceneName);
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    //void Start()
-    //{
 
-    //}
+    private void SavePlayerState(GameObject playerObject)
+    {
+        if (PlayerStateManager.Instance == null) return;
 
-    //// Update is called once per frame
-    //void Update()
-    //{
+        PlayerHealth playerHealth = playerObject.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            PlayerStateManager.Instance.SetHealth(playerHealth.currentHealth, playerHealth.maxHealth);
+        }
 
-    //}
+        PlayerStats playerStats = playerObject.GetComponent<PlayerStats>();
+        if (playerStats != null)
+        {
+            PlayerStateManager.Instance.SetGold(playerStats.currentGold);
+        }
+
+        if (TabController.instance == null) return;
+
+        PlayerStateManager.Instance.SetInventory(TabController.instance.inventoryItems);
+        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Helmet, TabController.instance.GetEquippedItem(Item.ItemType.Helmet));
+        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Weapon, TabController.instance.GetEquippedItem(Item.ItemType.Weapon));
+        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Upper, TabController.instance.GetEquippedItem(Item.ItemType.Upper));
+        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Bottom, TabController.instance.GetEquippedItem(Item.ItemType.Bottom));
+    }
 }
