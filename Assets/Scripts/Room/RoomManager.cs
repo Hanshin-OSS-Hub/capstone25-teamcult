@@ -894,8 +894,8 @@ public class RoomManager : MonoBehaviour {
         // 원본 보상 리스트에서 선택된 프리팹을 방에 추가
         room.rewardPrefabs.Add(allRewards[selectedIndex].rewardPrefab);
 
-        // 원본 보상 가중치를 절반으로 감소
-        double newWeight = allRewards[selectedIndex].weight * 0.5;
+        // 원본 보상 가중치를 퍼센트 감소 
+        double newWeight = allRewards[selectedIndex].weight * 0.9;
         allRewards[selectedIndex].weight = newWeight;
 
         // 변경된 원본 가중치를 세그먼트 트리에 반영
