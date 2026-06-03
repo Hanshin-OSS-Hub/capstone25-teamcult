@@ -30,12 +30,17 @@ public class Elevator : MonoBehaviour
             PlayerStateManager.Instance.SetGold(playerStats.currentGold);
         }
 
-        if (TabController.instance == null) return;
+        if (TabController.instance != null)
+        {
+            PlayerStateManager.Instance.SetInventory(TabController.instance.inventoryItems);
+            PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Helmet, TabController.instance.GetEquippedItem(Item.ItemType.Helmet));
+            PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Weapon, TabController.instance.GetEquippedItem(Item.ItemType.Weapon));
+            PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Upper, TabController.instance.GetEquippedItem(Item.ItemType.Upper));
+            PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Bottom, TabController.instance.GetEquippedItem(Item.ItemType.Bottom));
+        }
 
-        PlayerStateManager.Instance.SetInventory(TabController.instance.inventoryItems);
-        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Helmet, TabController.instance.GetEquippedItem(Item.ItemType.Helmet));
-        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Weapon, TabController.instance.GetEquippedItem(Item.ItemType.Weapon));
-        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Upper, TabController.instance.GetEquippedItem(Item.ItemType.Upper));
-        PlayerStateManager.Instance.SetEquippedItem(Item.ItemType.Bottom, TabController.instance.GetEquippedItem(Item.ItemType.Bottom));
+        PlayerStateManager.Instance.MarkPendingState();
+
+        Debug.Log($"[PlayerState] Saved before scene load: {PlayerStateManager.Instance.GetDebugSummary()}");
     }
 }

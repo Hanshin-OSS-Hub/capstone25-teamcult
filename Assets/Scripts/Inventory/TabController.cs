@@ -59,12 +59,14 @@ public class TabController : MonoBehaviour
         if (weaponContent != null)
         {
             foreach (Transform child in weaponContent.transform) Destroy(child.gameObject);
+            weaponSlotUI.Clear();
             CreateEmptySlots(weaponContent.transform, weaponSlotUI);
         }
 
         if (consumableContent != null)
         {
             foreach (Transform child in consumableContent.transform) Destroy(child.gameObject);
+            consumableSlotUI.Clear();
             CreateEmptySlots(consumableContent.transform, consumableSlotUI);
         }
     }
@@ -196,6 +198,60 @@ public class TabController : MonoBehaviour
         }
 
         AddItem(item);
+    }
+
+    public void RestoreFromState(PlayerStateData state)
+    {
+        if (state == null) return;
+
+        InitInventory();
+        inventoryItems.Clear();
+
+        foreach (Item item in state.inventoryItems)
+        {
+            AddItem(item);
+        }
+
+        RestoreEquippedItem(ref equippedHead, state.equippedHelmet, headSlotImage);
+        RestoreEquippedItem(ref equippedWeapon, state.equippedWeapon, weaponSlotImage);
+        RestoreEquippedItem(ref equippedUpper, state.equippedUpper, armorSlotImage);
+        RestoreEquippedItem(ref equippedBottom, state.equippedBottom, shoesSlotImage);
+
+        if (equippedWeapon != null && PlayerSlash.instance != null)
+        {
+            PlayerSlash.instance.SetWeapon(equippedWeapon);
+        }
+    }
+
+    private void RestoreEquippedItem(ref Item equippedItem, Item item, Image slotImage)
+    {
+        equippedItem = item;
+
+        if (item != null && PlayerStats.instance != null)
+        {
+            PlayerStats.instance.EquipStat(item);
+        }
+
+        if (slotImage == null) return;
+
+        EquipSlot equipSlot = slotImage.GetComponent<EquipSlot>();
+        if (equipSlot != null)
+        {
+            equipSlot.SetItem(item);
+            return;
+        }
+
+        if (item != null)
+        {
+            slotImage.sprite = item.icon;
+            slotImage.enabled = true;
+            slotImage.color = Color.white;
+        }
+        else
+        {
+            slotImage.sprite = null;
+            slotImage.enabled = false;
+        }
     }
 
     public void ToggleWindow()

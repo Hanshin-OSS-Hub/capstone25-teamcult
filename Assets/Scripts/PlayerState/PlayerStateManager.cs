@@ -6,8 +6,10 @@ public class PlayerStateManager : MonoBehaviour
     public static PlayerStateManager Instance { get; private set; }
 
     [SerializeField] private PlayerStateData state = new PlayerStateData();
+    [SerializeField] private bool hasPendingState = false;
 
     public PlayerStateData State => state;
+    public bool HasPendingState => hasPendingState;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -38,6 +40,18 @@ public class PlayerStateManager : MonoBehaviour
     public void ResetState()
     {
         state.ResetToDefaults();
+        hasPendingState = false;
+    }
+
+    public void MarkPendingState()
+    {
+        hasPendingState = true;
+    }
+
+    public void ClearPendingState()
+    {
+        state.ResetToDefaults();
+        hasPendingState = false;
     }
 
     public void SetHealth(float currentHealth, float maxHealth)
@@ -85,5 +99,17 @@ public class PlayerStateManager : MonoBehaviour
     public void SetEquippedItem(Item.ItemType itemType, Item item)
     {
         state.SetEquippedItem(itemType, item);
+    }
+
+    public string GetDebugSummary()
+    {
+        return $"Health {state.currentHealth}/{state.maxHealth}, Gold {state.gold}, Inventory {state.inventoryItems.Count}, " +
+            $"Helmet {GetItemName(state.equippedHelmet)}, Weapon {GetItemName(state.equippedWeapon)}, " +
+            $"Upper {GetItemName(state.equippedUpper)}, Bottom {GetItemName(state.equippedBottom)}";
+    }
+
+    private string GetItemName(Item item)
+    {
+        return item != null ? item.itemName : "None";
     }
 }
