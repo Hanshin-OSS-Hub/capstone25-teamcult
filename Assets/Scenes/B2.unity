@@ -664,6 +664,10 @@ MonoBehaviour:
   mainBranchLength: 6
   subBranchLength: 5
   twigCount: 4
+  useDemoLayout: 0
+  demoRoomSequence: 000000000100000006000000050000000300000004000000
+  demoLineDirection: 1
+  demoBossIndexOverride: -1
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
@@ -10208,14 +10212,6 @@ PrefabInstance:
       propertyPath: m_Tiles.Array.data[5].second.m_TileSpriteIndex
       value: 118
       objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: bossPrefabs.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'bossPrefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 5992420211836326638, guid: 0db852d21752c6d44af3494f42ecb7a9, type: 3}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 

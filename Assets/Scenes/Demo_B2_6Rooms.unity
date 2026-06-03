@@ -665,60 +665,12 @@ MonoBehaviour:
   subBranchLength: 5
   twigCount: 4
   useDemoLayout: 1
-  demoRoomSequence:
-  - 0
-  - 1
-  - 6
-  - 5
-  - 3
-  - 4
+  demoRoomSequence: 000000000100000006000000050000000300000004000000
   demoLineDirection: 1
   demoBossIndexOverride: -1
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
-  - rewardPrefab: {fileID: 6556682162464984417, guid: 01d04464cf8b59a46b06293f19d12409, type: 3}
-    weight: 10
-  - rewardPrefab: {fileID: 7560031331587836119, guid: 57583cbde71171441a346dc1590e3102, type: 3}
-    weight: 10
-  - rewardPrefab: {fileID: 6569257465189000285, guid: 992fe83a2ee49f64995da349c3be7336, type: 3}
-    weight: 10
-  - rewardPrefab: {fileID: 4875841497743311934, guid: 21710129f0eb47f4bbd29ac0d708814e, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 5784821071563565229, guid: 42eb1027b032cae47aae17374121c3f0, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 3636716517886858846, guid: 179331b9f5604844ab952cc9f4a1fe14, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 6445344401784188878, guid: b952ed050e8b21e47963ca3f3cbe27fa, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 7113657796099367501, guid: f7a79fe178c0bd248b6e56f211d15416, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 4430919538778924198, guid: 6e2339fac785d0e45bd36c7f301caad0, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 6095461095797544426, guid: b763a57dde547044db2123bc8efaddce, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 7877680013972068381, guid: 6b2b019a263f8aa46a6dd72bc2582d14, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 2277685023529718003, guid: 17425ea13ef6d0d40984d779cbe31306, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 1536908440480944303, guid: 7a9c741eea35ce34b97ccad70f599705, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 5797664720744645465, guid: d260d63884854ba4abd13c0d6387363e, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 3300011006504784378, guid: 060b03f1ac484ea41b0ca6dc55dfdcdf, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 3022509507861104767, guid: e77343a361af05249b609463eae4bfd3, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 2031972557479575575, guid: 629199a617521094bab1f5d3bab62106, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 5240344766646553700, guid: 06d11fe8eafce4d478279e44460d761e, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 6903925108880583032, guid: 5b8162f8226f65848a10c3b170aaaf0c, type: 3}
-    weight: 1
-  - rewardPrefab: {fileID: 6020811297936715169, guid: a8b36412a61f2924d9d378c23ff003f8, type: 3}
-    weight: 2
-  - rewardPrefab: {fileID: 5825993296176267064, guid: 26d4adb949d2515478e2191e4dbe669d, type: 3}
-    weight: 1
 --- !u!4 &116460504
 Transform:
   m_ObjectHideFlags: 0
@@ -10218,14 +10170,6 @@ PrefabInstance:
       propertyPath: m_Tiles.Array.data[5].second.m_TileSpriteIndex
       value: 118
       objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: bossPrefabs.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5610456583426836143, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
-      propertyPath: 'bossPrefabs.Array.data[1]'
-      value: 
-      objectReference: {fileID: 5992420211836326638, guid: 0db852d21752c6d44af3494f42ecb7a9, type: 3}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
