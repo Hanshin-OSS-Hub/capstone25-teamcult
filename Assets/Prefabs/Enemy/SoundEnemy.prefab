@@ -436,7 +436,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.095832825, y: 1.0336304}
+  m_Offset: {x: -0.15336466, y: 0.9003389}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -446,7 +446,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.2951813, y: 1.9397383}
+  m_Size: {x: 0.7967863, y: 1.3022571}
   m_EdgeRadius: 0
 --- !u!50 &4318164848150652596
 Rigidbody2D:
@@ -492,7 +492,12 @@ MonoBehaviour:
   moveSpeed: 1.5
   bulletPrefab: {fileID: 0}
   attackCooldown: 5
+  firePoint: {fileID: 0}
+  fireOffset: {x: 0, y: 0.8}
+  defaultFacingLeft: 0
+  attackStateName: Attack
   soundWavePrefab: {fileID: 4398518681569855357, guid: fd1954663759ef84ba014d463984b83e, type: 3}
+  waveDelay: 0.2
 --- !u!114 &8097645234907946754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,7 +515,6 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
-  damageTextPrefab: {fileID: 0}
   maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
   maSeokDropChance: 5
 --- !u!114 &5606284035456738859

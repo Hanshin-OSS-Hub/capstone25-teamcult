@@ -497,7 +497,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.011998653, y: 0.9781953}
+  m_Offset: {x: -0.037405252, y: 0.88927233}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -507,7 +507,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.4065728, y: 1.7600315}
+  m_Size: {x: 1.1016943, y: 1.3281205}
   m_EdgeRadius: 0
 --- !u!114 &1632963202285371723
 MonoBehaviour:
@@ -526,7 +526,6 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 5426590261145882454}
   hpText: {fileID: 7723665171618840921}
-  damageTextPrefab: {fileID: 4564337897028911482, guid: 5df6cde4faae9b348a15afd20c517f33, type: 3}
   maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
   maSeokDropChance: 5
 --- !u!114 &5026637328627402883
@@ -569,6 +568,9 @@ MonoBehaviour:
   dashSpeed: 10
   dashCooldown: 2
   prepareTime: 0.4
+  dashDuration: 0.9
+  wallCheckDistance: 0.5
+  wallNameKeyword: Tilemap_Wall
   damage: 10
   maxHealth: 30
 --- !u!95 &2357294865263631128

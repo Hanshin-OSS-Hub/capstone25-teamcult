@@ -419,6 +419,9 @@ MonoBehaviour:
   moveSpeed: 1.5
   bulletPrefab: {fileID: 5708858304311431416, guid: 92094d09da8fe4442b3bed16b0e1cd70, type: 3}
   attackCooldown: 1.5
+  firePoint: {fileID: 0}
+  fireOffset: {x: 0, y: 0.8}
+  defaultFacingLeft: 0
   attackStateName: Attack
 --- !u!61 &45593336640219567
 BoxCollider2D:
@@ -454,7 +457,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0000009536743, y: 0.9709821}
+  m_Offset: {x: -0.01745367, y: 0.9098911}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -464,7 +467,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.0935869, y: 1.6785173}
+  m_Size: {x: 0.7270422, y: 1.5563354}
   m_EdgeRadius: 0
 --- !u!50 &4318164848150652596
 Rigidbody2D:
