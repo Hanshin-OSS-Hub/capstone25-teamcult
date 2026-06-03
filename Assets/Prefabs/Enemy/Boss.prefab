@@ -525,7 +525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f2e760a169d5542997d0fb8a20d3b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossEnemy
-  detectRange: 12
+  detectRange: 20
   stopDistance: 20
   moveSpeed: 1
   bulletPrefab: {fileID: 7413192166536640196, guid: fde2b9091d2bc6449a1735bae72324ee, type: 3}
