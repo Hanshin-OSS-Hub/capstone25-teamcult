@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 2.21}
+  m_AnchoredPosition: {x: -0.13, y: 2.035}
   m_SizeDelta: {x: 2, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3276193369246436675
@@ -313,15 +313,14 @@ GameObject:
   m_Component:
   - component: {fileID: 8289710430788153010}
   - component: {fileID: 6060076300500543558}
-  - component: {fileID: 543463158948013408}
   - component: {fileID: 45593336640219567}
   - component: {fileID: 4318164848150652596}
   - component: {fileID: 8097645234907946754}
   - component: {fileID: 5606284035456738859}
-  - component: {fileID: -3488884844288335399}
-  - component: {fileID: 7622657765356482813}
+  - component: {fileID: 6648536702406314250}
+  - component: {fileID: 3771125443502255065}
   m_Layer: 0
-  m_Name: Ranged 2
+  m_Name: Boss B1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,7 +336,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10, y: 5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2722688690972811932}
@@ -388,11 +387,11 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 78645907
-  m_SortingLayer: 6
+  m_SortingLayerID: -2094805801
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2022268893501099586, guid: ccdca6d40c5ea7e4db5504fd363ad81d, type: 3}
+  m_Sprite: {fileID: 7327924489319291332, guid: f31dbec25eba0a6419bef5a0dedfd4a3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -402,27 +401,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &543463158948013408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5992420211836326638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34f1208e072d00c4eb27d786c1ee86cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectRange: 20
-  stopDistance: 5
-  moveSpeed: 1.5
-  bulletPrefab: {fileID: 5708858304311431416, guid: 92094d09da8fe4442b3bed16b0e1cd70, type: 3}
-  attackCooldown: 1.5
-  firePoint: {fileID: 0}
-  fireOffset: {x: 0, y: 0.8}
-  defaultFacingLeft: 0
-  attackStateName: Attack
 --- !u!61 &45593336640219567
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -457,17 +435,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.01745367, y: 0.9098911}
+  m_Offset: {x: 0, y: 1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 2, y: 2}
+    oldSize: {x: 4.266667, y: 4.266667}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.7270422, y: 1.5563354}
+  m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
 --- !u!50 &4318164848150652596
 Rigidbody2D:
@@ -513,8 +491,8 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
-  maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
-  maSeokDropChance: 5
+  maSeokPrefab: {fileID: 0}
+  maSeokDropChance: 50
 --- !u!114 &5606284035456738859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,15 +505,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9e0bd43e60d54aa1445e9a941a072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: 
+  enemyName: Doctor
   level: 1
-  maxHealth: 30
+  maxHealth: 500
   damage: 5
-  moveSpeed: 2
+  moveSpeed: 0
   defense: 0
-  danger: 10
+  danger: 10000
   expReward: 10
---- !u!114 &-3488884844288335399
+--- !u!114 &6648536702406314250
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -544,10 +522,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 5992420211836326638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3622d40062d56bc4087c9f6ef2df5d22, type: 3}
+  m_Script: {fileID: 11500000, guid: 27f2e760a169d5542997d0fb8a20d3b2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaSeokAura
---- !u!95 &7622657765356482813
+  m_EditorClassIdentifier: Assembly-CSharp::BossEnemy
+  detectRange: 20
+  stopDistance: 20
+  moveSpeed: 1
+  bulletPrefab: {fileID: 7413192166536640196, guid: fde2b9091d2bc6449a1735bae72324ee, type: 3}
+  attackCooldown: 1.5
+  spreadAngle: 25
+  attackAnimLength: 0.5
+  magicCirclePrefab: {fileID: 3690183335811230425, guid: cfd4b4da51c75aa4ebeceb147729da5d, type: 3}
+  magicCooldown: 0.05
+  magicWarningTime: 1.5
+  magicDamage: 5
+  predictTime: 0.8
+  curveBulletPrefab: {fileID: 8881826392568671362, guid: 08a42c85ce19fa74d8dad8b9ef4febc1, type: 3}
+  curveBulletCount: 9
+  curveBulletSpeed: 3
+  curveCooldown: 2
+  curveDelay: 0.75
+  curveAngle: 80
+  curveBulletLifetime: 6
+  curveDamage: 10
+  maxHealth: 100
+--- !u!95 &3771125443502255065
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -557,7 +556,7 @@ Animator:
   m_GameObject: {fileID: 5992420211836326638}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c2f21830558232747835781fe70b815e, type: 2}
+  m_Controller: {fileID: 9100000, guid: a09150bc4c9c3b0409376b4e61f733eb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

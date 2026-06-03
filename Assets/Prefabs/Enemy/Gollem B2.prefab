@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: -1805567787568491945}
   - component: {fileID: 4942037797384581204}
   m_Layer: 0
-  m_Name: shield
+  m_Name: Gollem B2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +426,7 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2389193319765324094, guid: 0b82113e673b0294e824db471070b8ee, type: 3}
+  m_Sprite: {fileID: 2399449935258208175, guid: 356567c11cb99114fad78b00ce9fa3e7, type: 3}
   m_Color: {r: 1, g: 0.9716981, b: 0.99039453, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -497,7 +497,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.031691015, y: 0.8794105}
+  m_Offset: {x: -0.072692275, y: 0.9392259}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -507,7 +507,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.1464468, y: 1.4618719}
+  m_Size: {x: 1.3167927, y: 1.326014}
   m_EdgeRadius: 0
 --- !u!114 &1632963202285371723
 MonoBehaviour:
@@ -545,7 +545,7 @@ MonoBehaviour:
   maxHealth: 100
   damage: 8
   moveSpeed: 2
-  defense: 3
+  defense: 5
   danger: 10
   expReward: 10
 --- !u!95 &-1805567787568491945
@@ -558,7 +558,7 @@ Animator:
   m_GameObject: {fileID: 7575059051696297546}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1e4da33755d5a9f468b30b5494dd9831, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9ef77a6b01bc86c43bf7efca1becdfaf, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

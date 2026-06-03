@@ -321,7 +321,7 @@ GameObject:
   - component: {fileID: -3488884844288335399}
   - component: {fileID: 7622657765356482813}
   m_Layer: 0
-  m_Name: RangedEnemy
+  m_Name: Range B2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

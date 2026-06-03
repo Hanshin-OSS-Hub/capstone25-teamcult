@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1.31}
+  m_AnchoredPosition: {x: 0, y: 2.21}
   m_SizeDelta: {x: 2, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3276193369246436675
@@ -249,7 +249,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.08, y: 0.8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8195298439520751876
@@ -313,15 +313,15 @@ GameObject:
   m_Component:
   - component: {fileID: 8289710430788153010}
   - component: {fileID: 6060076300500543558}
+  - component: {fileID: 543463158948013408}
   - component: {fileID: 45593336640219567}
   - component: {fileID: 4318164848150652596}
-  - component: {fileID: 5252887062323239908}
   - component: {fileID: 8097645234907946754}
   - component: {fileID: 5606284035456738859}
   - component: {fileID: -3488884844288335399}
-  - component: {fileID: -6362361233462157908}
+  - component: {fileID: 7622657765356482813}
   m_Layer: 0
-  m_Name: SoundEnemy
+  m_Name: Range B1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -392,7 +392,7 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5197972505386241327, guid: bd9fd0ad0d155644ca3e35c64ef2b55d, type: 3}
+  m_Sprite: {fileID: -2022268893501099586, guid: ccdca6d40c5ea7e4db5504fd363ad81d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -402,6 +402,27 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &543463158948013408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5992420211836326638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f1208e072d00c4eb27d786c1ee86cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectRange: 20
+  stopDistance: 5
+  moveSpeed: 1.5
+  bulletPrefab: {fileID: 5708858304311431416, guid: 92094d09da8fe4442b3bed16b0e1cd70, type: 3}
+  attackCooldown: 1.5
+  firePoint: {fileID: 0}
+  fireOffset: {x: 0, y: 0.8}
+  defaultFacingLeft: 0
+  attackStateName: Attack
 --- !u!61 &45593336640219567
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -436,7 +457,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.15336466, y: 0.9003389}
+  m_Offset: {x: -0.01745367, y: 0.9098911}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -446,7 +467,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.7967863, y: 1.3022571}
+  m_Size: {x: 0.7270422, y: 1.5563354}
   m_EdgeRadius: 0
 --- !u!50 &4318164848150652596
 Rigidbody2D:
@@ -475,29 +496,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &5252887062323239908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5992420211836326638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1373b59d5470a26498ab1b16bd7c3fa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SoundEnemy
-  detectRange: 20
-  stopDistance: 20
-  moveSpeed: 1.5
-  bulletPrefab: {fileID: 0}
-  attackCooldown: 5
-  firePoint: {fileID: 0}
-  fireOffset: {x: 0, y: 0.8}
-  defaultFacingLeft: 0
-  attackStateName: Attack
-  soundWavePrefab: {fileID: 4398518681569855357, guid: fd1954663759ef84ba014d463984b83e, type: 3}
-  waveDelay: 0.2
 --- !u!114 &8097645234907946754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,7 +547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3622d40062d56bc4087c9f6ef2df5d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaSeokAura
---- !u!95 &-6362361233462157908
+--- !u!95 &7622657765356482813
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -559,7 +557,7 @@ Animator:
   m_GameObject: {fileID: 5992420211836326638}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b48fa33d68c6afe43b860aeece637c24, type: 2}
+  m_Controller: {fileID: 9100000, guid: c2f21830558232747835781fe70b815e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

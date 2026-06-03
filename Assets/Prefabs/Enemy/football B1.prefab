@@ -355,7 +355,7 @@ GameObject:
   - component: {fileID: -2479722704769909259}
   - component: {fileID: 2357294865263631128}
   m_Layer: 0
-  m_Name: football Enemy
+  m_Name: football B1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

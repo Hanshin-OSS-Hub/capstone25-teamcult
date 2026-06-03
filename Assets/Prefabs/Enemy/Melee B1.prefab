@@ -350,12 +350,12 @@ GameObject:
   - component: {fileID: 5737570492644780809}
   - component: {fileID: 7058035459449768779}
   - component: {fileID: 4953120043658853714}
+  - component: {fileID: 2648757534870701617}
   - component: {fileID: 1632963202285371723}
   - component: {fileID: 5026637328627402883}
   - component: {fileID: -1805567787568491945}
-  - component: {fileID: 4942037797384581204}
   m_Layer: 0
-  m_Name: GOLLEM
+  m_Name: Melee B1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -426,7 +426,7 @@ SpriteRenderer:
   m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2399449935258208175, guid: 356567c11cb99114fad78b00ce9fa3e7, type: 3}
+  m_Sprite: {fileID: -1893995098325767188, guid: e4f45f77a594bc5458eeee13851b8fe0, type: 3}
   m_Color: {r: 1, g: 0.9716981, b: 0.99039453, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -497,7 +497,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.072692275, y: 0.9392259}
+  m_Offset: {x: -0.010400265, y: 0.9092176}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -507,8 +507,27 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.3167927, y: 1.326014}
+  m_Size: {x: 0.8654087, y: 1.4874208}
   m_EdgeRadius: 0
+--- !u!114 &2648757534870701617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7575059051696297546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502ab6748711c9444ac742fb2c269837, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectRange: 25
+  attackRange: 2
+  attackCooldown: 1
+  moveSpeed: 2
+  damage: 1
+  attackStateName: Attack
+  damageDelay: 0.2
 --- !u!114 &1632963202285371723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542,7 +561,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: 
   level: 1
-  maxHealth: 100
+  maxHealth: 30
   damage: 8
   moveSpeed: 2
   defense: 3
@@ -558,7 +577,7 @@ Animator:
   m_GameObject: {fileID: 7575059051696297546}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9ef77a6b01bc86c43bf7efca1becdfaf, type: 2}
+  m_Controller: {fileID: 9100000, guid: 757d8e19289ffb14f88432d0caa4d9c4, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -570,24 +589,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4942037797384581204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7575059051696297546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25695dd01ffce7943a87c8c31b15a156, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShieldEnemy
-  detectRange: 25
-  attackRange: 2
-  attackCooldown: 1
-  moveSpeed: 0
-  damage: 0
-  damageDelay: 0.2
 --- !u!1 &8159280484519314814
 GameObject:
   m_ObjectHideFlags: 0

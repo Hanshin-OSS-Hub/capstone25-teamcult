@@ -111,7 +111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.13, y: 2.035}
+  m_AnchoredPosition: {x: 0, y: 1.31}
   m_SizeDelta: {x: 2, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3276193369246436675
@@ -249,7 +249,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.08, y: 0.8}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8195298439520751876
@@ -315,12 +315,13 @@ GameObject:
   - component: {fileID: 6060076300500543558}
   - component: {fileID: 45593336640219567}
   - component: {fileID: 4318164848150652596}
+  - component: {fileID: 5252887062323239908}
   - component: {fileID: 8097645234907946754}
   - component: {fileID: 5606284035456738859}
-  - component: {fileID: 6648536702406314250}
-  - component: {fileID: 3771125443502255065}
+  - component: {fileID: -3488884844288335399}
+  - component: {fileID: -6362361233462157908}
   m_Layer: 0
-  m_Name: Boss
+  m_Name: Sound B1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -336,7 +337,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10, y: 5, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2722688690972811932}
@@ -387,11 +388,11 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: -2094805801
-  m_SortingLayer: 3
+  m_SortingLayerID: 78645907
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7327924489319291332, guid: f31dbec25eba0a6419bef5a0dedfd4a3, type: 3}
+  m_Sprite: {fileID: -5197972505386241327, guid: bd9fd0ad0d155644ca3e35c64ef2b55d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -435,17 +436,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 1}
+  m_Offset: {x: -0.15336466, y: 0.9003389}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 4.266667, y: 4.266667}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 0.7967863, y: 1.3022571}
   m_EdgeRadius: 0
 --- !u!50 &4318164848150652596
 Rigidbody2D:
@@ -474,6 +475,29 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &5252887062323239908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5992420211836326638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1373b59d5470a26498ab1b16bd7c3fa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundEnemy
+  detectRange: 20
+  stopDistance: 20
+  moveSpeed: 1.5
+  bulletPrefab: {fileID: 0}
+  attackCooldown: 5
+  firePoint: {fileID: 0}
+  fireOffset: {x: 0, y: 0.8}
+  defaultFacingLeft: 0
+  attackStateName: Attack
+  soundWavePrefab: {fileID: 4398518681569855357, guid: fd1954663759ef84ba014d463984b83e, type: 3}
+  waveDelay: 0.2
 --- !u!114 &8097645234907946754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -491,8 +515,8 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
-  maSeokPrefab: {fileID: 0}
-  maSeokDropChance: 50
+  maSeokPrefab: {fileID: 1139846805951607920, guid: 3abca0d2baa8476448db7dba4165148e, type: 3}
+  maSeokDropChance: 5
 --- !u!114 &5606284035456738859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,15 +529,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de9e0bd43e60d54aa1445e9a941a072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Doctor
+  enemyName: 
   level: 1
-  maxHealth: 500
+  maxHealth: 30
   damage: 5
-  moveSpeed: 0
+  moveSpeed: 2
   defense: 0
-  danger: 10000
+  danger: 10
   expReward: 10
---- !u!114 &6648536702406314250
+--- !u!114 &-3488884844288335399
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -522,31 +546,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5992420211836326638}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27f2e760a169d5542997d0fb8a20d3b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 3622d40062d56bc4087c9f6ef2df5d22, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossEnemy
-  detectRange: 20
-  stopDistance: 20
-  moveSpeed: 1
-  bulletPrefab: {fileID: 7413192166536640196, guid: fde2b9091d2bc6449a1735bae72324ee, type: 3}
-  attackCooldown: 1.5
-  spreadAngle: 25
-  attackAnimLength: 0.5
-  magicCirclePrefab: {fileID: 3690183335811230425, guid: cfd4b4da51c75aa4ebeceb147729da5d, type: 3}
-  magicCooldown: 0.05
-  magicWarningTime: 1.5
-  magicDamage: 5
-  predictTime: 0.8
-  curveBulletPrefab: {fileID: 8881826392568671362, guid: 08a42c85ce19fa74d8dad8b9ef4febc1, type: 3}
-  curveBulletCount: 9
-  curveBulletSpeed: 3
-  curveCooldown: 2
-  curveDelay: 0.75
-  curveAngle: 80
-  curveBulletLifetime: 6
-  curveDamage: 10
-  maxHealth: 100
---- !u!95 &3771125443502255065
+  m_EditorClassIdentifier: Assembly-CSharp::MaSeokAura
+--- !u!95 &-6362361233462157908
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -556,7 +559,7 @@ Animator:
   m_GameObject: {fileID: 5992420211836326638}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a09150bc4c9c3b0409376b4e61f733eb, type: 2}
+  m_Controller: {fileID: 9100000, guid: b48fa33d68c6afe43b860aeece637c24, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
