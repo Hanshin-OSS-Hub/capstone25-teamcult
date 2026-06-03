@@ -45,18 +45,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
-  - {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
-  - {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
+  - {fileID: 7575059051696297546, guid: c2f87a159a1141247891b06405296569, type: 3}
+  - {fileID: 5992420211836326638, guid: badba31c2d21183418064cae8c15fbd2, type: 3}
   - {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
   normalEnemyGroups:
   - floor: 1
     enemyPrefabs:
-    - {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
+    - {fileID: 7575059051696297546, guid: c2f87a159a1141247891b06405296569, type: 3}
     - {fileID: 5992420211836326638, guid: badba31c2d21183418064cae8c15fbd2, type: 3}
     - {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
   - floor: 2
     enemyPrefabs:
     - {fileID: 5992420211836326638, guid: c697cd50cfa2d924da153d5b7dc19de0, type: 3}
+    - {fileID: 7575059051696297546, guid: 06361b6579359b749bff098f115e32e0, type: 3}
     - {fileID: 5992420211836326638, guid: cc2c93477e82add4881a2f1a0102d4fb, type: 3}
   specialRoomEnemyGroups:
   - roomType: 6
@@ -85,7 +86,7 @@ MonoBehaviour:
   - {fileID: 5992420211836326638, guid: ca4fd19ae206bcd43abfeddc2c3f84b8, type: 3}
   - {fileID: 5992420211836326638, guid: 0db852d21752c6d44af3494f42ecb7a9, type: 3}
   spawnInterval: -1
-  spawnRadius: 3
+  spawnRadius: 2.5
   enemiesPerTick: 1
   useAutoSpawnForDebug: 0
   debugFloor: 1
