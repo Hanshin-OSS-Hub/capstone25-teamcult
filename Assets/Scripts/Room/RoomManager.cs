@@ -85,6 +85,7 @@ public class RoomManager : MonoBehaviour {
     [SerializeField, Range(0f, 100f)] private float demoMaSeokDropChance = 100f;
     [SerializeField] private bool demoOverrideBossHealth = true;
     [SerializeField] private int demoBossMaxHealth = 100;
+    [SerializeField] private string demoBossNextSceneName = "";
 
     private int[,] mapPlan;
     public RoomData[,] rooms;
@@ -628,13 +629,30 @@ public class RoomManager : MonoBehaviour {
 
                     if (interiorPrefab != null) {
                         // 내부 프리팹을 벽 프리팹의 자식으로 생성하거나 같은 위치에 생성
-                        Instantiate(interiorPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
+                        GameObject interior = Instantiate(interiorPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
+                        ApplyDemoBossElevatorOverride(currentType, interior);
                     }
                 }
             }
         }
 
         AppendStartupLog($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
+    }
+
+    void ApplyDemoBossElevatorOverride(RoomType roomType, GameObject interior) {
+        if (!useDemoLayout || roomType != RoomType.Boss || interior == null) {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(demoBossNextSceneName)) {
+            return;
+        }
+
+        Elevator elevator = interior.GetComponentInChildren<Elevator>(true);
+
+        if (elevator != null) {
+            elevator.SetSceneName(demoBossNextSceneName);
+        }
     }
 
     GameObject GetRandomInteriorByType(RoomType type) {

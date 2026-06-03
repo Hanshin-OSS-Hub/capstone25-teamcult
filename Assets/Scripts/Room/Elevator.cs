@@ -5,6 +5,12 @@ public class Elevator : MonoBehaviour
 {
     [SerializeField] private string sceneName = "demo";
 
+    public void SetSceneName(string nextSceneName)
+    {
+        if (string.IsNullOrWhiteSpace(nextSceneName)) return;
+        sceneName = nextSceneName;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
