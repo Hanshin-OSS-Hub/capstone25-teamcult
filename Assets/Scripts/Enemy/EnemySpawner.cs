@@ -86,6 +86,7 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField] private int debugFloor = 1;
 
     private Transform player;
+    private RoomManager roomManager;
     private bool hasSpawnedSoundEnemyInRoom;
 
     void Awake() {
@@ -94,6 +95,7 @@ public class EnemySpawner : MonoBehaviour {
 
     void Start() {
         GameObject p = GameObject.Find("Player");
+        roomManager = Object.FindAnyObjectByType<RoomManager>();
 
         if (p != null) {
             player = p.transform;
@@ -359,6 +361,7 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         GameObject boss = Instantiate(bossPrefab, spawnCenter, Quaternion.identity);
+        ApplyDemoOverrides(boss, true);
         return boss;
     }
 
@@ -424,8 +427,19 @@ public class EnemySpawner : MonoBehaviour {
 
         Vector3 spawnPos = GetRandomSpawnPosition(spawnCenter);
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        ApplyDemoOverrides(enemy, false);
 
         return enemy;
+    }
+
+    private void ApplyDemoOverrides(GameObject enemyObject, bool isBoss) {
+        if (roomManager == null) {
+            roomManager = Object.FindAnyObjectByType<RoomManager>();
+        }
+
+        if (roomManager != null) {
+            roomManager.ApplyDemoEnemyOverrides(enemyObject, isBoss);
+        }
     }
 
     private bool IsSoundEnemyPrefab(GameObject prefab) {

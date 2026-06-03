@@ -81,6 +81,10 @@ public class RoomManager : MonoBehaviour {
     };
     [SerializeField] private DemoLineDirection demoLineDirection = DemoLineDirection.Right;
     [SerializeField] private int demoBossIndexOverride = -1;
+    [SerializeField] private bool demoOverrideEnemyDropChance = true;
+    [SerializeField, Range(0f, 100f)] private float demoMaSeokDropChance = 100f;
+    [SerializeField] private bool demoOverrideBossHealth = true;
+    [SerializeField] private int demoBossMaxHealth = 100;
 
     private int[,] mapPlan;
     public RoomData[,] rooms;
@@ -1050,5 +1054,42 @@ public class RoomManager : MonoBehaviour {
         }
 
         return currentFloor - 1;
+    }
+
+    public void ApplyDemoEnemyOverrides(GameObject enemyObject, bool isBoss) {
+        if (!useDemoLayout || enemyObject == null) {
+            return;
+        }
+
+        EnemyHealth enemyHealth = enemyObject.GetComponent<EnemyHealth>();
+
+        if (demoOverrideEnemyDropChance && enemyHealth != null) {
+            enemyHealth.maSeokDropChance = demoMaSeokDropChance;
+        }
+
+        if (!isBoss || !demoOverrideBossHealth) {
+            return;
+        }
+
+        int bossMaxHealth = Mathf.Max(1, demoBossMaxHealth);
+        EnemyStats enemyStats = enemyObject.GetComponent<EnemyStats>();
+
+        if (enemyStats != null) {
+            enemyStats.maxHealth = bossMaxHealth;
+        }
+
+        if (enemyHealth != null) {
+            enemyHealth.currentHealth = bossMaxHealth;
+        }
+
+        BossEnemy bossEnemy = enemyObject.GetComponent<BossEnemy>();
+        if (bossEnemy != null) {
+            bossEnemy.maxHealth = bossMaxHealth;
+        }
+
+        BossEnemy2 bossEnemy2 = enemyObject.GetComponent<BossEnemy2>();
+        if (bossEnemy2 != null) {
+            bossEnemy2.maxHealth = bossMaxHealth;
+        }
     }
 }

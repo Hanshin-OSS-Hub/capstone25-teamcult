@@ -685,6 +685,10 @@ MonoBehaviour:
   demoRoomSequence: 000000000100000006000000050000000300000004000000
   demoLineDirection: 1
   demoBossIndexOverride: -1
+  demoOverrideEnemyDropChance: 1
+  demoMaSeokDropChance: 100
+  demoOverrideBossHealth: 1
+  demoBossMaxHealth: 100
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
