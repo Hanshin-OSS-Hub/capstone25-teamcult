@@ -491,7 +491,6 @@ MonoBehaviour:
   nameText: {fileID: 0}
   hpSlider: {fileID: 8195298439520751876}
   hpText: {fileID: 4723044827827355349}
-  damageTextPrefab: {fileID: 0}
   maSeokPrefab: {fileID: 0}
   maSeokDropChance: 50
 --- !u!114 &5606284035456738859
@@ -538,6 +537,14 @@ MonoBehaviour:
   magicWarningTime: 1.5
   magicDamage: 5
   predictTime: 0.8
+  curveBulletPrefab: {fileID: 8881826392568671362, guid: 08a42c85ce19fa74d8dad8b9ef4febc1, type: 3}
+  curveBulletCount: 9
+  curveBulletSpeed: 3
+  curveCooldown: 2
+  curveDelay: 0.75
+  curveAngle: 80
+  curveBulletLifetime: 6
+  curveDamage: 10
   maxHealth: 100
 --- !u!95 &3771125443502255065
 Animator:
