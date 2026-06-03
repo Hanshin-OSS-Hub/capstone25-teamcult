@@ -689,7 +689,7 @@ MonoBehaviour:
   demoMaSeokDropChance: 100
   demoOverrideBossHealth: 1
   demoBossMaxHealth: 100
-  demoBossNextSceneName: Demo_B2
+  demoBossNextSceneName: 
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
@@ -9974,7 +9974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Lens.OrthographicSize
-      value: 5
+      value: 5.624
       objectReference: {fileID: 0}
     - target: {fileID: 6334039247746042052, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: Target.TrackingTarget
@@ -9982,7 +9982,7 @@ PrefabInstance:
       objectReference: {fileID: 621932869}
     - target: {fileID: 7464120130602480550, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: orthographic size
-      value: 5
+      value: 5.624
       objectReference: {fileID: 0}
     - target: {fileID: 7684064059664549931, guid: e8355d2264d3c28469f24a55103abf78, type: 3}
       propertyPath: m_AnchoredPosition.x
