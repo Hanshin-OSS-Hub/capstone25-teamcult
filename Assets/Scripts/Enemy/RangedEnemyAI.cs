@@ -4,11 +4,11 @@ using UnityEngine;
 public class RangedEnemy : MonoBehaviour
 {
     [Header("설정")]
-    public float detectRange = 7f;   // 사거리 (이 안에 들어오면 감지)
-    public float stopDistance = 3f;  // 너무 붙지 않는 최소 거리
-    public float moveSpeed = 1.5f;   // 이동 속도
-    public GameObject bulletPrefab;  // 발사할 투사체 프리팹
-    public float attackCooldown = 2f; // 2초마다 발사
+    public float detectRange = 7f;
+    public float stopDistance = 3f;
+    public float moveSpeed = 1.5f;
+    public GameObject bulletPrefab;
+    public float attackCooldown = 2f;
 
     [Header("발사 위치")]
     [Tooltip("총알이 나갈 위치. 비워두면 적 위치 + 오프셋 사용")]
@@ -20,19 +20,19 @@ public class RangedEnemy : MonoBehaviour
     [Tooltip("스프라이트가 기본적으로 오른쪽을 보고 있으면 false, 왼쪽을 보고 있으면 true")]
     public bool defaultFacingLeft = false;
 
-    [SerializeField] protected string attackStateName = "Attack"; // 공격 애니 상태 이름
+    [SerializeField] protected string attackStateName = "Attack";
 
     protected float lastAttackTime;
     protected Transform player;
     protected Animator anim;
     protected SpriteRenderer sr;
     protected bool hasSpotted = false;
+    protected bool isAttacking = false;
 
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
-        if (anim != null) anim.enabled = false; // 평소엔 꺼두기
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
     }
@@ -42,6 +42,7 @@ public class RangedEnemy : MonoBehaviour
         if (player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
+        bool isWalking = false;
 
         if (distance <= detectRange)
         {
@@ -54,7 +55,7 @@ public class RangedEnemy : MonoBehaviour
 
             FacePlayer();
 
-            if (Time.time > lastAttackTime + attackCooldown)
+            if (!isAttacking && Time.time > lastAttackTime + attackCooldown)
             {
                 Shoot();
                 lastAttackTime = Time.time;
@@ -63,11 +64,15 @@ public class RangedEnemy : MonoBehaviour
             if (distance > stopDistance)
             {
                 transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+                isWalking = true;
             }
         }
+
+        // 걷기/대기 전환은 컨트롤러가 isWalking 보고 알아서
+        if (anim != null && !isAttacking)
+            anim.SetBool("isWalking", isWalking);
     }
 
-    // 플레이어 위치에 따라 스프라이트 좌우 반전
     protected void FacePlayer()
     {
         if (sr == null || player == null) return;
@@ -76,12 +81,10 @@ public class RangedEnemy : MonoBehaviour
         sr.flipX = defaultFacingLeft ? playerIsRight : !playerIsRight;
     }
 
-    // 실제 총알이 나갈 위치 계산
     protected Vector3 GetFirePosition()
     {
         if (firePoint != null) return firePoint.position;
 
-        // firePoint 없으면 적 위치 + 오프셋 (바라보는 방향에 맞춰 X 보정)
         bool facingRight = (player != null) && (player.position.x > transform.position.x);
         float offsetX = facingRight ? fireOffset.x : -fireOffset.x;
         return transform.position + new Vector3(offsetX, fireOffset.y, 0f);
@@ -89,7 +92,6 @@ public class RangedEnemy : MonoBehaviour
 
     protected virtual void Shoot()
     {
-        // 투사체 발사할 때만 애니 한 번 재생
         if (anim != null)
         {
             StopAllCoroutines();
@@ -110,14 +112,17 @@ public class RangedEnemy : MonoBehaviour
 
     protected IEnumerator PlayOnce()
     {
-        anim.enabled = true;
-        anim.Rebind();
+        isAttacking = true;
+
+        anim.SetBool("isWalking", false);
         anim.Play(attackStateName, 0, 0f);
         anim.Update(0f);
+
         yield return null;
         float len = anim.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(len > 0 ? len : 0.5f);
-        anim.enabled = false;
+
+        isAttacking = false;
     }
 
     void OnDrawGizmosSelected()

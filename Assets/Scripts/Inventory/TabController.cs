@@ -135,16 +135,29 @@ public class TabController : MonoBehaviour
 
         if (item.itemType == Item.ItemType.Heart)
         {
-            ElementalManager manager = FindFirstObjectByType<ElementalManager>();
-            if (manager != null)
+            // 하트 적용 중 어떤 예외가 나도 클릭 이벤트(=탭 입력)가 멈추지 않게 보호
+            try
             {
-                manager.ActivateAbility(item.elementType);
-                HeartSlotController.instance.SetHeart(item.elementType);
-            }
+                ElementalManager manager = FindFirstObjectByType<ElementalManager>();
+                if (manager != null)
+                    manager.ActivateAbility(item.elementType);
+                else
+                    Debug.LogWarning("ElementalManager를 찾지 못했습니다.");
 
-            PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
-            if (playerHealth != null)
-                playerHealth.Heal(4f);
+                // ★ 핵심 수정: instance null 체크 추가
+                if (HeartSlotController.instance != null)
+                    HeartSlotController.instance.SetHeart(item.elementType);
+                else
+                    Debug.LogWarning("HeartSlotController.instance가 null입니다.");
+
+                PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
+                if (playerHealth != null)
+                    playerHealth.Heal(4f);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"하트 적용 중 예외: {e}");
+            }
 
             inventoryItems.Remove(item);
             fromSlot.ClearSlot();

@@ -1293,6 +1293,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stat Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4372220086541122, guid: 88c5acaf973099845883c2e560c501af, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 396726495524148764, guid: 88c5acaf973099845883c2e560c501af, type: 3}
       propertyPath: m_Camera
       value: 
@@ -21866,6 +21870,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5947502270005952061, guid: e6182bf6bc999da43918b07e79daad64, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6277220669477262627, guid: e6182bf6bc999da43918b07e79daad64, type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6910471666223372732, guid: e6182bf6bc999da43918b07e79daad64, type: 3}
