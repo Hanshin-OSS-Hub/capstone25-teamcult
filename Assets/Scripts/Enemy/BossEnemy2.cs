@@ -21,12 +21,23 @@ public class BossEnemy2 : MonoBehaviour
     public int magicDamage = 25;
     public float triangleRadius = 2f;
 
+    [Header("곡선탄 패턴")]
+    public GameObject curveBulletPrefab;   // BossProjectile 붙은 탄 프리팹
+    public int curveBulletCount = 9;
+    public float curveBulletSpeed = 3f;
+    public float curveCooldown = 2f;
+    public float curveDelay = 0.75f;       // 직진하다 꺾이기까지 시간(초)
+    public float curveAngle = 80f;         // 꺾이는 각도(+ 반시계 / - 시계)
+    public float curveBulletLifetime = 6f;
+    public int curveDamage = 10;
+
     [Header("체력")]
     public int maxHealth = 200;
     private int currentHealth;
 
     private float lastAttackTime;
     private float lastMagicTime;
+    private float lastCurveTime;
     private Transform player;
     private Rigidbody2D playerRb;
     private Animator anim;
@@ -59,6 +70,13 @@ public class BossEnemy2 : MonoBehaviour
                 if (SFXManager.Instance != null)
                     SFXManager.Instance.PlaySFX(SFXType.BossGreeting);
             }
+
+            // 플레이어 방향에 따라 좌우 반전
+            if (player.position.x < transform.position.x)
+                transform.localScale = new Vector3(-1, 1, 1);
+            else
+                transform.localScale = new Vector3(1, 1, 1);
+
             if (!isMagicAttacking && Time.time > lastMagicTime + magicCooldown)
             {
                 StartCoroutine(MagicCirclePattern());
@@ -68,6 +86,11 @@ public class BossEnemy2 : MonoBehaviour
             {
                 ShootTriple();
                 lastAttackTime = Time.time;
+            }
+            if (Time.time > lastCurveTime + curveCooldown)
+            {
+                FireCurvePattern();
+                lastCurveTime = Time.time;
             }
             if (distance > stopDistance)
             {
@@ -132,6 +155,34 @@ public class BossEnemy2 : MonoBehaviour
             EnemyBullet bulletScript = bullet.GetComponent<EnemyBullet>();
             if (bulletScript != null)
                 bulletScript.SetDirection(shootDir);
+        }
+    }
+
+    void FireCurvePattern()
+    {
+        if (curveBulletPrefab == null)
+        {
+            Debug.LogWarning("?? Curve Bullet Prefab이 비어 있습니다!");
+            return;
+        }
+
+        Debug.Log("?? 곡선탄 발사! 개수: " + curveBulletCount);
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySFX(SFXType.BossAttack);
+
+        for (int i = 0; i < curveBulletCount; i++)
+        {
+            float angle = (360f / curveBulletCount) * i;
+            float rad = angle * Mathf.Deg2Rad;
+            Vector2 shootDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+            GameObject bullet = Instantiate(curveBulletPrefab, transform.position, Quaternion.identity);
+            BossProjectile proj = bullet.GetComponent<BossProjectile>();
+            if (proj != null)
+                proj.Init(shootDir, curveBulletSpeed, curveDelay, curveAngle, curveBulletLifetime, curveDamage);
+            else
+                Debug.LogWarning("?? 프리팹에 BossProjectile 스크립트가 없습니다!");
         }
     }
 
