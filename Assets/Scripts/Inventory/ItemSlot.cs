@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; // 이 줄이 반드시 필요합니다!
-// 인터페이스 2개 추가 (IPointerEnterHandler, IPointerExitHandler)
+using UnityEngine.EventSystems; 
+
 public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Image icon;
@@ -34,7 +34,6 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    // --- 마우스가 슬롯에 들어왔을 때 ---
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (item != null) // 아이템이 있을 때만 툴팁 표시
@@ -43,17 +42,13 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    // --- 마우스가 슬롯에서 나갔을 때 ---
     public void OnPointerExit(PointerEventData eventData)
     {
         TooltipController.instance.HideTooltip();
     }
 
-    // --- 슬롯이 비활성화될 때 (인벤토리 닫을 때) ---
     private void OnDisable()
     {
-        // 마우스 올린 채로 인벤토리를 끄면 OnPointerExit가 안 불려서
-        // 툴팁이 남는 문제 방지
         if (TooltipController.instance != null)
         {
             TooltipController.instance.HideTooltip();

@@ -59,15 +59,11 @@ public class ItemPickUp : MonoBehaviour {
             Debug.Log($"{newItemWithOption.itemName} 획득 완료!");
             LogManager.Instance.AddLog($"{newItemWithOption.itemName}을(를) 획득했습니다.");
 
-            // =========================================================
-            // ★ 아이템 획득 성공 효과음 추가
-            // (SFXType.ItemEquip 대신 원하시는 다른 효과음 이름으로 바꾸셔도 됩니다)
-            // =========================================================
             if (SFXManager.Instance != null) {
                 SFXManager.Instance.PlaySFX(SFXType.ItemEquip); 
             }
 
-            Destroy(gameObject); // 효과음 재생 후 아이템 오브젝트 파괴
+            Destroy(gameObject); 
         }
         else {
             LogManager.Instance.AddLog("인벤토리가 가득 차서 아이템을 획득할 수 없습니다.");
