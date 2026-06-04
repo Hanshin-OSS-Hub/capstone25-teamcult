@@ -222,9 +222,9 @@ public class SoundWaveController : MonoBehaviour
 
         float scoreRatio = maxScore > 0 ? Mathf.Clamp01((float)waveScore / maxScore) : 0f;
         float targetMissChance = Mathf.Lerp(0f, 30f, scoreRatio);
-        playerStats.missChance = targetMissChance;
+        playerStats.soundWaveMissChance = targetMissChance;
 
-        Debug.Log($"[SoundWave] waveScore: {waveScore}/{maxScore}, missChance: {playerStats.missChance}%");
+        Debug.Log($"[SoundWave] waveScore: {waveScore}/{maxScore}, soundWaveMissChance: {playerStats.soundWaveMissChance}%, missChanceReduce: {playerStats.missChanceReduce}%, effectiveMissChance: {playerStats.GetEffectiveMissChance()}%");
     }
 
     private void TryCleanupAfterOwnerDeath()

@@ -41,7 +41,7 @@ public class PlayerBullet : MonoBehaviour
             if (enemy != null)
             {
                 // 음파 디버프로 인한 빗나감 판정
-                float missChance = (PlayerStats.instance != null) ? PlayerStats.instance.missChance : 0f;
+                float missChance = (PlayerStats.instance != null) ? PlayerStats.instance.GetEffectiveMissChance() : 0f;
                 if (missChance > 0f && Random.Range(0f, 100f) < missChance)
                 {
                     enemy.ShowMiss(); // 빗나감
