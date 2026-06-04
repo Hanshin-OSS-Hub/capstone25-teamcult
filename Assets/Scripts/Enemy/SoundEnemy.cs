@@ -21,8 +21,9 @@ public class SoundEnemy : RangedEnemy
             _waveController = waveObj.GetComponent<SoundWaveController>();
         }
         EnemyHealth enemyHealth = GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
-            enemyHealth.OnDeath += RestoreMissChance;
+        //if (enemyHealth != null) {
+        //    enemyHealth.OnDeath += RestoreMissChance;
+        //}
     }
 
     protected override void Shoot()
@@ -64,14 +65,4 @@ public class SoundEnemy : RangedEnemy
         }
     }
 
-    private void RestoreMissChance()
-    {
-        if (PlayerStats.instance == null || _waveController == null) return;
-        float applied = _waveController.GetAppliedMissChance();
-        if (applied > 0)
-        {
-            PlayerStats.instance.missChance = Mathf.Max(0f, PlayerStats.instance.missChance - applied);
-            LogManager.Instance.AddLog($"[디버그] 회피율 복구됨: {PlayerStats.instance.missChance}%");
-        }
-    }
 }

@@ -53,7 +53,7 @@ MonoBehaviour:
   maxRadius: 3
   maxWorldRadius: 50
   waveThickness: 0.05
-  hitThreshold: 1
+  hitThreshold: 0.2
   waveScore: 0
   maxScore: 100
   scoreDecayDelay: 10

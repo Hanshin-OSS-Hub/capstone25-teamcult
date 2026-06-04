@@ -4,8 +4,7 @@ using UnityEngine.Rendering.Universal;
 
 public class SoundWaveController : MonoBehaviour
 {
-    private class Wave
-    {
+    private class Wave {
         public Vector4 Center;
         public Vector3 WorldPos;
         public float Radius;
@@ -27,16 +26,12 @@ public class SoundWaveController : MonoBehaviour
     [SerializeField] private float maxWorldRadius = 50.0f;
     [SerializeField] private float waveThickness = 0.05f;
     [SerializeField] private float hitThreshold = 1.0f;
-    [SerializeField] private float missChancePenalty = 5f;
-    [SerializeField] private float missChanceCooldown = 3f;
 
     [Header("Score & Dynamic Effect Settings")]
     [SerializeField] private int waveScore = 0;
     [SerializeField] private int maxScore = 100;
     [SerializeField] private float scoreDecayDelay = 10f;
-    private float _lastHitTime;
-    private float _lastMissChanceTime = -999f;
-    private float _appliedMissChance = 0f;
+    private float _lastHitTime; 
 
     [Header("Screen Distortion (URP Feature)")]
     [SerializeField] private UniversalRendererData rendererData;
@@ -61,36 +56,31 @@ public class SoundWaveController : MonoBehaviour
         if (rendererData != null)
         {
             _glitchFeature = rendererData.rendererFeatures.Find(x => x.name == "ScreenDistortionRF");
-            if (_glitchFeature is FullScreenPassRendererFeature fullScreenPass)
-            {
+            if (_glitchFeature is FullScreenPassRendererFeature fullScreenPass) {
                 _glitchMaterial = fullScreenPass.passMaterial;
             }
         }
 
-        if (_glitchFeature != null) _glitchFeature.SetActive(false);
+        if (_glitchFeature != null) { _glitchFeature.SetActive(false); }
         _mainCam = Camera.main;
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
+        if (playerObj != null) {
             playerTransform = playerObj.transform;
         }
-        else
-        {
+        else {
             Debug.LogWarning("Player 태그를 가진 오브젝트를 찾을 수 없습니다!");
         }
     }
 
-    void Update()
-    {
+    void Update() {
         UpdateAndUploadWaves();
         UpdateGlitchIntensity();
         HandleScoreDecay();
         TryCleanupAfterOwnerDeath();
     }
 
-    public void TriggerScreenDistortion()
-    {
+    public void TriggerScreenDistortion() {
         waveScore = Mathf.Min(waveScore + 10, maxScore);
         _lastHitTime = Time.time;
         _currentDynamicDuration = Mathf.Lerp(1.0f, 3.0f, (float)waveScore / maxScore);
@@ -98,54 +88,44 @@ public class SoundWaveController : MonoBehaviour
         if (_glitchFeature != null) _glitchFeature.SetActive(true);
     }
 
-    private void UpdateGlitchIntensity()
-    {
+    private void UpdateGlitchIntensity() {
         if (_glitchFeature == null || _glitchTimer > _currentDynamicDuration) return;
 
         _glitchTimer += Time.deltaTime;
         float intensity = 0f;
         float maxIntensity = Mathf.Lerp(0.3f, 1.0f, (float)waveScore / maxScore);
 
-        if (_glitchTimer <= 0.5f)
-        {
+        if (_glitchTimer <= 0.5f) {
             intensity = maxIntensity;
         }
-        else if (_glitchTimer <= _currentDynamicDuration)
-        {
+        else if (_glitchTimer <= _currentDynamicDuration) {
             float t = (_glitchTimer - 0.5f) / (_currentDynamicDuration - 0.5f);
             intensity = Mathf.Lerp(maxIntensity, 0.0f, t);
         }
-        else
-        {
+        else {
             _glitchFeature.SetActive(false);
         }
 
-        if (_glitchMaterial != null)
-        {
+        if (_glitchMaterial != null) {
             _glitchMaterial.SetFloat(IntensityID, intensity);
         }
     }
 
-    private void HandleScoreDecay()
-    {
+    private void HandleScoreDecay() {
         if (waveScore <= 0) return;
 
-        if (Time.time - _lastHitTime >= scoreDecayDelay)
-        {
-            if (Time.frameCount % 60 == 0)
-            {
+        if (Time.time - _lastHitTime >= scoreDecayDelay) {
+            if (Time.frameCount % 60 == 0) {
                 waveScore = Mathf.Max(waveScore - 1, 0);
             }
         }
     }
 
-    public void CreateWave()
-    {
+    public void CreateWave() {
         if (_ownerDead) return;
         if (_activeWaves.Count >= 30 || enemyTransform == null) return;
 
-        _activeWaves.Add(new Wave
-        {
+        _activeWaves.Add(new Wave {
             Center = GetEnemyScreenPos(),
             WorldPos = enemyTransform.position,
             Radius = 0f,
@@ -154,23 +134,7 @@ public class SoundWaveController : MonoBehaviour
             HasHitPlayer = false
         });
 
-        if (playerTransform != null)
-        {
-            TriggerScreenDistortion();
-            PlayerStats playerStats = playerTransform.GetComponent<PlayerStats>();
-            if (playerStats != null && Time.time - _lastMissChanceTime >= missChanceCooldown)
-            {
-                _lastMissChanceTime = Time.time;
-                float before = playerStats.missChance;
-                playerStats.missChance = Mathf.Min(playerStats.missChance + missChancePenalty, 30f);
-                float added = playerStats.missChance - before;
-                _appliedMissChance += added;
-                LogManager.Instance.AddLog($"[음파] 명중률 감소: {playerStats.missChance}%");
-            }
-        }
     }
-
-    public float GetAppliedMissChance() => _appliedMissChance;
 
     public void SetOwnerTransform(Transform owner)
     {
@@ -203,8 +167,17 @@ public class SoundWaveController : MonoBehaviour
                 wave.WorldPos = enemyTransform.position;
             }
 
-            if (progress >= 1.0f)
-            {
+            if (!wave.HasHitPlayer && playerTransform != null) {
+                float currentWorldRadius = progress * maxWorldRadius;
+                float distanceToPlayer = Vector3.Distance(wave.WorldPos, playerTransform.position);
+
+                if (Mathf.Abs(distanceToPlayer - currentWorldRadius) < hitThreshold) {
+                    wave.HasHitPlayer = true;
+                    TriggerScreenDistortion();
+                }
+            }
+
+            if (progress >= 1.0f) {
                 _activeWaves.RemoveAt(i);
                 continue;
             }
