@@ -56,5 +56,5 @@ MonoBehaviour:
   hitThreshold: 0.2
   waveScore: 0
   maxScore: 100
-  scoreDecayDelay: 10
+  scoreDecayDelay: 6
   rendererData: {fileID: 11400000, guid: c39a50e2891368b448fd7b43fece1f95, type: 2}

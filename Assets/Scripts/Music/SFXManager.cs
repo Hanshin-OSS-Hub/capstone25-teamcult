@@ -70,16 +70,16 @@ public class SFXManager : MonoBehaviour
 
     public void PlaySFX(SFXType type)
     {
-        if (lastFrame != Time.frameCount)
-        {
-            if (playCountThisFrame > 0)
-            {
-                Debug.Log($"[SFX] Frame {lastFrame}: PlaySFX called {playCountThisFrame} times");
-            }
+        //if (lastFrame != Time.frameCount)
+        //{
+        //    if (playCountThisFrame > 0)
+        //    {
+        //        Debug.Log($"[SFX] Frame {lastFrame}: PlaySFX called {playCountThisFrame} times");
+        //    }
 
-            lastFrame = Time.frameCount;
-            playCountThisFrame = 0;
-        }
+        //    lastFrame = Time.frameCount;
+        //    playCountThisFrame = 0;
+        //}
 
         playCountThisFrame++;
 
@@ -89,10 +89,10 @@ public class SFXManager : MonoBehaviour
             {
                 if (!source.isPlaying)
                 {
-                    Debug.Log(
-                        $"[SFX LOAD CHECK] Frame {Time.frameCount}: type={type}, clip={data.clip.name}, " +
-                        $"loadState={data.clip.loadState}, preload={data.clip.preloadAudioData}"
-                    );
+                    //Debug.Log(
+                    //    $"[SFX LOAD CHECK] Frame {Time.frameCount}: type={type}, clip={data.clip.name}, " +
+                    //    $"loadState={data.clip.loadState}, preload={data.clip.preloadAudioData}"
+                    //);
                     source.PlayOneShot(data.clip, data.volume);
                     return;
                 }

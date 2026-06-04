@@ -83,6 +83,7 @@ public class SoundWaveController : MonoBehaviour
     public void TriggerScreenDistortion() {
         waveScore = Mathf.Min(waveScore + 10, maxScore);
         _lastHitTime = Time.time;
+        SyncMissChanceWithWaveScore();
         _currentDynamicDuration = Mathf.Lerp(1.0f, 3.0f, (float)waveScore / maxScore);
         _glitchTimer = 0f;
         if (_glitchFeature != null) _glitchFeature.SetActive(true);
@@ -116,7 +117,12 @@ public class SoundWaveController : MonoBehaviour
 
         if (Time.time - _lastHitTime >= scoreDecayDelay) {
             if (Time.frameCount % 60 == 0) {
+                int previousScore = waveScore;
                 waveScore = Mathf.Max(waveScore - 1, 0);
+
+                if (waveScore != previousScore) {
+                    SyncMissChanceWithWaveScore();
+                }
             }
         }
     }
@@ -201,6 +207,24 @@ public class SoundWaveController : MonoBehaviour
         if (enemyTransform == null || _mainCam == null) return new Vector4(0.5f, 0.5f, 0, 0);
         Vector3 viewPos = _mainCam.WorldToViewportPoint(enemyTransform.position);
         return new Vector4(viewPos.x, viewPos.y, 0, 0);
+    }
+
+    private void SyncMissChanceWithWaveScore()
+    {
+        PlayerStats playerStats = null;
+        if (playerTransform != null) {
+            playerStats = playerTransform.GetComponent<PlayerStats>();
+        }
+        if (playerStats == null) {
+            playerStats = PlayerStats.instance;
+        }
+        if (playerStats == null) return;
+
+        float scoreRatio = maxScore > 0 ? Mathf.Clamp01((float)waveScore / maxScore) : 0f;
+        float targetMissChance = Mathf.Lerp(0f, 30f, scoreRatio);
+        playerStats.missChance = targetMissChance;
+
+        Debug.Log($"[SoundWave] waveScore: {waveScore}/{maxScore}, missChance: {playerStats.missChance}%");
     }
 
     private void TryCleanupAfterOwnerDeath()
