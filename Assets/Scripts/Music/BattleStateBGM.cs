@@ -48,8 +48,17 @@ public class BattleStateBGM : MonoBehaviour
 
     private PlayerHealth playerObserver;
     private float lastKnownHealth = -1f;
+    private Coroutine pendingPlayRoutine;
 
-    void Awake() { Instance = this; }
+    void Awake()
+    {
+        Instance = this;
+        PreloadClip(normalBGM);
+        PreloadClip(tensionBGM);
+        PreloadClip(combatBGM);
+        PreloadClip(bossBGM);
+        PreloadClip(heartMonitorSound);
+    }
 
     void Start()
     {
@@ -235,6 +244,18 @@ public class BattleStateBGM : MonoBehaviour
 
     void PlayWithCrossfade(AudioClip nextClip)
     {
+        if (nextClip.loadState != AudioDataLoadState.Loaded)
+        {
+            if (nextClip.loadState == AudioDataLoadState.Unloaded)
+            {
+                nextClip.LoadAudioData();
+            }
+
+            if (pendingPlayRoutine != null) StopCoroutine(pendingPlayRoutine);
+            pendingPlayRoutine = StartCoroutine(PlayWhenLoaded(nextClip));
+            return;
+        }
+
         int nextIndex = 1 - activeIndex; 
 
         if (musicSources[activeIndex].clip == nextClip) return;
@@ -245,6 +266,27 @@ public class BattleStateBGM : MonoBehaviour
 
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
         fadeRoutine = StartCoroutine(Crossfade(nextIndex));
+    }
+
+    private void PreloadClip(AudioClip clip)
+    {
+        if (clip == null || clip.loadState != AudioDataLoadState.Unloaded) return;
+        clip.LoadAudioData();
+    }
+
+    private IEnumerator PlayWhenLoaded(AudioClip clip)
+    {
+        while (clip != null && clip.loadState == AudioDataLoadState.Loading)
+        {
+            yield return null;
+        }
+
+        pendingPlayRoutine = null;
+
+        if (clip != null && clip.loadState == AudioDataLoadState.Loaded)
+        {
+            PlayWithCrossfade(clip);
+        }
     }
 
     IEnumerator Crossfade(int nextIndex)

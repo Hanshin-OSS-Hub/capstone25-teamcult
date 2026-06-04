@@ -32,6 +32,8 @@ public class SFXManager : MonoBehaviour
 
     private AudioSource[] sfxSources;
     private Dictionary<SFXType, SFXData> sfxDictionary;
+    private int lastFrame = -1;
+    private int playCountThisFrame = 0;
 
     void Awake()
     {
@@ -50,6 +52,11 @@ public class SFXManager : MonoBehaviour
             if (!sfxDictionary.ContainsKey(sfx.type) && sfx.clip != null)
             {
                 sfxDictionary.Add(sfx.type, sfx);
+
+                if (sfx.clip.loadState == AudioDataLoadState.Unloaded)
+                {
+                    sfx.clip.LoadAudioData();
+                }
             }
         }
 
@@ -63,12 +70,29 @@ public class SFXManager : MonoBehaviour
 
     public void PlaySFX(SFXType type)
     {
+        if (lastFrame != Time.frameCount)
+        {
+            if (playCountThisFrame > 0)
+            {
+                Debug.Log($"[SFX] Frame {lastFrame}: PlaySFX called {playCountThisFrame} times");
+            }
+
+            lastFrame = Time.frameCount;
+            playCountThisFrame = 0;
+        }
+
+        playCountThisFrame++;
+
         if (sfxDictionary.TryGetValue(type, out SFXData data))
         {
             foreach (var source in sfxSources)
             {
                 if (!source.isPlaying)
                 {
+                    Debug.Log(
+                        $"[SFX LOAD CHECK] Frame {Time.frameCount}: type={type}, clip={data.clip.name}, " +
+                        $"loadState={data.clip.loadState}, preload={data.clip.preloadAudioData}"
+                    );
                     source.PlayOneShot(data.clip, data.volume);
                     return;
                 }
