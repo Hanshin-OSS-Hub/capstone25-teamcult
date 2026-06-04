@@ -46,7 +46,7 @@ public class SoundEnemy : RangedEnemy
         // 2. 잠깐 기다렸다가 음파 발사
         yield return new WaitForSeconds(waveDelay);
 
-        LogManager.Instance.AddLog("사운드 shot()");
+        //LogManager.Instance.AddLog("사운드 shot()");
 
         if (_waveController != null)
             _waveController.CreateWave();

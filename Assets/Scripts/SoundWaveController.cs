@@ -167,11 +167,13 @@ public class SoundWaveController : MonoBehaviour
                 wave.WorldPos = enemyTransform.position;
             }
 
-            if (!wave.HasHitPlayer && playerTransform != null) {
-                float currentWorldRadius = progress * maxWorldRadius;
-                float distanceToPlayer = Vector3.Distance(wave.WorldPos, playerTransform.position);
+            if (!wave.HasHitPlayer && playerTransform != null && _mainCam != null) {
+                Vector3 playerViewportPos = _mainCam.WorldToViewportPoint(playerTransform.position);
+                Vector2 centered = new Vector2(playerViewportPos.x - wave.Center.x, playerViewportPos.y - wave.Center.y);
+                centered.x *= (float)Screen.width / Screen.height;
+                float distanceToPlayer = centered.magnitude;
 
-                if (Mathf.Abs(distanceToPlayer - currentWorldRadius) < hitThreshold) {
+                if (Mathf.Abs(distanceToPlayer - wave.Radius) <= waveThickness) {
                     wave.HasHitPlayer = true;
                     TriggerScreenDistortion();
                 }
