@@ -285,9 +285,9 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: fef60e90dd43beb4c967caca8f27cb56, type: 2}
+    m_Data: {fileID: 11400000, guid: 9f5b5ecaf8775e040ac36d5cc6969639, type: 2}
   - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: ac75af9b8f66d04428f0341f66f64cd6, type: 2}
+    m_Data: {fileID: 11400000, guid: 048e5a4a6461589449a31ec392333f6c, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -510,9 +510,9 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 1
-    m_Data: {fileID: 989422958, guid: 21ec6bb224707fd4590fb364e88e894a, type: 3}
+    m_Data: {fileID: 1396011236, guid: 21ec6bb224707fd4590fb364e88e894a, type: 3}
   - m_RefCount: 1
-    m_Data: {fileID: 789229287, guid: 21ec6bb224707fd4590fb364e88e894a, type: 3}
+    m_Data: {fileID: 1025783552, guid: 21ec6bb224707fd4590fb364e88e894a, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 2
     m_Data:
@@ -663,7 +663,7 @@ GameObject:
   - component: {fileID: 8790752915369665}
   - component: {fileID: 4349593105015505064}
   m_Layer: 0
-  m_Name: hint fire
+  m_Name: hint lightning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

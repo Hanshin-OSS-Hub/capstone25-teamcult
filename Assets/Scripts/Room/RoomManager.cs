@@ -67,6 +67,9 @@ public class RoomManager : MonoBehaviour {
 
     [Header("Special Room Hint Settings")]
     [SerializeField] private List<SpecialRoomHintGroup> specialRoomHintGroups = new List<SpecialRoomHintGroup>();
+    [SerializeField] private bool spawnSpecialRoomHintsInAllDirectionsForTest = true;
+    [SerializeField] private Vector2 specialRoomHintPositionOffset = new Vector2(10f, -10f);
+    [SerializeField] private float specialRoomHintDirectionOffset = 1f;
 
     private Dictionary<RoomType, GameObject> specialRoomHintPrefabDict = new Dictionary<RoomType, GameObject>();
 
@@ -724,7 +727,7 @@ public class RoomManager : MonoBehaviour {
                         ApplyDemoBossElevatorOverride(currentType, interior);
                     }
 
-                    SpawnSpecialRoomHint(currentType, spawnedRoom);
+                    SpawnSpecialRoomHint(currentType, spawnedRoom, requiredMask);
                 }
             }
         }
@@ -732,7 +735,7 @@ public class RoomManager : MonoBehaviour {
         AppendStartupLog($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
     }
 
-    void SpawnSpecialRoomHint(RoomType roomType, GameObject spawnedRoom) {
+    void SpawnSpecialRoomHint(RoomType roomType, GameObject spawnedRoom, int doorMask) {
         if (!IsSpecialRoomType(roomType) || spawnedRoom == null) {
             return;
         }
@@ -741,7 +744,65 @@ public class RoomManager : MonoBehaviour {
             return;
         }
 
-        Instantiate(hintPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
+        List<int> hintDirections = GetSpecialRoomHintDirections(doorMask);
+
+        for (int i = 0; i < hintDirections.Count; i++) {
+            int direction = hintDirections[i];
+            Vector3 hintPosition = spawnedRoom.transform.position + GetHintOffsetByDirection(direction) + (Vector3)specialRoomHintPositionOffset;
+            Quaternion hintRotation = Quaternion.Euler(0f, 0f, GetHintRotationZByDirection(direction));
+
+            Instantiate(hintPrefab, hintPosition, hintRotation, spawnedRoom.transform);
+        }
+    }
+
+    List<int> GetSpecialRoomHintDirections(int doorMask) {
+        List<int> hintDirections = new List<int>();
+
+        if (spawnSpecialRoomHintsInAllDirectionsForTest) {
+            for (int direction = 0; direction < 4; direction++) {
+                hintDirections.Add(direction);
+            }
+
+            return hintDirections;
+        }
+
+        for (int direction = 0; direction < 4; direction++) {
+            if ((doorMask & (1 << direction)) != 0) {
+                hintDirections.Add(direction);
+            }
+        }
+
+        if (hintDirections.Count == 0) {
+            hintDirections.Add(0);
+        }
+
+        return hintDirections;
+    }
+
+    Vector3 GetHintOffsetByDirection(int direction) {
+        switch (direction) {
+            case 1:
+                return Vector3.right * ((roomSize.x * 0.5f) + specialRoomHintDirectionOffset);
+            case 2:
+                return Vector3.down * ((roomSize.y * 0.5f) + specialRoomHintDirectionOffset);
+            case 3:
+                return Vector3.left * ((roomSize.x * 0.5f) + specialRoomHintDirectionOffset);
+            default:
+                return Vector3.up * ((roomSize.y * 0.5f) + specialRoomHintDirectionOffset);
+        }
+    }
+
+    float GetHintRotationZByDirection(int direction) {
+        switch (direction) {
+            case 1:
+                return -90f;
+            case 2:
+                return 180f;
+            case 3:
+                return 90f;
+            default:
+                return 0f;
+        }
     }
 
     void ApplyDemoBossElevatorOverride(RoomType roomType, GameObject interior) {
