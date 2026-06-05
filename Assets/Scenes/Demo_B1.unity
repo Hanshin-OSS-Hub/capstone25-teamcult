@@ -393,12 +393,15 @@ MonoBehaviour:
   - type: 3
     interiorPrefabs:
     - {fileID: 4866158564602013184, guid: 7e515546bb1a04940b913892fd22e6d8, type: 3}
+  specialRoomHintGroups:
+  - type: 6
+    hintPrefab: {fileID: 4866158564602013184, guid: 8da660b8573a1214dbf48194d1d0057a, type: 3}
   maxRooms: 15
   mainBranchLength: 6
   subBranchLength: 5
   twigCount: 4
   useDemoLayout: 1
-  demoRoomSequence: 000000000100000006000000050000000300000004000000
+  demoRoomSequence: 000000000600000006000000050000000300000004000000
   demoLineDirection: 1
   demoBossIndexOverride: -1
   demoOverrideEnemyDropChance: 1

@@ -13,6 +13,12 @@ public class RoomTypeGroup {
 }
 
 [System.Serializable]
+public class SpecialRoomHintGroup {
+    public RoomType type;
+    public GameObject hintPrefab;
+}
+
+[System.Serializable]
 public class RewardWeight {
     public GameObject rewardPrefab;
     public double weight;
@@ -58,6 +64,11 @@ public class RoomManager : MonoBehaviour {
 
     // 빠른 탐색을 위한 딕셔너리
     private Dictionary<RoomType, List<GameObject>> roomGroupDict = new Dictionary<RoomType, List<GameObject>>();
+
+    [Header("Special Room Hint Settings")]
+    [SerializeField] private List<SpecialRoomHintGroup> specialRoomHintGroups = new List<SpecialRoomHintGroup>();
+
+    private Dictionary<RoomType, GameObject> specialRoomHintPrefabDict = new Dictionary<RoomType, GameObject>();
 
     public int MapSize {
         get { return mapSize; }
@@ -116,6 +127,8 @@ public class RoomManager : MonoBehaviour {
                 roomGroupDict.Add(group.type, group.interiorPrefabs);
             }
         }
+
+        InitSpecialRoomHintPrefabDict();
     }
 
     void Start() {
@@ -131,6 +144,20 @@ public class RoomManager : MonoBehaviour {
 
         if (enemySpawner == null) {
             Debug.Log("<color=#FFA500><b>주의!</b></color> RoomManager가 EnemySpawner를 찾지 못했습니다. 특수방 생성과 층별 몬스터 수 설정이 제한됩니다.");
+        }
+    }
+
+    void InitSpecialRoomHintPrefabDict() {
+        specialRoomHintPrefabDict.Clear();
+
+        foreach (var group in specialRoomHintGroups) {
+            if (group == null || group.hintPrefab == null) {
+                continue;
+            }
+
+            if (!specialRoomHintPrefabDict.ContainsKey(group.type)) {
+                specialRoomHintPrefabDict.Add(group.type, group.hintPrefab);
+            }
         }
     }
 
@@ -696,11 +723,25 @@ public class RoomManager : MonoBehaviour {
                         GameObject interior = Instantiate(interiorPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
                         ApplyDemoBossElevatorOverride(currentType, interior);
                     }
+
+                    SpawnSpecialRoomHint(currentType, spawnedRoom);
                 }
             }
         }
 
         AppendStartupLog($"<color=cyan><b>[3] 드로우 완료!</b></color> 실제 씬에 배치된 방 개수: {spawnCount}");
+    }
+
+    void SpawnSpecialRoomHint(RoomType roomType, GameObject spawnedRoom) {
+        if (!IsSpecialRoomType(roomType) || spawnedRoom == null) {
+            return;
+        }
+
+        if (!specialRoomHintPrefabDict.TryGetValue(roomType, out GameObject hintPrefab) || hintPrefab == null) {
+            return;
+        }
+
+        Instantiate(hintPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
     }
 
     void ApplyDemoBossElevatorOverride(RoomType roomType, GameObject interior) {
