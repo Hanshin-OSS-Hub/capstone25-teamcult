@@ -334,17 +334,16 @@ public class RoomManager : MonoBehaviour {
         List<RoomType> sequence = GetDemoRoomSequence();
         Vector2Int startPos = new Vector2Int(mapSize / 2, mapSize / 2);
         Vector2Int direction = GetDemoDirection();
-        List<Vector2Int> demoPositions = new List<Vector2Int>();
+        List<Vector2Int> demoPositions = GetDemoPositions(sequence.Count, startPos, direction);
 
         for (int i = 0; i < sequence.Count; i++) {
-            Vector2Int pos = startPos + direction * i;
+            Vector2Int pos = demoPositions[i];
 
             if (!IsInsideMap(pos)) {
                 Debug.LogError($"<color=red><b>[DemoLayout]</b></color> 데모 방 위치가 맵 범위를 벗어났습니다: {pos}");
                 return;
             }
 
-            demoPositions.Add(pos);
             RoomData room = rooms[pos.x, pos.y];
             room.type = sequence[i];
             room.status = RoomData.RoomStatus.Empty;
@@ -414,6 +413,71 @@ public class RoomManager : MonoBehaviour {
         }
 
         return sequence;
+    }
+
+    List<Vector2Int> GetDemoPositions(int count, Vector2Int startPos, Vector2Int direction) {
+        List<Vector2Int> straightPositions = GetStraightDemoPositions(count, startPos, direction);
+
+        if (AreAllPositionsInsideMap(straightPositions)) {
+            return straightPositions;
+        }
+
+        List<Vector2Int> serpentinePositions = GetSerpentineDemoPositions(count, startPos, demoLineDirection);
+
+        if (!AreAllPositionsInsideMap(serpentinePositions)) {
+            return serpentinePositions;
+        }
+
+        AppendStartupLog($"<color=cyan><b>[DemoLayout]</b></color> 직선 배치가 맵 범위를 벗어나 ㄹ자 배치로 전환합니다.");
+        return serpentinePositions;
+    }
+
+    List<Vector2Int> GetStraightDemoPositions(int count, Vector2Int startPos, Vector2Int direction) {
+        List<Vector2Int> positions = new List<Vector2Int>();
+
+        for (int i = 0; i < count; i++) {
+            positions.Add(startPos + direction * i);
+        }
+
+        return positions;
+    }
+
+    List<Vector2Int> GetSerpentineDemoPositions(int count, Vector2Int startPos, DemoLineDirection lineDirection) {
+        List<Vector2Int> positions = new List<Vector2Int>();
+        int startX = lineDirection == DemoLineDirection.Left ? mapSize / 2 : startPos.x;
+        int endX = lineDirection == DemoLineDirection.Left ? 0 : mapSize - 1;
+        int horizontalStep = lineDirection == DemoLineDirection.Left ? -1 : 1;
+        int y = startPos.y;
+        int x = startX;
+
+        for (int i = 0; i < count; i++) {
+            positions.Add(new Vector2Int(x, y));
+
+            if (i == count - 1) {
+                break;
+            }
+
+            if (x == endX) {
+                y--;
+                horizontalStep *= -1;
+                endX = horizontalStep > 0 ? mapSize - 1 : 0;
+            }
+            else {
+                x += horizontalStep;
+            }
+        }
+
+        return positions;
+    }
+
+    bool AreAllPositionsInsideMap(List<Vector2Int> positions) {
+        for (int i = 0; i < positions.Count; i++) {
+            if (!IsInsideMap(positions[i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     Vector2Int GetDemoDirection() {
