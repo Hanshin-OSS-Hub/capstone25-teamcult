@@ -375,6 +375,15 @@ MonoBehaviour:
   - type: 3
     interiorPrefabs:
     - {fileID: 4866158564602013184, guid: 656d3e0d4c8c6b44c855c1398dbad463, type: 3}
+  specialRoomHintGroups:
+  - type: 6
+    hintPrefab: {fileID: 4866158564602013184, guid: 3a3a9b73636512a418fa089576f91fc5, type: 3}
+  - type: 7
+    hintPrefab: {fileID: 4866158564602013184, guid: e3e6c90b7ad584746ba43f43075379d2, type: 3}
+  - type: 8
+    hintPrefab: {fileID: 4866158564602013184, guid: 0f970f5d078d5834e894b80e21db304e, type: 3}
+  specialRoomHintPositionOffset: {x: 10, y: -10}
+  specialRoomHintDirectionOffset: 1
   maxRooms: 15
   mainBranchLength: 6
   subBranchLength: 5
@@ -5105,7 +5114,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1166335252}
   m_HandleRect: {fileID: 1166335250}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

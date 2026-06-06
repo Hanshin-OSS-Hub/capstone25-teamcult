@@ -403,6 +403,15 @@ MonoBehaviour:
   - type: 3
     interiorPrefabs:
     - {fileID: 4866158564602013184, guid: 7e515546bb1a04940b913892fd22e6d8, type: 3}
+  specialRoomHintGroups:
+  - type: 6
+    hintPrefab: {fileID: 4866158564602013184, guid: 8da660b8573a1214dbf48194d1d0057a, type: 3}
+  - type: 7
+    hintPrefab: {fileID: 4866158564602013184, guid: 2cc7fde963cf3fe4bb4c45826dc6b34e, type: 3}
+  - type: 8
+    hintPrefab: {fileID: 4866158564602013184, guid: 2bd025bccdc7c8645881899ebadaf553, type: 3}
+  specialRoomHintPositionOffset: {x: 10, y: -10}
+  specialRoomHintDirectionOffset: 1
   maxRooms: 15
   mainBranchLength: 6
   subBranchLength: 5

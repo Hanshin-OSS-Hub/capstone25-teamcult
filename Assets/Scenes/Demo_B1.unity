@@ -396,7 +396,10 @@ MonoBehaviour:
   specialRoomHintGroups:
   - type: 6
     hintPrefab: {fileID: 4866158564602013184, guid: 8da660b8573a1214dbf48194d1d0057a, type: 3}
-  spawnSpecialRoomHintsInAllDirectionsForTest: 0
+  - type: 7
+    hintPrefab: {fileID: 4866158564602013184, guid: 2cc7fde963cf3fe4bb4c45826dc6b34e, type: 3}
+  - type: 8
+    hintPrefab: {fileID: 4866158564602013184, guid: 2bd025bccdc7c8645881899ebadaf553, type: 3}
   specialRoomHintPositionOffset: {x: 10, y: -10}
   specialRoomHintDirectionOffset: 1
   maxRooms: 15
@@ -404,7 +407,7 @@ MonoBehaviour:
   subBranchLength: 5
   twigCount: 4
   useDemoLayout: 1
-  demoRoomSequence: 000000000600000001000000050000000300000004000000
+  demoRoomSequence: 000000000600000007000000080000000300000004000000
   demoLineDirection: 1
   demoBossIndexOverride: -1
   demoOverrideEnemyDropChance: 1
