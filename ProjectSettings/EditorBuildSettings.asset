@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Sound/OLD/demo for Sound.unity
     guid: 830e926b5ea1a69479a0af6cac4fa30b
+  - enabled: 1
+    path: Assets/Scenes/ClearScene.unity
+    guid: 0fcc6dc050f3dc8449711d8cf16c6e4d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class BossEnemy2 : MonoBehaviour
 {
+    [Header("발사 위치 보정")]
+    public Vector2 firePointOffset = new Vector2(0f, 1f);  // 탄 생성 높이 보정 (X는 0 권장)
+
     [Header("이동")]
     public float detectRange = 12f;
     public float stopDistance = 4f;
@@ -143,6 +146,8 @@ public class BossEnemy2 : MonoBehaviour
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);
 
+        Vector3 spawnPos = transform.position + (Vector3)firePointOffset;
+
         Vector3 dir = (player.position - transform.position).normalized;
         float baseAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         float[] angles = { baseAngle - spreadAngle, baseAngle, baseAngle + spreadAngle };
@@ -151,7 +156,7 @@ public class BossEnemy2 : MonoBehaviour
         {
             float rad = angle * Mathf.Deg2Rad;
             Vector3 shootDir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
             EnemyBullet bulletScript = bullet.GetComponent<EnemyBullet>();
             if (bulletScript != null)
                 bulletScript.SetDirection(shootDir);
@@ -171,13 +176,15 @@ public class BossEnemy2 : MonoBehaviour
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySFX(SFXType.BossAttack);
 
+        Vector3 spawnPos = transform.position + (Vector3)firePointOffset;
+
         for (int i = 0; i < curveBulletCount; i++)
         {
             float angle = (360f / curveBulletCount) * i;
             float rad = angle * Mathf.Deg2Rad;
             Vector2 shootDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-            GameObject bullet = Instantiate(curveBulletPrefab, transform.position, Quaternion.identity);
+            GameObject bullet = Instantiate(curveBulletPrefab, spawnPos, Quaternion.identity);
             BossProjectile proj = bullet.GetComponent<BossProjectile>();
             if (proj != null)
                 proj.Init(shootDir, curveBulletSpeed, curveDelay, curveAngle, curveBulletLifetime, curveDamage);

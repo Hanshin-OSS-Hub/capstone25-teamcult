@@ -396,7 +396,7 @@ MonoBehaviour:
   demoMaSeokDropChance: 100
   demoOverrideBossHealth: 1
   demoBossMaxHealth: 200
-  demoBossNextSceneName: 
+  demoBossNextSceneName: ClearScene
   allRewards:
   - rewardPrefab: {fileID: 4213617217369435977, guid: b0478d873384c8f4b87ce4ef5065b0e4, type: 3}
     weight: 50
@@ -5114,7 +5114,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1166335252}
   m_HandleRect: {fileID: 1166335250}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
