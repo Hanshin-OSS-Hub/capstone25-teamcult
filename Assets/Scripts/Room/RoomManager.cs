@@ -67,7 +67,6 @@ public class RoomManager : MonoBehaviour {
 
     [Header("Special Room Hint Settings")]
     [SerializeField] private List<SpecialRoomHintGroup> specialRoomHintGroups = new List<SpecialRoomHintGroup>();
-    [SerializeField] private bool spawnSpecialRoomHintsInAllDirectionsForTest = true;
     [SerializeField] private Vector2 specialRoomHintPositionOffset = new Vector2(10f, -10f);
     [SerializeField] private float specialRoomHintDirectionOffset = 1f;
 
@@ -757,14 +756,6 @@ public class RoomManager : MonoBehaviour {
 
     List<int> GetSpecialRoomHintDirections(int doorMask) {
         List<int> hintDirections = new List<int>();
-
-        if (spawnSpecialRoomHintsInAllDirectionsForTest) {
-            for (int direction = 0; direction < 4; direction++) {
-                hintDirections.Add(direction);
-            }
-
-            return hintDirections;
-        }
 
         for (int direction = 0; direction < 4; direction++) {
             if ((doorMask & (1 << direction)) != 0) {
