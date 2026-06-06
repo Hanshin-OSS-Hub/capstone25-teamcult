@@ -401,7 +401,7 @@ MonoBehaviour:
   - type: 8
     hintPrefab: {fileID: 4866158564602013184, guid: 2bd025bccdc7c8645881899ebadaf553, type: 3}
   specialRoomHintPositionOffset: {x: 10, y: -10}
-  specialRoomHintDirectionOffset: 1
+  specialRoomHintDirectionOffset: -2
   maxRooms: 15
   mainBranchLength: 6
   subBranchLength: 5
