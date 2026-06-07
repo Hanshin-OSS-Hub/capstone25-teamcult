@@ -1874,90 +1874,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 522717512}
   m_CullTransparentMesh: 1
---- !u!1001 &537298710
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -6362361233462157908, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 6f10b8ff079d5ae44985327df8496d14, type: 2}
-    - target: {fileID: 191312666450871, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 191312666450871, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5252887062323239908, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: attackStateName
-      value: attack
-      objectReference: {fileID: 0}
-    - target: {fileID: 5606284035456738859, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: enemyName
-      value: sound
-      objectReference: {fileID: 0}
-    - target: {fileID: 5606284035456738859, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5992420211836326638, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_Name
-      value: Sound B2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 14.24906
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -12.981815
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8289710430788153010, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5992420211836326638, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 786748223}
-  m_SourcePrefab: {fileID: 100100000, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
 --- !u!1 &545082812
 GameObject:
   m_ObjectHideFlags: 0
@@ -2434,34 +2350,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b8162f8226f65848a10c3b170aaaf0c, type: 3}
---- !u!1 &786748213 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5992420211836326638, guid: a7df320ba25898a4aa13c673b6a72b43, type: 3}
-  m_PrefabInstance: {fileID: 537298710}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &786748223
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 786748213}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b603161a070f11c46919c5e99b5d4c0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpeakerDevil
-  detectRange: 20
-  stopDistance: 10
-  moveSpeed: 1.5
-  bulletPrefab: {fileID: 0}
-  attackCooldown: 4
-  firePoint: {fileID: 0}
-  fireOffset: {x: 0, y: 0.8}
-  defaultFacingLeft: 0
-  attackStateName: attack
-  soundWavePrefab: {fileID: 4398518681569855357, guid: fd1954663759ef84ba014d463984b83e, type: 3}
-  waveDelay: 0.2
 --- !u!1 &802055040
 GameObject:
   m_ObjectHideFlags: 0
@@ -5340,7 +5228,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1166335252}
   m_HandleRect: {fileID: 1166335250}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7903,5 +7791,4 @@ SceneRoots:
   - {fileID: 1814580644}
   - {fileID: 18226134}
   - {fileID: 331670427}
-  - {fileID: 537298710}
   - {fileID: 1178453400}
