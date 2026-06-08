@@ -6,6 +6,9 @@ public class BossEnemy2 : MonoBehaviour
     [Header("발사 위치 보정")]
     public Vector2 firePointOffset = new Vector2(0f, 1f);  // 탄 생성 높이 보정 (X는 0 권장)
 
+    [Header("크기")]
+    public float bossScale = 1.5f;
+
     [Header("이동")]
     public float detectRange = 12f;
     public float stopDistance = 4f;
@@ -44,6 +47,7 @@ public class BossEnemy2 : MonoBehaviour
     private Transform player;
     private Rigidbody2D playerRb;
     private Animator anim;
+    private SpriteRenderer sr;
     private bool hasGreeted = false;
     private bool isMagicAttacking = false;
 
@@ -52,6 +56,8 @@ public class BossEnemy2 : MonoBehaviour
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
         if (anim != null) anim.enabled = false; // 평소엔 꺼두기
+
+        sr = GetComponent<SpriteRenderer>();     // 루트(Boss B2)에 붙은 스프라이트
 
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null)
@@ -74,11 +80,10 @@ public class BossEnemy2 : MonoBehaviour
                     SFXManager.Instance.PlaySFX(SFXType.BossGreeting);
             }
 
-            // 플레이어 방향에 따라 좌우 반전
-            if (player.position.x < transform.position.x)
-                transform.localScale = new Vector3(-1, 1, 1);
-            else
-                transform.localScale = new Vector3(1, 1, 1);
+            // 크기는 항상 양수 고정 (HP바 안 뒤집히게), 방향은 스프라이트 flipX로만 처리
+            transform.localScale = new Vector3(bossScale, bossScale, 1f);
+            if (sr != null)
+                sr.flipX = (player.position.x < transform.position.x);
 
             if (!isMagicAttacking && Time.time > lastMagicTime + magicCooldown)
             {
