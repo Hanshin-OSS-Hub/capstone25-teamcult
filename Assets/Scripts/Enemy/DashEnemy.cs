@@ -14,8 +14,8 @@ public class DashEnemy : MonoBehaviour
     public float dashDuration = 0.9f;
 
     [Header("벽 감지")]
-    public float wallCheckDistance = 0.5f;
-    public string wallNameKeyword = "Tilemap_Wall"; // 이 이름 포함하면 벽으로 인식
+    public float bodyRadius = 0.5f;
+    public string wallNameKeyword = "Tilemap_Wall";
 
     [Header("공격")]
     public int damage = 10;
@@ -68,12 +68,15 @@ public class DashEnemy : MonoBehaviour
             }
             else if (!isDashing && distance > stopDistance)
             {
-                float currentSpeed = distance <= detectRange ? chaseSpeed : moveSpeed;
-                transform.position = Vector2.MoveTowards(
-                    transform.position,
-                    player.position,
-                    currentSpeed * Time.deltaTime
-                );
+                float speed = chaseSpeed;
+                Vector2 moveDir = ((Vector2)player.position - (Vector2)transform.position).normalized;
+                float step = speed * Time.deltaTime;
+
+                float wall = WallDistanceAhead(moveDir, step + bodyRadius);
+                if (wall < 0f)
+                    transform.position += (Vector3)(moveDir * step);
+                else
+                    transform.position += (Vector3)(moveDir * Mathf.Max(0f, wall - bodyRadius));
             }
         }
 
@@ -108,18 +111,21 @@ public class DashEnemy : MonoBehaviour
         yield return new WaitForSeconds(prepareTime);
 
         if (anim != null) anim.SetTrigger("ExecuteAttack");
-
         canHit = true;
 
         Vector2 dashDir = (player.position - transform.position).normalized;
         float dashTimer = 0f;
         while (dashTimer < dashDuration)
         {
-            // 앞쪽에 벽(이름으로 판별) 있으면 돌진 중단
-            if (IsWallAhead(dashDir))
+            float step = dashSpeed * Time.deltaTime;
+            float wall = WallDistanceAhead(dashDir, step + bodyRadius);
+            if (wall >= 0f)
+            {
+                transform.position += (Vector3)(dashDir * Mathf.Max(0f, wall - bodyRadius));
                 break;
+            }
 
-            transform.position += (Vector3)(dashDir * dashSpeed * Time.deltaTime);
+            transform.position += (Vector3)(dashDir * step);
             dashTimer += Time.deltaTime;
             yield return null;
         }
@@ -128,15 +134,19 @@ public class DashEnemy : MonoBehaviour
         isDashing = false;
     }
 
-    bool IsWallAhead(Vector2 dir)
+    float WallDistanceAhead(Vector2 dir, float dist)
     {
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, dir, wallCheckDistance);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, dir, dist);
+        float nearest = -1f;
         foreach (var hit in hits)
         {
             if (hit.collider != null && hit.collider.name.Contains(wallNameKeyword))
-                return true;
+            {
+                if (nearest < 0f || hit.distance < nearest)
+                    nearest = hit.distance;
+            }
         }
-        return false;
+        return nearest;
     }
 
     void OnTriggerEnter2D(Collider2D other) { TryHit(other); }
