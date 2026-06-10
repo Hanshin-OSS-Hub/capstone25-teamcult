@@ -5,14 +5,12 @@ using UnityEngine.EventSystems;
 public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public Item currentItem;
-    public Image iconImage; // 슬롯의 이미지 아이콘
+    public Image iconImage;
 
-    // 아이템 정보 세팅 및 시각적 업데이트
     public void SetItem(Item item)
     {
         currentItem = item;
 
-        // 아이콘 이미지가 인스펙터에 잘 연결되어 있는지 안전장치 추가
         if (iconImage != null)
         {
             if (currentItem != null)
@@ -33,12 +31,10 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    // 장착 해제
     public void OnPointerClick(PointerEventData eventData)
     {
         if (currentItem == null) return;
 
-        // 마우스 왼쪽(Left) 버튼을 클릭했을 때 작동
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             Item itemToUnequip = currentItem;
@@ -49,7 +45,6 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    // 툴팁 켜기
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (currentItem != null)
@@ -58,7 +53,6 @@ public class EquipSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         }
     }
 
-    // 툴팁 끄기
     public void OnPointerExit(PointerEventData eventData)
     {
         TooltipController.instance.HideTooltip();

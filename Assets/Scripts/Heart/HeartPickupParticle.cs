@@ -28,7 +28,6 @@ public class HeartPickupParticle : MonoBehaviour
         {
             if (c.name == "Heart Canvas") return c;
         }
-        // 못찾으면 가장 높은 sortingOrder 캔버스 반환
         Canvas top = null;
         int maxOrder = -9999;
         foreach (var c in canvases)
@@ -60,7 +59,7 @@ public class HeartPickupParticle : MonoBehaviour
         {
             GameObject p = new GameObject("AshParticle");
             p.transform.SetParent(canvas.transform, false);
-            p.transform.SetAsLastSibling(); // ScreenEffectPanel보다 위에 그려짐
+            p.transform.SetAsLastSibling(); 
 
             RectTransform rt = p.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.5f, 0.5f);

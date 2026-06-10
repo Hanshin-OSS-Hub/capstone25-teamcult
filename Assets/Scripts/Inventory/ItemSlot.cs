@@ -29,14 +29,13 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (item != null)
         {
             TabController.instance.EquipItem(item, this);
-            // 장착해서 아이템이 사라지면 툴팁도 꺼줌
             TooltipController.instance.HideTooltip();
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item != null) // 아이템이 있을 때만 툴팁 표시
+        if (item != null) 
         {
             TooltipController.instance.ShowTooltip(item, true);
         }

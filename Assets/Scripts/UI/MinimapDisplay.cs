@@ -3,11 +3,10 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class MinimapDisplay : MonoBehaviour {
-    // 인스펙터에서 방 종류별 색상을 설정하기 위한 구조체
     [System.Serializable]
     public struct TypeColor {
-        public RoomType roomType; // 체크할 방 종류
-        public Color color;                // 표시할 색상
+        public RoomType roomType; 
+        public Color color;                
     }
 
     private RoomManager roomManager;
@@ -22,8 +21,8 @@ public class MinimapDisplay : MonoBehaviour {
 
     [Header("Colors - Default")]
     [SerializeField] private Color wallOutlineColor = new Color(0.2f, 0.2f, 0.2f);
-    [SerializeField] private Color wallInnerColor = Color.gray; // 아직 안 가본 방 (가시권)
-    [SerializeField] private Color playerColor = Color.green;   // 현재 플레이어 위치
+    [SerializeField] private Color wallInnerColor = Color.gray; 
+    [SerializeField] private Color playerColor = Color.green;   
     [SerializeField] private Color pathColor = Color.white;
     [SerializeField] private Color emptyColor = new Color(0, 0, 0, 0f);
 
@@ -80,13 +79,11 @@ public class MinimapDisplay : MonoBehaviour {
                 int startX = x * roomPixelBlock;
                 int startY = y * roomPixelBlock;
 
-                // --- 핵심 수정: RoomType 기반 색상 결정 ---
                 Color innerColor;
                 if (x == playerIdx.x && y == playerIdx.y) {
-                    innerColor = playerColor; // 현재 위치 최우선
+                    innerColor = playerColor; 
                 }
                 else if (isVisited) {
-                    // 방문한 방은 RoomType 리스트에서 설정된 색상을 가져옴
                     innerColor = GetColorByType(roomManager.rooms[x, y].type);
                 }
                 else {
@@ -108,7 +105,6 @@ public class MinimapDisplay : MonoBehaviour {
         return Color.white; // 리스트에 설정되지 않은 Type일 경우 기본 흰색
     }
 
-    // --- 헬퍼 함수 (이전과 동일) ---
     bool CheckVisibleViaDoor(int x, int y, int size) {
         if (y + 1 < size && IsRoomVisited(x, y + 1, size) && (roomManager.GetDoorMask(x, y + 1) & (1 << 2)) != 0) return true;
         if (y - 1 >= 0 && IsRoomVisited(x, y - 1, size) && (roomManager.GetDoorMask(x, y - 1) & (1 << 0)) != 0) return true;

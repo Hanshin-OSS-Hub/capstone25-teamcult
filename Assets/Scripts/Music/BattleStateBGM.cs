@@ -5,7 +5,6 @@ public class BattleStateBGM : MonoBehaviour
 {
     public static BattleStateBGM Instance;
 
-    // ★ 위협도 4단계 (새로운 시스템)
     public enum ThreatLevel { None, Normal, Tension, Combat, Boss }
     public ThreatLevel currentLevel = ThreatLevel.None;
 
@@ -68,7 +67,7 @@ public class BattleStateBGM : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             musicSources[i] = gameObject.AddComponent<AudioSource>();
-            musicSources[i].loop = true; // 단일 곡 반복을 위해 true
+            musicSources[i].loop = true; 
             musicSources[i].volume = 0f;
             musicSources[i].ignoreListenerPause = true; 
         }
@@ -95,7 +94,7 @@ public class BattleStateBGM : MonoBehaviour
     {
         if (isGameOver) return; 
 
-        // 매 프레임 체력 관찰 및 심박동 재생 (오리지널 로직 완벽 복구)
+        // 매 프레임 체력 관찰 및 심박동 재생
         ObservePlayerHealth();
         HandleLowHealthBeep();
 
@@ -126,9 +125,6 @@ public class BattleStateBGM : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // ★ 1. 체력 관찰 및 심박동 (Original Logic)
-    // =========================================================
 
     void ObservePlayerHealth()
     {
@@ -142,21 +138,19 @@ public class BattleStateBGM : MonoBehaviour
         float currentHP = playerObserver.currentHealth;
         if (lastKnownHealth < 0) lastKnownHealth = currentHP;
 
-        // 체력이 깎였을 때 자동 글리치 및 피격음 재생
         if (currentHP < lastKnownHealth)
         {
             TriggerGlitch();
             if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.PlayerHit);
         }
 
-        // 사망 시
         if (currentHP <= 0 && lastKnownHealth > 0)
         {
             if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.PlayerDeath);
         }
 
         lastKnownHealth = currentHP;
-        SetLowHealth(currentHP > 0f && currentHP <= 2f); // 하트 하나(2f) 남았을 때 삐- 삐-
+        SetLowHealth(currentHP > 0f && currentHP <= 2f);
     }
 
     void HandleLowHealthBeep()
@@ -189,16 +183,13 @@ public class BattleStateBGM : MonoBehaviour
         if(!isGameOver) { isGlitching = true; glitchTimer = glitchDuration; } 
     }
 
-    // =========================================================
-    // ★ 2. 원소 효과 (Original Logic)
-    // =========================================================
+  
 
     public void ApplyElementalEffect(string type)
     {
         if (string.IsNullOrEmpty(type)) return;
         currentElement = type.ToLower().Trim(); 
         
-        // 예전 스크립트 기준 수치 복구
         if (currentElement == "ice") targetPitch = 0.6f; 
         else if (currentElement == "lightning") targetPitch = 1.4f; 
         else targetPitch = 1.0f;
@@ -221,9 +212,7 @@ public class BattleStateBGM : MonoBehaviour
         distortionFilter.distortionLevel = (currentElement == "fire") ? 0.5f : 0f;
     }
 
-    // =========================================================
-    // ★ 3. 위협도 기반 믹싱 (New Logic)
-    // =========================================================
+ 
 
     public void SetBattleState(ThreatLevel newLevel)
     {
@@ -310,9 +299,7 @@ public class BattleStateBGM : MonoBehaviour
         fadeRoutine = null;
     }
 
-    // =========================================================
-    // ★ 4. 게임 오버 서서히 종료 (Original Logic)
-    // =========================================================
+
 
     public void TriggerGameOver()
     {
@@ -346,16 +333,13 @@ public class BattleStateBGM : MonoBehaviour
         heartMonitorSource.Stop(); 
     }
 
-    // =========================================================
-    // ★ 5. 마법사 음파 공격 시 BGM 울렁임 (Sonic Wobble) 효과
-    // =========================================================
+  
     private Coroutine wobbleCoroutine;
 
     public void TriggerSonicWobble(float duration = 1.5f)
     {
         if (isGameOver) return;
         
-        // 기존에 울렁이고 있었다면 초기화하고 다시 시작
         if (wobbleCoroutine != null) StopCoroutine(wobbleCoroutine);
         wobbleCoroutine = StartCoroutine(SonicWobbleRoutine(duration));
     }
@@ -366,27 +350,22 @@ public class BattleStateBGM : MonoBehaviour
 
         while (timer < duration)
         {
-            // 게임 시간이 멈춰도 연출은 진행되도록 unscaledDeltaTime 사용
             timer += Time.unscaledDeltaTime; 
             
-            // ★ 핵심: 사인파(Sin)를 이용해 피치를 물결치듯 위아래로 흔듦 (속도 20, 진폭 0.15)
             float wobblePitch = Mathf.Sin(timer * 20f) * 0.15f; 
             
             musicSources[0].pitch = targetPitch + wobblePitch;
             musicSources[1].pitch = targetPitch + wobblePitch;
 
-            // ★ 추가 연출: 주파수 필터를 깎았다 풀었다 해서 "우웅-우웅-" 하는 먹먹함 생성
             float wobbleFilter = Mathf.Abs(Mathf.Sin(timer * 20f)) * 10000f;
             lowPassFilter.cutoffFrequency = 22000f - wobbleFilter;
 
             yield return null;
         }
 
-        // 효과가 끝나면 원래 상태로 정확히 복구
         musicSources[0].pitch = targetPitch;
         musicSources[1].pitch = targetPitch;
         
-        // 체력이 낮을 때 먹먹했던 상태라면 그 상태로 복구, 아니면 완전히 맑은 소리로 복구
         lowPassFilter.cutoffFrequency = isLowHealth ? 1200f : 22000f; 
         wobbleCoroutine = null;
     }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 
-// [변경] DarkFantasy 추가
 public enum MusicGenre { DeepHouse, Synthwave, DarkFantasy }
 
 [RequireComponent(typeof(AudioSource))]
@@ -37,7 +36,6 @@ public class DnBSynth : MonoBehaviour
     [HideInInspector] public int tensionLevel = 0; 
     [HideInInspector] public bool lowHealthMode = false;
 
-    // 내부 처리 변수
     private double sampleRate = 44100.0;
     private double nextTick = 0.0;
     private int stepIndex = 0;
@@ -54,14 +52,12 @@ public class DnBSynth : MonoBehaviour
     
     private System.Random rand = new System.Random();
     
-    // 글리치 변수
     private float glitchIntensity = 0.0f;
     private float attackGlitch = 0.0f;
     private float damageGlitch = 0.0f;
 
     private int[] generatedMelody = new int[16];
     
-    // ★★★ [스케일 정의] ★★★
     private int[] currentScale; 
     
     // 1. DeepHouse: 마이너 펜타토닉 (깔끔함)
@@ -110,7 +106,6 @@ public class DnBSynth : MonoBehaviour
                 currentScale = naturalMinor;
                 break;
 
-            // [NEW] DarkFantasy 설정
             case MusicGenre.DarkFantasy:
                 bpm = 90.0; // 느리고 묵직하게
                 bassWaveType = 1; // Saw (Drone용)
@@ -185,7 +180,6 @@ public class DnBSynth : MonoBehaviour
             double snare = GenSnare(pitchShift);
             double hihat = GenHihat(pitchShift);
             
-            // ★ [변경] 장르별 제네레이터 분기
             double bass = 0.0;
             double lead = 0.0;
 
@@ -247,13 +241,12 @@ public class DnBSynth : MonoBehaviour
                 if (step % 4 == 0) kTrig = true; if (step == 4 || step == 12) sTrig = true; if (step % 2 == 0) hTrig = true; 
                 break;
                 
-            // [NEW] DarkFantasy 리듬: 묵직하고 느린 쿵... 쿵...
             case MusicGenre.DarkFantasy:
                 if (step == 0) kTrig = true; // 첫 박에 아주 무거운 킥
                 if (step == 8) kTrig = true; // 중간에 한번 더
                 // 스네어 대신 둔탁한 타격음 느낌으로 12번에만
                 if (step == 12) sTrig = true; 
-                // 하이햇 대신 기괴한 금속음 (확률적)
+                // 하이햇 대신 기괴한 금속음
                 if (rand.NextDouble() < 0.3) hTrig = true; 
                 break;
         }
@@ -323,14 +316,13 @@ public class DnBSynth : MonoBehaviour
         return GetThickWave(leadV.phase, type, morph) * Math.Exp(-leadV.time*8.0) * leadVol; 
     }
 
-    // ★★★ [NEW] Dark Fantasy 전용 악기 ★★★
     
-    // 1. Dark Drone: 거대하고 지속적인 저음 (괴물의 숨소리)
+    // Dark Drone: 거대하고 지속적인 저음 (괴물의 숨소리)
     double GenDarkDrone(double p)
     {
         if (!bassV.active) return 0;
         bassV.time += p / sampleRate;
-        if (bassV.time > 2.0) bassV.active = false; // 아주 길게 (2초)
+        if (bassV.time > 2.0) bassV.active = false; 
 
         bassV.phase += bassV.freq * p / sampleRate;
 
@@ -350,7 +342,7 @@ public class DnBSynth : MonoBehaviour
         return Math.Tanh(raw * 2.0) * bassVol * 1.2; // 약간의 디스토션
     }
 
-    // 2. Ghost Bell: 차갑고 금속성인 종소리 (FM 합성)
+    // Ghost Bell: 차갑고 금속성인 종소리 (FM 합성)
     double GenGhostBell(double p)
     {
         if (!leadV.active) return 0;

@@ -67,7 +67,6 @@ public class TitleFireEffect : MonoBehaviour
 
     void Update()
     {
-        // 실시간 위치 반영
         for (int i = 0; i < charRects.Count; i++)
         {
             charRects[i].anchoredPosition = new Vector2(charFinalPositions[i].x, titleYPos);
@@ -80,7 +79,6 @@ public class TitleFireEffect : MonoBehaviour
         if (pressKeyText != null)
             pressKeyText.rectTransform.anchoredPosition = new Vector2(0, pressKeyYPos);
 
-        // 아무 키나 누르면 시작
         if (canStart && Input.anyKeyDown)
         {
             SceneManager.LoadScene(gameSceneName);

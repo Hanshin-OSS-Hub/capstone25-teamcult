@@ -48,7 +48,7 @@ public class BossEnemy : MonoBehaviour
     {
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
-        if (anim != null) anim.enabled = false; // 평소엔 꺼두기 (기본 스프라이트 유지)
+        if (anim != null) anim.enabled = false; 
 
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null)
@@ -136,7 +136,6 @@ public class BossEnemy : MonoBehaviour
     {
         if (bulletPrefab == null || player == null) return;
 
-        // 공격할 때만 애니메이터 켜고 재생
         if (anim != null)
         {
             anim.enabled = true;

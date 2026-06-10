@@ -7,13 +7,11 @@ public class DamageText : MonoBehaviour
     public float duration = 1f;
     public float riseSpeed = 2f;
 
-    // int만 받는 버전
     public void Setup(int damage)
     {
         Setup(damage, Color.white);
     }
 
-    // 색상도 받는 버전
     public void Setup(int damage, Color color)
     {
         if (tmp == null) tmp = GetComponent<TextMeshPro>();
@@ -22,7 +20,6 @@ public class DamageText : MonoBehaviour
         StartCoroutine(Animate());
     }
 
-    // 문자열 표시 (MISS 등)
     public void SetupText(string text, Color color)
     {
         if (tmp == null) tmp = GetComponent<TextMeshPro>();
@@ -40,22 +37,17 @@ public class DamageText : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-
-            // 통통 튀는 효과
             float bounce = Mathf.Abs(Mathf.Sin(t * Mathf.PI * 2.5f)) * bounceHeight * (1f - t);
 
-            // 위로 올라가면서 튐
             transform.position = startPos + new Vector3(
                 0f,
                 t * riseSpeed * 0.5f + bounce,
                 0f
             );
 
-            // 후반부 페이드아웃
             float alpha = t < 0.6f ? 1f : Mathf.Lerp(1f, 0f, (t - 0.6f) / 0.4f);
             tmp.color = new Color(tmp.color.r, tmp.color.g, tmp.color.b, alpha);
 
-            // 크기 통통
             float scale = 1f + Mathf.Abs(Mathf.Sin(t * Mathf.PI * 3f)) * 0.3f * (1f - t);
             transform.localScale = Vector3.one * scale;
 

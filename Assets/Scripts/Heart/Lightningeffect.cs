@@ -13,7 +13,7 @@ public class LightningEffect : MonoBehaviour
     public int originalDamage = 10;
     public Vector3 chainOrigin;
     public GameObject originEnemy;
-    public List<GameObject> visitedEnemies = new List<GameObject>(); // 방문한 적 목록
+    public List<GameObject> visitedEnemies = new List<GameObject>(); 
     private bool hasChained = false;
 
     void Start()
@@ -46,13 +46,10 @@ public class LightningEffect : MonoBehaviour
             if (!hit.CompareTag("Enemy")) continue;
             if (Vector3.Distance(hit.transform.position, origin) < 0.1f) continue;
 
-            // 처음 맞은 적 제외
             if (originEnemy != null && hit.gameObject == originEnemy) continue;
 
-            // 이미 방문한 적 제외 (중복 방지)
             if (visitedEnemies.Contains(hit.gameObject)) continue;
 
-            // 무적인 적 제외 (분열 직후)
             EnemyHealth eh = hit.GetComponent<EnemyHealth>();
             if (eh != null && eh.IsInvincible()) continue;
 
@@ -61,7 +58,6 @@ public class LightningEffect : MonoBehaviour
 
         if (chainTargets.Count == 0) return;
 
-        // 방문 목록에 추가
         foreach (GameObject target in chainTargets)
             visitedEnemies.Add(target);
 
@@ -81,7 +77,7 @@ public class LightningEffect : MonoBehaviour
             chainEffect.duration = duration * 0.5f;
             chainEffect.maxChainCount = remainingChains - 1;
             chainEffect.originEnemy = originEnemy;
-            chainEffect.visitedEnemies = new List<GameObject>(visitedEnemies); // 방문 목록 전달
+            chainEffect.visitedEnemies = new List<GameObject>(visitedEnemies); 
         }
 
         foreach (GameObject target in chainTargets)

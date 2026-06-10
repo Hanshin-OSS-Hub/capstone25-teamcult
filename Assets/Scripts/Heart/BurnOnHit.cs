@@ -12,7 +12,8 @@ public class BurnOnHit : MonoBehaviour
         if (other.GetComponent<BurnEffect>() == null)
         {
             BurnEffect burn = other.gameObject.AddComponent<BurnEffect>();
-            burn.damage = burnDamage; // 데미지 전달!
+            burn.damage = burnDamage; 
+
         }
     }
 }

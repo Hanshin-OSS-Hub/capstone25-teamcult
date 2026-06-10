@@ -54,7 +54,6 @@ public class SettingsPanelManager : MonoBehaviour
         if (!isOpen) gameObject.SetActive(false);
     }
 
-    // 저장 버튼 OnClick에 연결
     public void SaveGame()
     {
         if (SaveManager.instance != null)

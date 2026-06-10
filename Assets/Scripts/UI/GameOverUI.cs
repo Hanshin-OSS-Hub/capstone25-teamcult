@@ -30,7 +30,6 @@ public class GameOverUI : MonoBehaviour
             continueImage.sprite = hasSave ? continueSprite : continueLockSprite;
     }
 
-    // 재시작: 완전 초기화 (런 + 마석 전부 삭제)
     public void OnClickRetry()
     {
         Time.timeScale = 1f;
@@ -45,7 +44,6 @@ public class GameOverUI : MonoBehaviour
         SceneManager.LoadScene(gameSceneName);
     }
 
-    // 이어하기: 세이브 유지하고 복원
     public void OnClickContinue()
     {
         if (SaveManager.instance == null || !SaveManager.instance.HasSavedRun())
@@ -56,7 +54,6 @@ public class GameOverUI : MonoBehaviour
         SceneManager.LoadScene(gameSceneName);
     }
 
-    // 메인 메뉴로
     public void OnClickMainMenu()
     {
         Time.timeScale = 1f;

@@ -135,7 +135,6 @@ public class TabController : MonoBehaviour
 
         if (item.itemType == Item.ItemType.Heart)
         {
-            // 하트 적용 중 어떤 예외가 나도 클릭 이벤트(=탭 입력)가 멈추지 않게 보호
             try
             {
                 ElementalManager manager = FindFirstObjectByType<ElementalManager>();
@@ -144,7 +143,6 @@ public class TabController : MonoBehaviour
                 else
                     Debug.LogWarning("ElementalManager를 찾지 못했습니다.");
 
-                // ★ 핵심 수정: instance null 체크 추가
                 if (HeartSlotController.instance != null)
                     HeartSlotController.instance.SetHeart(item.elementType);
                 else

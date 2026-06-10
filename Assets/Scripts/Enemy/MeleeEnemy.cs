@@ -69,7 +69,6 @@ public class MeleeEnemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
             isWalking = true;
 
-            // 방향 반전 + 체력바 보정
             if (player.position.x < transform.position.x)
             {
                 transform.localScale = new Vector3(-1, 1, 1);
@@ -84,7 +83,6 @@ public class MeleeEnemy : MonoBehaviour
             }
         }
 
-        // 걷기/대기 전환은 컨트롤러가 isWalking 보고 알아서
         if (anim != null && !isAttacking)
             anim.SetBool("isWalking", isWalking);
     }
@@ -112,7 +110,6 @@ public class MeleeEnemy : MonoBehaviour
             Debug.Log("근거리 적 공격!");
         }
 
-        // 공격 애니 끝날 때까지 대기
         if (anim != null)
         {
             float len = anim.GetCurrentAnimatorStateInfo(0).length;

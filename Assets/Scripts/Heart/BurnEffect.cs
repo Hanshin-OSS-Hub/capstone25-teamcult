@@ -122,7 +122,7 @@ public class BurnEffect : MonoBehaviour
             yield return new WaitForSeconds(tickInterval);
             elapsed += tickInterval;
             if (enemyHealth != null)
-                enemyHealth.TakeDamageIgnoreDefense((int)damage); // 방어력 무시!
+                enemyHealth.TakeDamageIgnoreDefense((int)damage);
         }
         burning = false;
 

@@ -54,7 +54,6 @@ public class ItemPickUp : MonoBehaviour {
     void Pickup() {
         Item newItemWithOption = OptionGenerator.GenerateDroppedItem(item);
 
-        // 인벤토리에 아이템이 성공적으로 들어갔다면
         if (TabController.instance.AddItem(newItemWithOption)) {
             Debug.Log($"{newItemWithOption.itemName} 획득 완료!");
             LogManager.Instance.AddLog($"{newItemWithOption.itemName}을(를) 획득했습니다.");

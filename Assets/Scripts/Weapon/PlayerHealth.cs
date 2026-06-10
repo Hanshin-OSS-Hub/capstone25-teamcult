@@ -52,7 +52,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (willLoad)
         {
-            // 이어하기 — SaveManager.LoadRun()이 체력 복원함 (여기선 임시 기본값)
+            // 이어하기 — SaveManager.LoadRun()이 체력 복원함
             currentHealth = 24f;
         }
         else

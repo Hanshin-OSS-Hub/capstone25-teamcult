@@ -14,7 +14,6 @@ public class HeatController : MonoBehaviour
     public ParticleSystem edgeParticles;
     public Volume globalVolume;
 
-    // ★ uiHearts 리스트 삭제 (이제 PlayerHealth가 관리합니다)
 
     private bool isActive = false;
     private Vignette vignetteEffect;
@@ -53,14 +52,12 @@ public class HeatController : MonoBehaviour
         }
     }
 
-    // 효과 켜기
     public void TriggerEffect()
     {
         isActive = true;
         if (edgeParticles != null && !edgeParticles.isPlaying) edgeParticles.Play();
     }
 
-    // 효과 끄기
     public void StopEffect()
     {
         isActive = false;

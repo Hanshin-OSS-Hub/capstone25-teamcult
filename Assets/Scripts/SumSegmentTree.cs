@@ -7,21 +7,13 @@ public class SumSegmentTree
     private int leafSize = 1;
     private int count = 0;
 
-    /// <summary>
-    /// 원본 데이터의 실제 원소 개수입니다.
-    /// </summary>
+ 
     public int Count => count;
 
-    /// <summary>
-    /// 세그먼트 트리 내부 리프 구간의 크기입니다.
-    /// Count 이상인 가장 작은 2의 거듭제곱입니다.
-    /// </summary>
+
     public int LeafSize => leafSize;
 
-    /// <summary>
-    /// 전체 구간의 합입니다.
-    /// 세그먼트 트리 루트인 tree[1] 값을 반환합니다.
-    /// </summary>
+  
     public double TotalSum => tree.Length > 1 ? tree[1] : 0.0;
 
     public void Build(IReadOnlyList<double> values)
@@ -67,7 +59,6 @@ public class SumSegmentTree
         }
     }
 
-    // [leftInclusive, rightExclusive) 구간 합
     public double RangeSum(int leftInclusive, int rightExclusive)
     {
         if (leftInclusive < 0 || rightExclusive < leftInclusive || rightExclusive > count)
@@ -99,8 +90,7 @@ public class SumSegmentTree
         return sum;
     }
 
-    // prefix sum 기준 이분탐색:
-    // prefixSum(index) >= targetPrefixSum 을 만족하는 가장 작은 index를 반환합니다.
+ 
     public int LowerBoundByPrefixSum(double targetPrefixSum)
     {
         if (count == 0)

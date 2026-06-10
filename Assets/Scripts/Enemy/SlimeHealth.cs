@@ -17,9 +17,7 @@ public class SlimeHealth : EnemyHealth {
         moveMapBounds = Object.FindAnyObjectByType<MoveMapBounds>();
     }
 
-    // =========================================================
-    // ★ 부모의 기본 소리 대신 슬라임 전용 소리로 덮어쓰기 (Override)
-    // =========================================================
+   
     protected override void PlayHitSound() {
         if (SFXManager.Instance != null) SFXManager.Instance.PlaySFX(SFXType.EnemyHit_Slime);
     }

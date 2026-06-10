@@ -27,7 +27,6 @@ public class MusicDirector : MonoBehaviour
     public void SetFlameMode(bool active) { isFlameActivated = active; }
     public void TriggerDamageEffect() { if (synth != null) synth.TriggerGlitch(); }
 
-    // ★★★ 다른 스크립트에서 호출하는 함수들 ★★★
     public void OnPlayerAttack()
     {
         if (synth != null) synth.TriggerAttackGlitch();
@@ -60,7 +59,6 @@ public class MusicDirector : MonoBehaviour
                 float d = Vector2.Distance(player.position, hitBuffer[i].transform.position);
                 if (d < closestDist) closestDist = d;
                 
-                // 적 타입 확인 (EnemyAudioProfile이 있다면)
                 var profile = hitBuffer[i].GetComponent<EnemyAudioProfile>(); // 만약 없다면 주석처리
                 /* if (profile != null) {
                     if (profile.type == EnemySoundType.Heavy) heavyCnt++;

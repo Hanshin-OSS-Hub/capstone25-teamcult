@@ -4,12 +4,10 @@ using System;
 [RequireComponent(typeof(AudioSource))]
 public class TechnoSynth : MonoBehaviour
 {
-    // ... (기존 설정 변수들 동일) ...
     [Header("Global Settings")]
     [Range(60, 180)] public double bpm = 128.0;
     [Range(0, 1)] public float masterVolume = 0.5f;
 
-    // ... (Kick, Bass, Lead 설정 변수들 동일) ...
     [Header("Kick Settings")]
     public float kickVol = 1.0f;
     [Range(0.01f, 1.0f)] public float kickDecay = 0.3f;
@@ -32,14 +30,11 @@ public class TechnoSynth : MonoBehaviour
     [Range(0.0f, 1.0f)] public float leadSustain = 0.5f;
     [Range(0.01f, 2.0f)] public float leadRelease = 0.3f;
 
-    // ==========================================
-    // [변주용 스위치 추가]
-    // ==========================================
-    [HideInInspector] public bool variationMode = false; // 거리 5 이내일 때 켜짐
+ 
+    [HideInInspector] public bool variationMode = false; 
 
     [HideInInspector] public bool isPlaying = true;
     
-    // ... (내부 변수들 동일) ...
     private double sampleRate;
     private double nextTick = 0.0;
     private int stepIndex = 0; 
@@ -83,19 +78,14 @@ public class TechnoSynth : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // [핵심 수정] 시퀀서 로직
-    // ==========================================
+
     void TriggerSequencer(int step)
     {
-        // 1. KICK: 4/4 정박 (항상 일정)
         if (step % 4 == 0) TriggerKick();
 
-        // 2. BASS: 변주 모드에 따라 패턴이 바뀜
         if (variationMode) 
         {
-            // [변주 모드] 16비트 롤링 베이스 (두두두두) - 엄청 긴박해짐
-            // 킥이 나오는 타이밍(0, 4, 8, 12)은 피해서 그루브를 줌 (사이드체인 느낌)
+            
             if (step % 4 != 0) 
             {
                 TriggerNote(bassState, 55.0); 
@@ -103,27 +93,23 @@ public class TechnoSynth : MonoBehaviour
         }
         else 
         {
-            // [일반 모드] 엇박 (쿵-짝-쿵-짝)
             if (step % 4 == 2) 
             {
                 TriggerNote(bassState, 55.0); 
             }
         }
 
-        // 3. LEAD: 변주 모드일 때만 비상벨처럼 울림
         if (variationMode)
         {
-            if (step % 8 == 0) // 긴 주기로 삐--- 
+            if (step % 8 == 0) 
             {
                 TriggerNote(leadState, 440.0); // 높은 A음
             }
         }
     }
 
-    // ... (GenerateKick, TriggerKick, GenerateVoice, TriggerNote 등 나머지 함수는 이전과 100% 동일) ...
-    // ... 코드가 길어지니 생략합니다. 이전 답변의 Generate 함수들을 그대로 쓰시면 됩니다 ...
+ 
     
-    // (아래는 편의를 위해 다시 첨부하는 Generate 함수들입니다)
     void TriggerKick() { kickState.phase = 0.0; kickState.envTime = 0.0; kickState.active = true; }
     double GenerateKick() {
         if (!kickState.active) return 0.0;

@@ -10,9 +10,8 @@ public class HealthBarManager : MonoBehaviour
     [SerializeField] private Transform emptyHeartsContainer;
     [SerializeField] private Transform filledHeartsContainer;
 
-    // === 체력 데이터 ===
     private int HP = 12;
-    public int heart = 3; // 하트 개수
+    public int heart = 3; 
     private int maxHeart = 10;
     private int HPperHeart = 4;
 
@@ -26,10 +25,7 @@ public class HealthBarManager : MonoBehaviour
     }
 
     private void Update()
-    {
-        // (테스트용 단축키 코드는 그대로 두셔도 되고 지우셔도 됩니다)
-       
-
+    { 
         if (Input.GetKeyDown(KeyCode.C) && heart > 0) ChangeHeartType(HeartAttribute.Ice, heart - 1);
         if (Input.GetKeyDown(KeyCode.V) && heart > 0) ChangeHeartType(HeartAttribute.Fire, heart - 1);
     }
@@ -50,7 +46,6 @@ public class HealthBarManager : MonoBehaviour
         emptyHeartObjects.Clear();
         filledHeartObjects.Clear();
 
-        // 기존 로직 유지: 현재 heart 개수만큼 생성
         int currentHeartCount = heart;
         heart = 0;
         HP = 0;
@@ -117,12 +112,7 @@ public class HealthBarManager : MonoBehaviour
         }
     }
 
-    private void UpdateHealthBar()
-    {
-        // (기존 코드에 있던 함수인데, 현재 로직에서는 LoseHP/GainHP에서 직접 처리하므로 안 쓰일 수도 있습니다. 
-        //  혹시 몰라 유지합니다.)
-        // ... (내용 생략) ...
-    }
+  
 
     public void ChangeHealth(int newHealth)
     {
@@ -131,14 +121,11 @@ public class HealthBarManager : MonoBehaviour
         else if (diff < 0) LoseHP(-diff);
     }
 
-    // ★★★ [우리가 추가한 핵심 기능] ★★★
-    // 몇 번째 하트의 체력이 몇 남았는지 확인하는 함수
+  
     public int GetHeartHP(int index)
     {
-        // 안전장치: 없는 번호를 물어보면 0 리턴
         if (index < 0 || index >= filledHeartObjects.Count) return 0;
 
-        // 해당 순서의 하트 스크립트를 가져와서 HP를 알려줌
         filledHeart heartComponent = filledHeartObjects[index].GetComponent<filledHeart>();
         if (heartComponent != null) return heartComponent.HP;
 

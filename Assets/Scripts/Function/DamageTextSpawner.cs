@@ -19,8 +19,8 @@ public class DamageTextSpawner : MonoBehaviour
         if (dt != null)
         {
             Color color = Color.white;
-            if (isCrit) color = new Color(1f, 0.8f, 0f);   // 크리티컬 노란색
-            if (isBurn) color = new Color(1f, 0.4f, 0.1f);  // 화상 주황색
+            if (isCrit) color = new Color(1f, 0.8f, 0f);   
+            if (isBurn) color = new Color(1f, 0.4f, 0.1f); 
             dt.Setup(damage, color);
         }
     }
@@ -33,6 +33,6 @@ public class DamageTextSpawner : MonoBehaviour
         GameObject obj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
         DamageText dt = obj.GetComponent<DamageText>();
         if (dt != null)
-            dt.SetupText("MISS", new Color(0.7f, 0.7f, 0.7f)); // 회색 MISS
+            dt.SetupText("MISS", new Color(0.7f, 0.7f, 0.7f)); 
     }
 }

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-// ★ 이 부분이 클래스 밖에 있어야 다른 스크립트가 알아먹습니다!
 public enum HeartAttribute
 {
     Normal,
@@ -23,7 +22,7 @@ public class filledHeart : MonoBehaviour
     [SerializeField] private HeartAttribute currentAttribute = HeartAttribute.Normal;
 
     [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color fireColor = new Color(1f, 0.5f, 0.5f); // 붉은 계열
+    [SerializeField] private Color fireColor = new Color(1f, 0.5f, 0.5f); 
     [SerializeField] private Color iceColor = new Color(0.5f, 0.5f, 1f);
     [SerializeField] private Color poisonColor = new Color(0.5f, 1f, 0.5f);
     [SerializeField] private Color electricColor = new Color(0.5f, 1f, 1f);
@@ -64,7 +63,6 @@ public class filledHeart : MonoBehaviour
 
         heartImage.color = targetColor;
 
-        // 속성 변할 때 '쿵' 효과 (선택사항)
         if (currentAttribute != HeartAttribute.Normal) StartCoroutine(PulseEffect());
     }
 

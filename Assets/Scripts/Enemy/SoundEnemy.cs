@@ -34,7 +34,6 @@ public class SoundEnemy : RangedEnemy
 
     IEnumerator AttackRoutine()
     {
-        // 1. 애니메이션 먼저 (부모의 attackStateName 사용)
         if (soundAnim != null)
         {
             soundAnim.enabled = true;
@@ -43,7 +42,6 @@ public class SoundEnemy : RangedEnemy
             soundAnim.Update(0f);
         }
 
-        // 2. 잠깐 기다렸다가 음파 발사
         yield return new WaitForSeconds(waveDelay);
 
         //LogManager.Instance.AddLog("사운드 shot()");
@@ -55,7 +53,6 @@ public class SoundEnemy : RangedEnemy
         if (BattleStateBGM.Instance != null)
             BattleStateBGM.Instance.TriggerSonicWobble(1.5f);
 
-        // 3. 애니 끝나면 끄기
         if (soundAnim != null)
         {
             float len = soundAnim.GetCurrentAnimatorStateInfo(0).length;

@@ -31,5 +31,5 @@ public class LightningSettings : MonoBehaviour
     public Color lightColor = new Color(0.3f, 0.7f, 1f);
     public float lightIntensity = 8f;
     public float lightRadius = 4f;
-    public string lightSortingLayer = "Overhead"; // 타일맵 Sorting Layer
+    public string lightSortingLayer = "Overhead"; 
 }

@@ -16,7 +16,6 @@ public class PlayerHitEffect : MonoBehaviour
 
     public void TakeDamage()
     {
-        // ★ [추가] 맞았을 때 BGM 엔진에 글리치(지지직) 효과 발동 명령!
         if (BattleStateBGM.Instance != null)
         {
             BattleStateBGM.Instance.TriggerGlitch();

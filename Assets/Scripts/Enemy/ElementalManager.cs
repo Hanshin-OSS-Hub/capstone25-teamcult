@@ -245,7 +245,6 @@ public class ElementalManager : MonoBehaviour
         Sprite[] heartSprites = GetHeartSprites(type);
         float tintStrength = GetMapTintStrength(type);
 
-        // 알파 강제 1로 고정해서 타일맵 반투명 방지
         Color tintColor = Color.Lerp(Color.white, cfg.edgeColor, tintStrength);
         tintColor.a = 1f;
         SetTilemapColor(tintColor);

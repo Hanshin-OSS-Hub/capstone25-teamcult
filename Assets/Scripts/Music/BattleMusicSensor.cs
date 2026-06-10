@@ -27,13 +27,11 @@ public class BattleMusicSensor : MonoBehaviour
             {
                 string objName = hit.gameObject.name;
 
-                // 1. 보스 판정 (이름으로 구분)
                 if (objName.Contains("Boss") || objName.Contains("Devil 2"))
                 {
                     foundBoss = true;
                     break; 
                 }
-                // 2. 일반 몬스터 판정 (보스가 아니라면 슬라임이든 뭐든 전부 카운트!)
                 else 
                 {
                     uniqueEnemies.Add(hit.gameObject); 

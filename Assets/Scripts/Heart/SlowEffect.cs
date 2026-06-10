@@ -55,8 +55,6 @@ public class SlowEffect : MonoBehaviour
 
             if (spriteRenderer != null)
                 originalColor = spriteRenderer.color;
-
-            // 파티클 생성
             icePS = CreateIceParticle();
 
             StartCoroutine(ApplyColorEffect());
@@ -82,7 +80,6 @@ public class SlowEffect : MonoBehaviour
         ParticleSystem ps = psObj.AddComponent<ParticleSystem>();
         ParticleSystemRenderer psr = psObj.GetComponent<ParticleSystemRenderer>();
 
-        // Additive 머티리얼
         Material mat = new Material(Shader.Find("Sprites/Default"));
         mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
         mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
@@ -92,26 +89,23 @@ public class SlowEffect : MonoBehaviour
         psr.sortingLayerName = "Overhead";
         psr.sortingOrder = 100;
 
-        // 메인 설정
         var main = ps.main;
         main.loop = true;
         main.startLifetime = new ParticleSystem.MinMaxCurve(0.4f, 0.8f);
         main.startSpeed = new ParticleSystem.MinMaxCurve(0.3f, 0.8f);
         main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.15f);
         main.startColor = new ParticleSystem.MinMaxGradient(
-            new Color(0.8f, 0.95f, 1.0f, 1f),  // 흰/하늘
-            new Color(0.3f, 0.7f, 1.0f, 1f)   // 파랑
+            new Color(0.8f, 0.95f, 1.0f, 1f),  
+            new Color(0.3f, 0.7f, 1.0f, 1f)   
         );
-        main.gravityModifier = new ParticleSystem.MinMaxCurve(-0.1f, -0.3f); // 천천히 위로
+        main.gravityModifier = new ParticleSystem.MinMaxCurve(-0.1f, -0.3f); 
         main.simulationSpace = ParticleSystemSimulationSpace.World;
         main.maxParticles = 40;
 
-        // 방출
         var emission = ps.emission;
         emission.enabled = true;
         emission.rateOverTime = 15f;
 
-        // 모양: 적 스프라이트 전체에서 방출
         float width = bounds.size.x * 0.7f;
         float height = bounds.size.y * 0.7f;
         var shape = ps.shape;
@@ -119,7 +113,6 @@ public class SlowEffect : MonoBehaviour
         shape.shapeType = ParticleSystemShapeType.Box;
         shape.scale = new Vector3(width, height, 0.01f);
 
-        // 크기 변화 (점점 작아짐)
         var sizeOverLifetime = ps.sizeOverLifetime;
         sizeOverLifetime.enabled = true;
         AnimationCurve sizeCurve = new AnimationCurve();
@@ -128,17 +121,16 @@ public class SlowEffect : MonoBehaviour
         sizeCurve.AddKey(1f, 0f);
         sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
 
-        // 색상 변화 (흰 → 파랑 → 투명)
         var colorOverLifetime = ps.colorOverLifetime;
         colorOverLifetime.enabled = true;
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[]
             {
-                new GradientColorKey(new Color(1f,   1f,   1f),   0.0f),  // 흰색
-                new GradientColorKey(new Color(0.6f, 0.9f, 1f),   0.3f),  // 하늘색
-                new GradientColorKey(new Color(0.3f, 0.7f, 1f),   0.7f),  // 파랑
-                new GradientColorKey(new Color(0.1f, 0.4f, 0.8f), 1.0f),  // 진파랑
+                new GradientColorKey(new Color(1f,   1f,   1f),   0.0f), 
+                new GradientColorKey(new Color(0.6f, 0.9f, 1f),   0.3f),  
+                new GradientColorKey(new Color(0.3f, 0.7f, 1f),   0.7f),  
+                new GradientColorKey(new Color(0.1f, 0.4f, 0.8f), 1.0f),  
             },
             new GradientAlphaKey[]
             {
@@ -149,14 +141,12 @@ public class SlowEffect : MonoBehaviour
         );
         colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
 
-        // 노이즈 (살짝 흔들림)
         var noise = ps.noise;
         noise.enabled = true;
         noise.strength = 0.1f;
         noise.frequency = 1f;
         noise.scrollSpeed = 0.5f;
 
-        // 회전 (결정이 돌아가는 느낌)
         var rotationOverLifetime = ps.rotationOverLifetime;
         rotationOverLifetime.enabled = true;
         rotationOverLifetime.z = new ParticleSystem.MinMaxCurve(-90f, 90f);
@@ -167,7 +157,6 @@ public class SlowEffect : MonoBehaviour
 
     IEnumerator ApplyColorEffect()
     {
-        // 페이드인: 원본 → 파란색
         float elapsed = 0f;
         float fadeTime = 0.3f;
         Color iceColor = new Color(0.4f, 0.8f, 1.0f, 1.0f);
@@ -181,7 +170,6 @@ public class SlowEffect : MonoBehaviour
             yield return null;
         }
 
-        // 슬로우 지속 중 살짝 깜빡임
         while (applied)
         {
             if (elementalManager != null && !elementalManager.hasIceHeart)
@@ -216,7 +204,6 @@ public class SlowEffect : MonoBehaviour
 
         Debug.Log("[슬로우] 해제");
 
-        // 파티클 정지
         if (icePS != null)
         {
             icePS.Stop();

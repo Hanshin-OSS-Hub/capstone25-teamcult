@@ -7,9 +7,10 @@ public enum RoomType { Start, Normal, Empty, Shop, Boss, Chest, Fire, Ice, Light
 public enum DemoLineDirection { Up, Right, Down, Left }
 
 [System.Serializable]
-public class RoomTypeGroup {
+public class RoomTypeGroup
+{
     public RoomType type;
-    public List<GameObject> interiorPrefabs; // 해당 타입에 속하는 내부 레이아웃 프리팹들
+    public List<GameObject> interiorPrefabs;
 }
 
 [System.Serializable]
@@ -59,10 +60,8 @@ public class RoomManager : MonoBehaviour {
 
 
     [Header("Room Interior Settings")]
-    // 인스펙터에서 RoomType별로 프리팹 리스트를 설정할 수 있습니다.
     [SerializeField] List<RoomTypeGroup> roomGroups = new List<RoomTypeGroup>();
 
-    // 빠른 탐색을 위한 딕셔너리
     private Dictionary<RoomType, List<GameObject>> roomGroupDict = new Dictionary<RoomType, List<GameObject>>();
 
     [Header("Special Room Hint Settings")]
@@ -705,7 +704,7 @@ public class RoomManager : MonoBehaviour {
                 int requiredMask = mapPlan[x, y];
 
                 if (requiredMask > 0) {
-                    // 1. 벽 조각 조합 배치
+                    //벽 조각 조합 배치
                     GameObject spawnedRoom = PlaceRoomWalls(x - (mapSize / 2), y - (mapSize / 2), requiredMask);
 
                     if (spawnedRoom == null) {
@@ -714,14 +713,13 @@ public class RoomManager : MonoBehaviour {
 
                     spawnCount++;
 
-                    // 2. 내부 레이아웃 배치
+                    //내부 레이아웃 배치
                     RoomType currentType = rooms[x, y].type;
                     GameObject interiorPrefab = GetRandomInteriorByType(currentType);
 
                     spawnedRoom.name = $"({x}, {y}) - {currentType}";
 
                     if (interiorPrefab != null) {
-                        // 내부 프리팹을 벽 프리팹의 자식으로 생성하거나 같은 위치에 생성
                         GameObject interior = Instantiate(interiorPrefab, spawnedRoom.transform.position, Quaternion.identity, spawnedRoom.transform);
                         ApplyDemoBossElevatorOverride(currentType, interior);
                     }
@@ -952,13 +950,12 @@ public class RoomManager : MonoBehaviour {
         rewardWeightTree.Build(weights);
     }
 
-    // 방의 위치와 리스트를 바탕으로 타입을 결정하는 메서드
     void AssignRoomTypes(Vector2Int startPos, List<Vector2Int> main, List<Vector2Int> sub, List<Vector2Int> twigs) {
-        // 1. 시작 지점 설정
+        // 시작 지점 설정
         rooms[startPos.x, startPos.y].type = RoomType.Start;
         rooms[startPos.x, startPos.y].monsterCount = 0;
 
-        // 2. 메인 가지(Main Branch)의 마지막 방 -> 보스방
+        // 메인 가지(Main Branch)의 마지막 방 -> 보스방
         if (main != null && main.Count > 0) {
             Vector2Int bossPos = main[main.Count - 1];
             rooms[bossPos.x, bossPos.y].type = RoomType.Boss;
@@ -968,14 +965,14 @@ public class RoomManager : MonoBehaviour {
             AppendStartupLog($"<color=#4FC3F7><b>[Boss]</b></color> 보스방 위치: {bossPos}, Floor: {currentFloor}, Boss Index: {rooms[bossPos.x, bossPos.y].bossIndex}");
         }
 
-        // 3. 서브 가지(Sub Branch)의 마지막 방 -> 상점
+        // 서브 가지(Sub Branch)의 마지막 방 -> 상점
         if (sub != null && sub.Count > 0) {
             Vector2Int shopPos = sub[sub.Count - 1];
             rooms[shopPos.x, shopPos.y].type = RoomType.Shop;
             rooms[shopPos.x, shopPos.y].monsterCount = 0;
         }
 
-        // 4. 모든 잔가지(Twigs) -> 보물상자 방 (Chest)
+        // 모든 잔가지(Twigs) -> 보물상자 방 (Chest)
         if (twigs != null) {
             foreach (var twigPos in twigs) {
                 rooms[twigPos.x, twigPos.y].type = RoomType.Chest;
@@ -983,10 +980,10 @@ public class RoomManager : MonoBehaviour {
             }
         }
 
-        // 5. main/sub 생성 순서를 root 거리로 저장해 특수방 배치에 활용
+        // main/sub 생성 순서를 root 거리로 저장해 특수방 배치에 활용
         Dictionary<Vector2Int, int> distanceByCreationOrder = BuildRoomDistanceByCreationOrder(startPos, main, sub);
 
-        // 6. EnemySpawner 데이터를 기준으로 일반방 일부를 특수방으로 변경
+        // EnemySpawner 데이터를 기준으로 일반방 일부를 특수방으로 변경
         AssignSpecialRoomsBySpawnerData(startPos, distanceByCreationOrder);
     }
     void AssignSpecialRoomsBySpawnerData(Vector2Int startPos, Dictionary<Vector2Int, int> distanceByCreationOrder) {

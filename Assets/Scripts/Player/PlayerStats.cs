@@ -60,7 +60,7 @@ public class PlayerStats : MonoBehaviour
     [HideInInspector] public float damageNullifyChance = 0f;
     [HideInInspector] public float missChance = 0f;
     [HideInInspector] public float soundWaveMissChance = 0f;
-    [HideInInspector] public float missChanceReduce = 0f;       // 장비로 얻는 명중률 보너스 (%)
+    [HideInInspector] public float missChanceReduce = 0f;       
     [HideInInspector] public float killMoveSpeedStack = 0f;
     [HideInInspector] public float killGoldChance = 0f;
     [HideInInspector] public int killGoldAmount = 0;
@@ -150,7 +150,6 @@ public class PlayerStats : MonoBehaviour
 
     public float GetTotalMoveSpeed() => (moveSpeed + itemBonusMoveSpeed) * (1f + killMoveSpeedStack);
 
-    // 실제 miss 판정에 쓰이는 최종 명중률 감소값 (디버프 - 장비보너스, 최소 0)
     public float GetEffectiveMissChance() => Mathf.Max(0f, missChance + soundWaveMissChance - missChanceReduce);
 
     public void EquipStat(Item item)

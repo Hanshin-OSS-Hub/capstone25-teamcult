@@ -49,7 +49,6 @@ public class GameManager : MonoBehaviour
         isLive = false;
         Time.timeScale = 0f;
 
-        // 세이브는 지우지 않음 (Continue를 위해 유지)
 
         if (gameOverPanel != null)
         {
@@ -73,7 +72,6 @@ public class GameManager : MonoBehaviour
         Debug.Log($"게임 오버! 생존시간: {gameTime:F1}초, 처치 수: {killCount}");
     }
 
-    // 처음부터 (세이브 삭제하고 새로)
     public void Retry()
     {
         Time.timeScale = 1f;
@@ -83,12 +81,11 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // 메인메뉴
+    
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
         reviveCount = 0;
-        // 세이브는 유지 (메인에서 이어하기 가능하게). 지우려면 아래 주석 해제
         // if (SaveManager.instance != null) SaveManager.instance.DeleteRun();
         SceneManager.LoadScene(mainMenuSceneName);
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewTheme", menuName = "Audio/Multi-Layer Theme")]
 public class MultiLayerTheme : ScriptableObject
 {
-    public string themeName; // 예: "DeepHouse_Zone", "DarkFantasy_Zone"
+    public string themeName; 
 
     [Header("Layer Loops (Index: 0=Explore, 1=Tension, 2=Combat)")]
     public AudioClip[] drums;  // 단계별 드럼 루프

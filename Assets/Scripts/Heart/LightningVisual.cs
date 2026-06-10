@@ -15,14 +15,12 @@ public class LightningVisual : MonoBehaviour
         Vector3 dir = end - start;
         Vector3 perp = new Vector3(-dir.y, dir.x, 0f).normalized;
 
-        // 화면 번쩍 + 타일맵 밝게
         ElementalManager em = Object.FindObjectOfType<ElementalManager>();
         if (em != null) em.TriggerLightningFlash();
 
-        // FireVignette 색상 + HDR로 밝게
-        LineRenderer aura = MakeLine(new Color(4.0f, 2.5f, 0.0f, 1f), 0.4f, 0.2f);   // 주황
-        LineRenderer glow = MakeLine(new Color(4.0f, 3.5f, 0.2f, 1f), 0.18f, 0.09f);  // 노랑
-        LineRenderer core = MakeLine(new Color(5.0f, 5.0f, 2.0f, 1f), 0.06f, 0.03f);  // 흰/노랑 
+        LineRenderer aura = MakeLine(new Color(4.0f, 2.5f, 0.0f, 1f), 0.4f, 0.2f);   
+        LineRenderer glow = MakeLine(new Color(4.0f, 3.5f, 0.2f, 1f), 0.18f, 0.09f);  
+        LineRenderer core = MakeLine(new Color(5.0f, 5.0f, 2.0f, 1f), 0.06f, 0.03f);  
 
 
 

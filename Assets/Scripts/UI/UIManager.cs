@@ -7,7 +7,7 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     [Header("UI Elements - Panels & Animator")]
-    public GameObject settingsPanel; // 'SettingsPanel' 오브젝트 연결
+    public GameObject settingsPanel; 
     private Animator settingsAnimator;
     private bool isSettingsOpen = false;
 
@@ -30,7 +30,6 @@ public class UIManager : MonoBehaviour
 
     void Awake()
     {
-        // 시작 시 애니메이터를 미리 가져옵니다.
         if (settingsPanel != null)
         {
             settingsAnimator = settingsPanel.GetComponent<Animator>();
@@ -41,8 +40,8 @@ public class UIManager : MonoBehaviour
     {
         // 리스너 연결
         brightnessSlider.onValueChanged.AddListener(SetBrightness);
-        settingsButton.onClick.AddListener(OpenSettingsPanel); // Open 함수로 변경
-        closeSettingsButton.onClick.AddListener(CloseSettingsPanel); // Close 함수로 변경
+        settingsButton.onClick.AddListener(OpenSettingsPanel); 
+        closeSettingsButton.onClick.AddListener(CloseSettingsPanel); 
         quitGameButton.onClick.AddListener(QuitGame);
         if (PlayerPrefs.HasKey(BRIGHTNESS_KEY))
         {
@@ -52,11 +51,9 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // 처음 켜서 저장된 값이 없을 경우 슬라이더의 현재 값으로 초기화
             SetBrightness(brightnessSlider.value);
         }
 
-        // 초기 상태 설정: 패널은 꺼두고 상태변수 초기화
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(false);
@@ -66,14 +63,12 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        // Tab으로 설정창 열기
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!isSettingsOpen) OpenSettingsPanel();
             else CloseSettingsPanel();
         }
 
-        // ESC로 닫기 (인벤토리 우선)
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (TabController.instance.mainPanel.activeSelf)
@@ -86,19 +81,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // --- 설정 패널 제어 (애니메이션 포함) ---
     public void OpenSettingsPanel()
     {
         if (isSettingsOpen) return;
 
         isSettingsOpen = true;
-        settingsPanel.SetActive(true); // 우선 오브젝트를 켭니다.
+        settingsPanel.SetActive(true); 
         Time.timeScale = 0f;
 
         if (settingsAnimator != null)
         {
             settingsAnimator.ResetTrigger("Close");
-            settingsAnimator.SetTrigger("Open"); // 열기 애니메이션 실행
+            settingsAnimator.SetTrigger("Open"); 
         }
         
     }
@@ -114,16 +108,14 @@ public class UIManager : MonoBehaviour
         if (settingsAnimator != null)
         {
             settingsAnimator.ResetTrigger("Open");
-            settingsAnimator.SetTrigger("Close"); // 닫기 애니메이션 실행
+            settingsAnimator.SetTrigger("Close"); 
         }
 
-        // 애니메이션이 끝난 후(0.5초 뒤) 오브젝트를 비활성화합니다.
         Invoke("DisableSettingsPanel", 0.5f);
     }
 
     private void DisableSettingsPanel()
     {
-        // Invoke 실행 시점에 다시 열렸을 수도 있으므로 체크
         if (!isSettingsOpen) settingsPanel.SetActive(false);
     }
 

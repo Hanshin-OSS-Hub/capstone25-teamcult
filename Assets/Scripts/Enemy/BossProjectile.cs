@@ -24,7 +24,6 @@ public class BossProjectile : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        // 일정 시간 지나면 한 번 꺾인다
         if (!curved && timer >= curveDelay)
         {
             float rad = curveAngle * Mathf.Deg2Rad;

@@ -7,7 +7,7 @@ public class ShieldEnemy : MonoBehaviour
     public float attackCooldown = 1f;
     public float moveSpeed;
     public int damage;
-    public float damageDelay = 0.2f; // 공격 애니 후 데미지까지 딜레이
+    public float damageDelay = 0.2f; 
     private Transform player;
     private float lastAttackTime;
     private PlayerHealth playerHealth;
@@ -42,7 +42,6 @@ public class ShieldEnemy : MonoBehaviour
 
         if (distance <= attackRange)
         {
-            // 공격 범위 = 정지
             if (anim != null) anim.SetBool("isWalking", false);
 
             if (!hasSpotted)
@@ -59,12 +58,10 @@ public class ShieldEnemy : MonoBehaviour
         }
         else if (distance <= detectRange)
         {
-            // 추적 = 걷기
             if (anim != null) anim.SetBool("isWalking", true);
 
             transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
-            // 방향 반전 + 체력바 보정
             if (player.position.x < transform.position.x)
             {
                 transform.localScale = new Vector3(-1, 1, 1);
@@ -86,10 +83,8 @@ public class ShieldEnemy : MonoBehaviour
 
     void Attack()
     {
-        // 공격 애니 트리거 (enabled 안 끔)
         if (anim != null) anim.SetTrigger("Attack");
 
-        // 데미지는 살짝 뒤에
         Invoke(nameof(DealDamage), damageDelay);
     }
 

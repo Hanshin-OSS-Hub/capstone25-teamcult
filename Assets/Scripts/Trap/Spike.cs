@@ -25,9 +25,7 @@ public class Spike : MonoBehaviour
             if (player != null) {
                 player.TakeDamage(damage);
                 
-                // =========================================================
-                // ★ 전기 함정 발동 사운드 추가
-                // =========================================================
+              
                 if (SFXManager.Instance != null) {
                     SFXManager.Instance.PlaySFX(SFXType.Trap_Electric);
                 }

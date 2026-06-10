@@ -85,7 +85,6 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth < 0) currentHealth = 0;
         UpdateUI();
 
-        // === 디버그 ===
         if (DamageTextSpawner.Instance != null)
         {
             Vector3 pos = GetTextSpawnPos();
@@ -96,7 +95,6 @@ public class EnemyHealth : MonoBehaviour
         {
             Debug.LogWarning("[데미지텍스트] DamageTextSpawner.Instance가 null!");
         }
-        // =============
 
         if (currentHealth <= 0)
         {

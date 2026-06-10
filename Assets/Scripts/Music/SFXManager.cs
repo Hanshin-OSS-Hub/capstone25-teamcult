@@ -20,7 +20,7 @@ public struct SFXData
 {
     public SFXType type;
     public AudioClip clip;
-    [Range(0f, 2f)] public float volume; // 소리를 더 키울 수 있도록 1.0 -> 2.0으로 확장
+    [Range(0f, 2f)] public float volume; 
 }
 
 public class SFXManager : MonoBehaviour
@@ -100,13 +100,11 @@ public class SFXManager : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // ★ [볼륨 자동 평준화 도구] 에디터에서 우클릭으로 실행!
-    // =========================================================
+    
     [ContextMenu("오디오 자동 분석 및 볼륨 맞춤")]
     public void AutoNormalizeVolumes()
     {
-        float targetPeak = 0.6f; // 모든 효과음이 맞출 목표 기준 볼륨
+        float targetPeak = 0.6f; 
 
         for (int i = 0; i < sfxList.Count; i++)
         {
@@ -115,11 +113,9 @@ public class SFXManager : MonoBehaviour
 
             try
             {
-                // 오디오 클립의 파형 데이터를 배열로 추출
                 float[] samples = new float[sfx.clip.samples * sfx.clip.channels];
                 sfx.clip.GetData(samples, 0);
 
-                // 음원 내에서 가장 시끄러운 부분(Peak) 찾기
                 float maxPeak = 0f;
                 foreach (float sample in samples)
                 {
@@ -127,14 +123,12 @@ public class SFXManager : MonoBehaviour
                     if (abs > maxPeak) maxPeak = abs;
                 }
 
-                // 피크 수치에 비례하여 볼륨을 자동으로 계산
                 if (maxPeak > 0)
                 {
-                    // 너무 튀는 소리는 줄이고, 작은 소리는 증폭시킴
                     sfx.volume = Mathf.Clamp(targetPeak / maxPeak, 0.1f, 2.0f);
                 }
                 
-                sfxList[i] = sfx; // 리스트에 계산된 볼륨 적용
+                sfxList[i] = sfx; 
             }
             catch
             {

@@ -29,7 +29,6 @@ public class PlayerExp : MonoBehaviour
             stats.bonusDamage += 2;
         }
 
-        // ? 오파츠 포인트 지급 제거 (방 클리어 시 지급으로 변경됨)
         Debug.Log($"레벨 업!! 현재 레벨: {level}");
     }
 }

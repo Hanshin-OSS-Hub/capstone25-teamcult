@@ -36,18 +36,14 @@ private void Awake() {
             index++;
         }
         
-        // [수정됨] 여기서 UpdateDangerUI(0)를 호출하던 코드를 지웠습니다!
     }
 
-    // =========================================================
-    // ★ 새로 추가: 모든 싱글톤 매니저가 깨어난 후 안전하게 최초 BGM 명령
-    // =========================================================
+    
     private void Start() {
         UpdateDangerUI(0); 
     }
 
     public void UpdateDangerUI(int currentDanger) {
-        // 1. 새로운 해골 개수 및 비상 상태 체크
         int newCount = 0;
         if (currentDanger > 0) {
             newCount = ((currentDanger - 1) / dangerThresholdPerSkull) + 1;
@@ -56,10 +52,8 @@ private void Awake() {
 
         bool isEmergency = currentDanger >= 10000;
 
-        // 상태가 이전과 똑같다면 UI와 BGM 모두 갱신하지 않고 종료 (최적화)
         if (_currentActiveSkullCount == newCount && _wasEmergency == isEmergency) return;
 
-        // 2. UI 시각적 업데이트 로직
         for (int i = 0; i < MAX_SKULL_COUNT; i++) {
             if (skullImages[i] == null) continue;
 
@@ -89,9 +83,7 @@ private void Awake() {
             }
         }
 
-        // =========================================================
-        // ★ 3. 해골 UI 상태에 맞춰 BGM 위협도 동기화
-        // =========================================================
+  
         if (BattleStateBGM.Instance != null)
         {
             BattleStateBGM.ThreatLevel targetState = BattleStateBGM.ThreatLevel.Normal;
@@ -106,7 +98,6 @@ private void Awake() {
             }
         }
 
-        // 4. 현재 상태 저장
         _currentActiveSkullCount = newCount;
         _wasEmergency = isEmergency;
 

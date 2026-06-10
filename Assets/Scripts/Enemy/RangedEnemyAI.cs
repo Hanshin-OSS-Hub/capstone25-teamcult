@@ -68,7 +68,6 @@ public class RangedEnemy : MonoBehaviour
             }
         }
 
-        // 걷기/대기 전환은 컨트롤러가 isWalking 보고 알아서
         if (anim != null && !isAttacking)
             anim.SetBool("isWalking", isWalking);
     }
